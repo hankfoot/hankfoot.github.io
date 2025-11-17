@@ -1,0 +1,144 @@
+{
+  "bio": {
+    "name": "Hank Duhaime",
+    "location": "Seattle, WA",
+    "contactMessage": "I'm always happy to chat with fellow designers, recruiters, up-and-comers, potential collaborators, or anyone willing to nerd out about theme parks."
+  },
+  "aboutParagraphs": [
+    "I’m Hank — a design technologist who builds playful interactive experiences.",
+    "Most recently I've been focused on emergent digital spaces: from AR tools for healthcare to XR, haptics, and AI at Meta Reality Labs.",
+    "I thrive where code, hardware, and imagination meet: turning early ideas into prototypes that can be felt, heard, seen, and (sometimes) smelled. Not tasted though, at least… not yet 🤔",
+    "Outside of work, I’m a hobbyist maker with skills in electronics and 3D printing. My love languages are threaded inserts and programmable LEDs.",
+    "I also enjoy teaching others how to bring their own interactive ideas to life — whether that’s wiring a first circuit or helping shape a full installation."
+  ],
+  "experience": [
+    {
+      "company": "Meta Reality Labs Research",
+      "title": "Senior Product Design Prototyper",
+      "dates": "2022 – Present",
+      "description": "Prototyping for R&D in AR/VR to enable design explorations, value assessments, and research studies for emergent research technologies including haptics, AI, wearables, and robotics"
+    },
+    {
+      "company": "Publicis Sapient",
+      "title": "Experience Designer L1",
+      "dates": "2020 – 2022",
+      "description": "Designed digital products for Mercedes-Benz USA through the creation of sketches, wireframes, interaction flows, and click-through prototypes "
+    },
+        {
+      "company": "SpellBound AR",
+      "title": "UX Designer / Engineer",
+      "dates": "2020 – 2021 & 2016-2018",
+      "description": "Designed, programmed, and shipped 5 mobile AR minigames used in 20+ pediatric hospitals to improve the patient experience"
+    },
+    {
+      "company": "Second Story Interactive Studios",
+      "title": "Experience Design Itern",
+      "dates": "2019",
+      "description": "Developed flow diagrams, videos, and software prototypes to represent interactive physical installations to prospective clients"
+    },
+    {
+      "company": "Georgia Tech College of Design",
+      "title": "Graduate Teaching Assistant",
+      "dates": "2019-2020",
+      "description": "Mentored graduate students through the process of concepting, designing, and fabricating interactive physical installations"
+    }
+  ],
+  "skillGroups": [
+    { "group": "Digital Prototyping", "skills": ["Games, AR, and VR (Unity/C#)", "Python", "AI", "Processing", "Web (HTML/CSS/JS)"] },
+    { "group": "Physical Prototyping", "skills": ["3D printing","CAD","Electronics", "Laser cutting", "Model-making (cardboard / foam)"] },
+    { "group": "Interaction Design", "skills": ["Wireframing (Figma)", "Workshops (Figjam)", "Interaction flows", "Video editing (Premiere)"] }
+    ],
+  "publications": [
+    {
+      "title": "Enabling Immersive, Fantastical Interactions in Virtual Reality Using EMG and Haptics (CHI Workshop, 2025)",
+      "link": "https://sensorimotordevices.github.io/pages/accepted"
+    },
+    {
+      "title": "Explorations of Wrist Haptic Feedback for AR/VR Interactions with Tasbi (UIST Demo, 2022)",
+      "link": "https://dl.acm.org/doi/10.1145/3526114.3558658"
+    },
+    {
+      "title": "Safecracker: Exploring Immersion Through Audio and Object-Based Controllers (CHI Student Games Competition, 2020)",
+      "link": "https://dl.acm.org/doi/fullHtml/10.1145/3334480.3381656"
+    },
+    {
+      "title": "System and Method for Delivering Augmented Reality Using Scalable Frames to Pre-Existing Media (Utility Patents, 2017)",
+      "link": "https://patents.google.com/patent/US20170169598A1/en"
+    }
+  ],
+  "education": [
+    {"degree": "MS Human-Computer Interaction", "institution": "Georgia Institute of Technology"},
+    {"degree": "BSE Computer Science", "institution": "University of Michigan"}
+  ],
+  "focusAreas": ["XR & Haptics","Playful Interaction"],
+  "projects": [
+    {
+      "id": 6,
+      "slug": "rl-haptics",
+      "title": "RL Haptics Prototyping",
+      "subtitle": "Meta Reality Labs Research",
+      "tags": ["R&D", "XR", "Prototyping"],
+      "year": "2022-Present",
+      "description": "Selected public prototypes for novel XR interactions enabled by RL-R's cutting-edge haptic technologies",
+      "subtitleUrl": "https://tech.facebook.com/reality-labs/",
+      "featured": true,
+      "image": "/media/home/work/rl-haptics-hero.jpg"
+    },
+    {
+      "id": 1,
+      "slug": "arise",
+      "title": "ARISE AR Scavenger Hunt",
+      "subtitle": "SpellBound AR",
+      "tags": ["AR", "Design"],
+      "year": "2020",
+      "description": "A mobile app that encourages pediatric patients to get up and move by sending them an immersive undersea adventure",
+      "subtitleUrl": "https://spellboundar.com/"
+    },
+    {
+      "id": 2,
+      "slug": "use-your-melon",
+      "title": "Use Your Melon Exhibit",
+      "subtitle": "Georgia Aquarium Partnership",
+      "tags": ["Installation", "Design", "Prototyping"],
+      "year": "2020-2021",
+      "description": "A gesture-based interactive that challenges guests of the Georgia Aquarium to a game of echolocation charades while they queue for the dolphin show",
+      "subtitleUrl": "https://www.georgiaaquarium.org/"
+    },
+    {
+      "id": 3,
+      "slug": "safecracker",
+      "title": "Safecracker Arcade Game",
+      "subtitle": "CHI Student Games Competition Winner (2020)",
+      "tags": ["Installation", "Design", "Prototyping"],
+      "year": "2019-2020",
+      "description": "An immersive heist game where players race to crack open a safe with their trusty stethoscope",
+      "subtitleUrl": "https://dl.acm.org/doi/fullHtml/10.1145/3334480.3381656"
+    },
+    {
+      "id": 4,
+      "slug": "depth-charge",
+      "title": "Depth Charge Minigame",
+      "subtitle": "Georgia Tech Student Project",
+      "tags": ["Toy", "Prototyping"],
+      "year": "2019",
+      "description": "A handheld and fully-playable arcade cabinet modeled after the radar console of a submarine",
+      "subtitleUrl": "https://www.cc.gatech.edu/"
+    },
+    {
+      "id": 5,
+      "slug": "second-story",
+      "title": "Second Story Hardware Experiments",
+      "subtitle": "Second Story Interactive Studios",
+      "tags": ["R&D", "Prototyping"],
+      "year": "2019",
+      "description": "Hardware experiments built during my summer internship that showcase novel interaction technologies for physical installations",
+      "subtitleUrl": "https://2s-archive.rzrfs.com/",
+      "featured": false
+    }
+  ],
+  "social": {
+    "bluesky": "https://bsky.app/profile/schmardware.bsky.social",
+    "linkedin": "https://www.linkedin.com/in/henryduhaime/",
+    "resume": "https://hankduhaime.com/s/DuhaimeResume2023-V-Nov.pdf"
+  }
+}

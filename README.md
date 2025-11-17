@@ -1,6 +1,6 @@
-# Hank Duhaime Portfolio
+# Hank Duhaime's Portfolio
 
-A Next.js portfolio website with a LEGO instruction manual aesthetic. Features a clean, bold design with black borders, numbered sections, and a playful dot grid background.
+A Next.js portfolio website vibe coded with Copilot.
 
 ## 🚀 Quick Start
 
@@ -52,7 +52,7 @@ The site will be deployed to GitHub Pages at `https://hankfoot.github.io`
 
 ## 🎨 Design System
 
-### LEGO Aesthetic
+### Aesthetic
 - **Bold borders**: 4px black borders on all major sections
 - **Numbered sections**: Each section has a number badge (1-4)
 - **Dot grid background**: Subtle background pattern across all pages

@@ -1,10 +1,9 @@
 # Hank Duhaime's Portfolio
 
-A Next.js portfolio website vibe coded with Copilot.
+A Next.js portfolio site with a neobrutalist design aesthetic, statically exported for GitHub Pages.
 
-## 🚀 Quick Start
+## Quick Start
 
-### Development
 ```bash
 npm install
 npm run dev
@@ -12,155 +11,149 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to view the site.
 
-### Deployment
-```bash
-npm run build
-npx gh-pages -d out --dotfiles
-```
+## Architecture
 
-The site will be deployed to GitHub Pages at `https://hankfoot.github.io`
+### Tech Stack
 
-## 📁 Project Structure
+- **Framework:** Next.js (App Router, static export via `output: 'export'`)
+- **Styling:** Tailwind CSS 3 (utility-first, no dark mode)
+- **Icons:** `lucide-react` + one inline Bluesky SVG
+- **Deployment:** GitHub Pages via `gh-pages`
+
+### Project Structure
 
 ```
 ├── app/
-│   ├── layout.tsx          # Root layout with header, footer, and dot grid background
-│   ├── page.tsx            # Homepage (Hero, Projects, About, Contact)
-│   ├── projects/
-│   │   └── [id]/
-│   │       └── page.tsx    # Dynamic project pages (uses slug routing)
-│   └── globals.css         # Global styles and LEGO design system
+│   ├── layout.tsx              # Root layout — sticky Navbar + Footer wrapper
+│   ├── page.tsx                # Homepage (Hero, Projects, About, Contact)
+│   ├── globals.css             # Tailwind directives + minimal CSS vars + dot-grid body
+│   └── projects/
+│       └── [id]/
+│           └── page.tsx        # Dynamic project detail pages (slug-based routing)
 │
 ├── components/
-│   ├── navbar.tsx          # Sticky header navigation with wave animation
-│   ├── footer.tsx          # Global footer with social links and site navigation
-│   └── ui/                 # shadcn/ui components (Button, etc.)
+│   ├── navbar.tsx              # Sticky header with animated sine wave + mobile menu
+│   ├── footer.tsx              # 3-column footer with bio, shortcuts, project links
+│   ├── tag.tsx                 # Reusable pill tag (skills, project tags)
+│   ├── media-content.tsx       # Renders image or autoplay video from a type/src pair
+│   └── social-links.tsx        # Social links with "icon" (footer) and "button" (contact) variants
 │
 ├── public/
-│   ├── content-active.json # Single source of truth for all site content
-│   ├── media/
-│   │   ├── home/           # Homepage images and videos
-│   │   │   ├── intro/      # Hero section images
-│   │   │   ├── work/       # Project preview images/videos
-│   │   │   └── about/      # About section images
-│   │   └── projects/       # Project detail page media (organized by slug)
-│   └── .nojekyll           # Tells GitHub Pages not to process with Jekyll
+│   ├── content-active.json     # Single source of truth for ALL site content
+│   ├── .nojekyll               # Tells GitHub Pages to skip Jekyll processing
+│   └── media/
+│       └── home/
+│           ├── intro/          # Hero section images
+│           ├── about/          # About section images
+│           └── work/           # Project preview images & videos
 │
-├── next.config.js          # Next.js config (static export enabled)
-└── package.json            # Dependencies and scripts
+├── tailwind.config.ts          # Tailwind config (scans app/ + components/)
+├── next.config.js              # Static export, unoptimized images, trailing slash
+├── postcss.config.js           # PostCSS (tailwindcss + autoprefixer)
+├── tsconfig.json               # TypeScript config with @/* path alias
+└── package.json
 ```
 
-## 🎨 Design System
+### Data Flow
 
-### Aesthetic
-- **Bold borders**: 4px black borders on all major sections
-- **Numbered sections**: Each section has a number badge (1-4)
-- **Dot grid background**: Subtle background pattern across all pages
-- **Color-coded headers**: Red (Intro), Blue (Projects), Green (About), Orange (Contact)
-- **Typography**: Black font, all-caps headings, bold emphasis
+All site content is driven by `public/content-active.json`. There is no CMS, no markdown processing, and no build-time data fetching. Pages import the JSON directly:
 
-### Key Components
-- `SectionHeader`: Reusable numbered section headers
-- Cards with `border-4 border-black`
-- Buttons with uppercase text and bold font weights
-
-## 📝 Content Management
-
-All site content is managed through `public/content-active.json`:
-
-```json
-{
-  "bio": { "name", "location", "contactMessage" },
-  "aboutParagraphs": [...],
-  "experience": [...],
-  "skillGroups": [...],
-  "publications": [...],
-  "education": [...],
-  "projects": [
-    {
-      "id": 6,
-      "slug": "rl-haptics",
-      "title": "...",
-      "subtitle": "...",
-      "tags": [...],
-      "year": "...",
-      "description": "...",
-      "subtitleUrl": "...",
-      "featured": true,
-      "image": "/media/home/work/..."
-    }
-  ],
-  "social": { "bluesky", "linkedin", "resume" }
-}
+```
+content-active.json
+├── bio              → Homepage hero, contact section, footer
+├── aboutParagraphs  → About section (left column)
+├── experience       → About section (right column, resume cards)
+├── education        → About section (right column)
+├── skillGroups      → About section (right column, rendered with Tag component)
+├── publications     → About section (left column)
+├── projects         → Homepage project grid + project detail pages
+│   └── each project has: id, slug, title, subtitle, subtitleUrl, tags, year,
+│       description, featured?, image?, media? { type, src }
+└── social           → Contact section (SocialLinks variant="button")
+                       Footer (SocialLinks variant="icon")
 ```
 
-### Adding/Editing Projects
-1. Edit `public/content-active.json`
-2. Add a unique `slug` for URL routing (e.g., "safecracker", "arise")
-3. Place project preview images in `public/media/home/work/`
-4. Place detail images in `public/media/projects/{slug}/`
-5. Rebuild and deploy
+### Shared Components
 
-## 🔧 Key Features
+| Component | File | Purpose | Used By |
+|---|---|---|---|
+| `Tag` | `components/tag.tsx` | Rounded pill badge for skills & project tags | Homepage (skills + project cards), project detail page |
+| `MediaContent` | `components/media-content.tsx` | Renders an `<Image>` or autoplay `<video>` based on `type` prop | Homepage project grid |
+| `SocialLinks` | `components/social-links.tsx` | Social links with two visual variants | Footer (`variant="icon"`), Contact section (`variant="button"`) |
+| `Navbar` | `components/navbar.tsx` | Sticky top nav with animated SVG wave + mobile hamburger | Root layout |
+| `Footer` | `components/footer.tsx` | 3-column footer with bio, shortcuts, project list | Root layout |
 
-### Slug-Based Routing
-Projects use clean URLs like `/projects/safecracker` instead of `/projects/3`
+### Design System
 
-### Dynamic Project Pages
-All project pages are generated from `content-active.json` with a consistent template
+The site uses a **neobrutalist** aesthetic with these conventions:
 
-### Global Components
-- Navbar and Footer appear on all pages
-- Dot grid background is consistent across the site
+- **Thick borders:** `border-4 border-black` on sections, cards, and inputs
+- **Numbered section headers:** Colored banner with a circled number + title
+  - `#ef4444` (red) — Intro
+  - `#3b82f6` (blue) — Featured Work
+  - `#22c55e` (green) — About
+  - `#f97316` (orange) — Contact
+- **Dot-grid body background:** `radial-gradient` defined in `globals.css`
+- **Typography:** `font-black` headings, uppercase labels, `tracking-wider`/`tracking-tighter`
+- **Interactive cards:** `hover:shadow-[12px_12px_0px_rgba(0,0,0,0.2)]` offset shadow on hover
 
-### Static Export
-Built as a static site for GitHub Pages deployment (no server required)
+Common class patterns (defined as constants in `app/page.tsx`):
+- `sectionHeaderClasses` — colored section banner
+- `sectionNumberClasses` — circled number badge
+- `cardClasses` — bordered white card
 
-## 🚢 Deployment Workflow
+## How To
 
-### Regular Deployment
+### Add a New Project
+
+1. Add an entry to the `projects` array in `public/content-active.json`:
+   ```json
+   {
+     "id": 7,
+     "slug": "my-project",
+     "title": "My Project",
+     "subtitle": "Organization Name",
+     "tags": ["Design", "Prototyping"],
+     "year": "2025",
+     "description": "What it does...",
+     "subtitleUrl": "https://example.com",
+     "featured": true,
+     "media": { "type": "image", "src": "/media/home/work/my-project-hero.jpg" }
+   }
+   ```
+2. Place the preview image/video in `public/media/home/work/`.
+3. The project appears automatically on the homepage grid and gets a detail page at `/projects/my-project/`.
+
+### Add a New Page
+
+1. Create `app/my-page/page.tsx`.
+2. The root layout (`app/layout.tsx`) automatically wraps it with `Navbar` + `Footer`.
+3. To add it to navigation, edit the nav links array in `components/navbar.tsx`.
+
+### Update Social Links
+
+Edit the `social` object in `public/content-active.json`. The `SocialLinks` component reads from it in both the footer and contact section. To add a new platform, update the component in `components/social-links.tsx`.
+
+## NPM Scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start dev server at localhost:3000 |
+| `npm run build` | Build static export to `out/` |
+| `npm run deploy` | Build + deploy to GitHub Pages (`gh-pages -d out`) |
+| `npm run lint` | Run Next.js ESLint |
+
+## Deployment
+
+The site uses `output: 'export'` in `next.config.js` to generate a fully static build in the `out/` directory. The `deploy` script pushes that directory to the `gh-pages` branch.
+
 ```bash
-# 1. Make your changes
-# 2. Test locally
-npm run dev
-
-# 3. Commit to main branch
-git add .
-git commit -m "Your commit message"
-git push origin main
-
-# 4. Build and deploy to GitHub Pages
-npm run build
-npx gh-pages -d out --dotfiles
+npm run deploy
 ```
 
-### Branch Structure
-- `main` - Source code (this is what you edit)
-- `gh-pages` - Built static files (auto-generated, don't edit directly)
+- **`main` branch** — source code (edit this)
+- **`gh-pages` branch** — built static files (auto-generated, don't edit)
 
-## 🎯 NPM Scripts
+## License
 
-```bash
-npm run dev        # Start development server
-npm run build      # Build for production
-npm run start      # Start production server locally
-npm run lint       # Run ESLint
-```
-
-## 📦 Tech Stack
-
-- **Framework**: Next.js 14 (App Router)
-- **Styling**: Tailwind CSS
-- **Icons**: lucide-react, react-icons
-- **UI Components**: shadcn/ui
-- **Deployment**: GitHub Pages
-- **Package Manager**: npm
-
-## 🔗 Links
-
-- Live Site: https://hankfoot.github.io
-- Repository: https://github.com/hankfoot/hankfoot.github.io
-
-## 📄 License
-
-Personal portfolio site © 2025 Hank Duhaime
+Personal portfolio site © Hank Duhaime

@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { SiBluesky, SiLinkedin } from "react-icons/si"
+import { SocialLinks } from "@/components/social-links"
 import activeContent from "@/public/content-active.json"
 
 const linkHoverClasses = "text-gray-300 hover:text-white transition-colors"
@@ -15,16 +15,7 @@ export function Footer() {
             Design technologist specializing in immersive physical and digital media
           </p>
           <div className="flex gap-4">
-            {activeContent.social.bluesky && (
-              <a href={activeContent.social.bluesky} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors">
-                <SiBluesky className="h-6 w-6" />
-              </a>
-            )}
-            {activeContent.social.linkedin && (
-              <a href={activeContent.social.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors">
-                <SiLinkedin className="h-6 w-6" />
-              </a>
-            )}
+            <SocialLinks social={activeContent.social} variant="icon" />
           </div>
         </div>
 

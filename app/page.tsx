@@ -3,9 +3,9 @@
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { ExternalLink } from "lucide-react"
-import { SiBluesky, SiLinkedin } from "react-icons/si"
+import { Tag } from "@/components/tag"
+import { MediaContent } from "@/components/media-content"
+import { SocialLinks } from "@/components/social-links"
 import activeContent from "@/public/content-active.json"
 
 // Reusable classes
@@ -41,12 +41,18 @@ export default function Home() {
                 I'm currently prototyping the future of haptics, wearables, and robotics experiences at <a href="https://tech.facebook.com/reality-labs/" className="font-bold text-gray-600 mt-0.5 underline hover:text-black">Meta Reality Labs Research.</a>
               </p>
               <div className="flex gap-4 flex-wrap">
-                <Button className="bg-black text-white hover:bg-gray-800 font-black px-6 py-2 text-sm border-2 border-black" asChild>
-                  <Link href="#projects">VIEW WORK</Link>
-                </Button>
-                <Button variant="outline" className="border-4 border-black text-black hover:bg-black hover:text-white font-black px-6 py-2 text-sm" asChild>
-                  <Link href="#contact">CONTACT</Link>
-                </Button>
+                <Link
+                  href="#projects"
+                  className="inline-flex items-center justify-center bg-black text-white hover:bg-gray-800 font-black px-6 py-2 text-sm border-2 border-black transition-colors"
+                >
+                  VIEW WORK
+                </Link>
+                <Link
+                  href="#contact"
+                  className="inline-flex items-center justify-center border-4 border-black text-black hover:bg-black hover:text-white font-black px-6 py-2 text-sm transition-colors"
+                >
+                  CONTACT
+                </Link>
               </div>
             </div>
             <div className="h-80 relative bg-transparent">
@@ -66,24 +72,14 @@ export default function Home() {
           <SectionHeader number={2} title="FEATURED WORK" bgColor="#3b82f6" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8 bg-blue-50">
             {activeContent.projects.map((project) => {
-              // Media mapping for legacy projects (images and videos)
-              const projectMedia: Record<number, { type: 'image' | 'video'; src: string; alt?: string }> = {
-                1: { type: 'image', src: "/media/home/work/arise_hero.png", alt: "ARISE AR Scavenger Hunt" },
-                2: { type: 'video', src: "/media/home/work/use-your-melon_preview.mp4" },
-                3: { type: 'video', src: "/media/home/work/safecracker_preview.mp4" },
-                4: { type: 'image', src: "/media/home/work/depth-charge_hero.jpeg", alt: "Depth Charge Arcade Cabinet" },
-                5: { type: 'video', src: "/media/home/work/second-story-lab_preview.mp4" },
-              }
+              // Resolve media from content-active.json (image field or media object)
+              const media = project.image
+                ? { type: "image" as const, src: project.image, alt: project.title }
+                : (project as any).media
+                  ? { type: (project as any).media.type as "image" | "video", src: (project as any).media.src, alt: project.title }
+                  : undefined
 
-              // Prefer project.image if present, otherwise fallback to mapping
-              let media: { type: 'image' | 'video'; src: string; alt?: string } | undefined = undefined;
-              if (project.image) {
-                media = { type: 'image', src: project.image, alt: project.title };
-              } else if (projectMedia[project.id]) {
-                media = projectMedia[project.id];
-              }
-
-              const isClickable = project.featured !== false;
+              const isClickable = project.featured !== false
 
               return (
                 <div key={project.id} className="relative">
@@ -95,24 +91,12 @@ export default function Home() {
                     className={`relative bg-white border-4 border-black ${isClickable ? 'hover:shadow-[12px_12px_0px_rgba(0,0,0,0.2)] cursor-pointer' : ''} transition-shadow duration-200 h-full overflow-visible flex flex-col`}
                   >
                     <div className="h-64 relative bg-gray-100 border-b-4 border-black">
-                      {media && media.type === 'image' && (
-                        <Image
+                      {media && (
+                        <MediaContent
+                          type={media.type}
                           src={media.src}
-                          alt={media.alt || 'Project'}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 100vw, 50vw"
+                          alt={media.alt || project.title}
                         />
-                      )}
-                      {media && media.type === 'video' && (
-                        <video
-                          autoPlay
-                          muted
-                          loop
-                          className="w-full h-full object-cover"
-                        >
-                          <source src={media.src} type="video/mp4" />
-                        </video>
                       )}
                     </div>
                 <div className="p-6 pb-3 flex flex-col flex-grow">
@@ -141,22 +125,17 @@ export default function Home() {
                     {project.description}
                   </p>
                   <div className="flex gap-2 flex-wrap mb-3">
-                    {project.tags && project.tags.map((tag: string, idx: number) => (
-                      <span
-                        key={idx}
-                        className="inline-flex items-center rounded-full border-2 border-black bg-white text-black text-xs px-3 py-1 font-normal"
-                      >
-                        {tag}
-                      </span>
+                    {project.tags && project.tags.map((tag: string) => (
+                      <Tag key={tag} label={tag} />
                     ))}
                   </div>
-                  <Button
-                    className="w-full bg-black text-white hover:bg-gray-800 font-black py-2.5 text-xs border-2 border-black uppercase mt-auto"
+                  <Link
+                    href={`/projects/${project.slug}`}
                     onClick={(e) => e.stopPropagation()}
-                    asChild
+                    className="w-full inline-flex items-center justify-center bg-black text-white hover:bg-gray-800 font-black py-2.5 text-xs border-2 border-black uppercase mt-auto transition-colors"
                   >
-                    <Link href={`/projects/${project.slug}`}>VIEW WORK</Link>
-                  </Button>
+                    VIEW WORK
+                  </Link>
                 </div>
               </div>
               </div>
@@ -263,7 +242,7 @@ export default function Home() {
                     <p className="text-xs font-black text-gray-600 uppercase tracking-wider mb-2">{group.group}</p>
                     <div className="flex flex-wrap gap-2">
                       {group.skills.map((tag: string) => (
-                        <span key={tag} className="inline-flex items-center rounded-full border-2 border-black bg-white text-black text-xs px-3 py-1 font-normal">{tag}</span>
+                        <Tag key={tag} label={tag} />
                       ))}
                     </div>
                   </div>
@@ -292,28 +271,8 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="flex flex-col gap-4 p-8 bg-orange-50">
-              {activeContent.social.bluesky && (
-                <Button variant="outline" className="border-4 border-black text-black hover:bg-black hover:text-white font-black px-8 py-3 text-sm" asChild>
-                  <a href={activeContent.social.bluesky} target="_blank" rel="noopener noreferrer">
-                    <SiBluesky className="mr-2 h-4 w-4" /> BLUESKY
-                  </a>
-                </Button>
-              )}
-              {activeContent.social.linkedin && (
-                <Button variant="outline" className="border-4 border-black text-black hover:bg-black hover:text-white font-black px-8 py-3 text-sm" asChild>
-                  <a href={activeContent.social.linkedin} target="_blank" rel="noopener noreferrer">
-                    <SiLinkedin className="mr-2 h-4 w-4" /> LINKEDIN
-                  </a>
-                </Button>
-              )}
-              {activeContent.social.resume && (
-                <Button className="bg-black text-white hover:bg-gray-800 font-black px-8 py-3 border-2 border-black text-sm" asChild>
-                  <a href={activeContent.social.resume} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="mr-2 h-4 w-4" /> RESUME
-                  </a>
-                </Button>
-              )}
+            <div className="p-8 bg-orange-50">
+              <SocialLinks social={activeContent.social} variant="button" />
             </div>
           </div>
         </section>

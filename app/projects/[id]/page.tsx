@@ -1,6 +1,6 @@
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import { ExternalLink } from "lucide-react"
+import { Tag } from "@/components/tag"
 import contentData from "@/public/content-active.json"
 
 interface Project {
@@ -44,9 +44,9 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="bg-white border-4 border-black p-8 max-w-md">
           <h1 className="text-4xl font-black uppercase mb-4">Project Not Found</h1>
-          <Button asChild className="bg-black text-white hover:bg-gray-800 font-black uppercase">
-            <Link href="/">Back to Home</Link>
-          </Button>
+          <Link href="/" className="inline-flex items-center justify-center bg-black text-white hover:bg-gray-800 font-black uppercase px-6 py-2 transition-colors">
+            Back to Home
+          </Link>
         </div>
       </div>
     )
@@ -59,9 +59,9 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Back Button */}
         <div className="mb-8">
-          <Button asChild variant="outline" className="border-2 border-black font-black uppercase hover:bg-gray-100">
-            <Link href="/#projects">← Back to Projects</Link>
-          </Button>
+          <Link href="/#projects" className="inline-flex items-center justify-center border-2 border-black font-black uppercase hover:bg-gray-100 px-4 py-2 transition-colors">
+            ← Back to Projects
+          </Link>
         </div>
 
         {/* Header Card */}
@@ -91,9 +91,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
           {/* Tags */}
           <div className="flex gap-2 flex-wrap">
             {project.tags.map((tag) => (
-              <span key={tag} className="px-3 py-1 bg-gray-200 border-2 border-black font-bold text-sm uppercase">
-                {tag}
-              </span>
+              <Tag key={tag} label={tag} />
             ))}
           </div>
         </div>

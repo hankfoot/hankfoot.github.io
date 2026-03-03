@@ -92,7 +92,11 @@
       "year": "2020",
       "description": "A mobile app that encourages pediatric patients to get up and move by sending them an immersive undersea adventure",
       "subtitleUrl": "https://spellboundar.com/",
-      "media": { "type": "image", "src": "/media/home/work/arise_hero.png" }
+      "media": { "type": "image", "src": "/media/home/work/arise_hero.png" },
+      "heroImage": "/media/projects/arise/hero/hero-banner.png",
+      "metadata": [
+        { "label": "Tools", "value": "Figma, Unity, C#" }
+      ]
     },
     {
       "id": 2,

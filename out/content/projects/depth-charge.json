@@ -1,0 +1,22 @@
+{
+  "blocks": [
+    {
+      "type": "hero",
+      "variant": "banner",
+      "data": {
+        "metadata": [
+          { "label": "Duration", "value": "—" },
+          { "label": "Tools", "value": "—" }
+        ]
+      }
+    },
+    {
+      "type": "text",
+      "variant": "default",
+      "data": {
+        "heading": "Coming Soon",
+        "body": ["This project page is under construction. Check back soon for the full case study."]
+      }
+    }
+  ]
+}

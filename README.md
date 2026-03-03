@@ -27,25 +27,48 @@ Open [http://localhost:3000](http://localhost:3000) to view the site.
 │   ├── layout.tsx              # Root layout — sticky Navbar + Footer wrapper
 │   ├── page.tsx                # Homepage (Hero, Projects, About, Contact)
 │   ├── globals.css             # Tailwind directives + minimal CSS vars + dot-grid body
+│   ├── dev/
+│   │   └── blocks/
+│   │       └── page.tsx        # Style guide — every block type × variant (localhost:3000/dev/blocks)
 │   └── projects/
 │       └── [id]/
-│           └── page.tsx        # Dynamic project detail pages (slug-based routing)
+│           └── page.tsx        # Dynamic project detail pages (block-based, slug-routed)
 │
 ├── components/
 │   ├── navbar.tsx              # Sticky header with animated sine wave + mobile menu
 │   ├── footer.tsx              # 3-column footer with bio, shortcuts, project links
 │   ├── tag.tsx                 # Reusable pill tag (skills, project tags)
 │   ├── media-content.tsx       # Renders image or autoplay video from a type/src pair
-│   └── social-links.tsx        # Social links with "icon" (footer) and "button" (contact) variants
+│   ├── social-links.tsx        # Social links with "icon" (footer) and "button" (contact) variants
+│   └── blocks/
+│       ├── index.tsx           # BlockRenderer — maps block type → component
+│       ├── hero-block.tsx      # Hero (banner | split | overlay)
+│       ├── text-block.tsx      # Text (default | numbered | bullets)
+│       ├── image-block.tsx     # Image (full | contained)
+│       ├── video-block.tsx     # Video (inline | player)
+│       ├── gallery-block.tsx   # Gallery (grid | masonry | scroll)
+│       ├── callout-block.tsx   # Callout (note | quote | stat)
+│       ├── before-after-block.tsx  # Before/After (side-by-side | stacked)
+│       └── link-list-block.tsx # Link List (cards | inline)
 │
 ├── public/
-│   ├── content-active.json     # Single source of truth for ALL site content
+│   ├── content-active.json     # Homepage & global content
+│   ├── content/
+│   │   └── projects/
+│   │       ├── arise.json      # Full block content for ARISE project
+│   │       ├── rl-haptics.json # Stub (coming soon)
+│   │       └── ...             # One JSON per project slug
 │   ├── .nojekyll               # Tells GitHub Pages to skip Jekyll processing
 │   └── media/
-│       └── home/
-│           ├── intro/          # Hero section images
-│           ├── about/          # About section images
-│           └── work/           # Project preview images & videos
+│       ├── home/               # Homepage media
+│       │   ├── intro/
+│       │   ├── about/
+│       │   └── work/
+│       └── projects/           # Per-project media
+│           └── arise/
+│               ├── hero/
+│               ├── before-after/
+│               └── process/
 │
 ├── tailwind.config.ts          # Tailwind config (scans app/ + components/)
 ├── next.config.js              # Static export, unoptimized images, trailing slash
@@ -106,7 +129,7 @@ Common class patterns (defined as constants in `app/page.tsx`):
 
 ### Add a New Project
 
-1. Add an entry to the `projects` array in `public/content-active.json`:
+1. Add an entry to the `projects` array in `public/content-active.json` (this drives the homepage grid):
    ```json
    {
      "id": 7,
@@ -121,8 +144,54 @@ Common class patterns (defined as constants in `app/page.tsx`):
      "media": { "type": "image", "src": "/media/home/work/my-project-hero.jpg" }
    }
    ```
-2. Place the preview image/video in `public/media/home/work/`.
-3. The project appears automatically on the homepage grid and gets a detail page at `/projects/my-project/`.
+2. Create `public/content/projects/my-project.json` with a `blocks` array (see block schema below).
+3. Add a static import for the new JSON in `app/projects/[id]/page.tsx` and register it in the `projectContent` map.
+4. Place project media in `public/media/projects/my-project/`.
+5. The project appears automatically on the homepage grid and renders its blocks at `/projects/my-project/`.
+
+### Block-Based Project Pages
+
+Each project detail page is composed of **blocks** — typed JSON objects rendered by matching React components. Content lives in `public/content/projects/{slug}.json`.
+
+#### JSON Schema
+
+```json
+{
+  "blocks": [
+    { "type": "hero",         "variant": "banner",      "data": { ... } },
+    { "type": "text",         "variant": "default",     "data": { ... } },
+    { "type": "before-after", "variant": "side-by-side", "data": { ... } }
+  ]
+}
+```
+
+Every block has:
+- **`type`** (required) — maps to a component in `components/blocks/`
+- **`variant`** (optional) — selects a visual treatment within that component
+- **`data`** (required) — block-specific props (images, text, config)
+
+#### Available Block Types
+
+| Type | Variants | Key Data Fields |
+|---|---|---|
+| `hero` | `banner` · `split` · `overlay` | `image`, `metadata[]` (label/value pairs) |
+| `text` | `default` · `numbered` · `bullets` | `heading?`, `body[]`, `stepNumber?`, `items[]`, `anchorId?` |
+| `image` | `full` · `contained` | `src`, `alt`, `caption?` |
+| `video` | `inline` · `player` | `src`, `caption?` |
+| `gallery` | `grid` · `masonry` · `scroll` | `images[]` (src/alt/caption), `columns?` |
+| `callout` | `note` · `quote` · `stat` | `text`, `attribution?`, `statValue?` |
+| `before-after` | `side-by-side` · `stacked` | `heading?`, `before` / `after` (image/label/bullets) |
+| `link-list` | `cards` · `inline` | `heading?`, `links[]` (label/url/description) |
+
+#### Adding a New Block Type
+
+1. Create `components/blocks/my-block.tsx` exporting a `MyBlock` component with `data` and optional `project` props.
+2. Register it in `components/blocks/index.tsx` by adding to the `blockComponents` map.
+3. Add sample data to `app/dev/blocks/page.tsx` so the style guide stays up to date.
+
+#### Dev Style Guide
+
+Visit [localhost:3000/dev/blocks](http://localhost:3000/dev/blocks) to see every block type in every variant rendered with real ARISE media.
 
 ### Add a New Page
 

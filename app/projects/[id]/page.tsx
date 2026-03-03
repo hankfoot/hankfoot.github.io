@@ -1,7 +1,23 @@
 import Link from "next/link"
-import { ExternalLink } from "lucide-react"
-import { Tag } from "@/components/tag"
 import contentData from "@/public/content-active.json"
+import { BlockRenderer, Block } from "@/components/blocks"
+
+/* ── per-project content (static imports so they're bundled at build time) ── */
+import ariseContent from "@/public/content/projects/arise.json"
+import rlHapticsContent from "@/public/content/projects/rl-haptics.json"
+import useYourMelonContent from "@/public/content/projects/use-your-melon.json"
+import safecrackerContent from "@/public/content/projects/safecracker.json"
+import depthChargeContent from "@/public/content/projects/depth-charge.json"
+import secondStoryContent from "@/public/content/projects/second-story.json"
+
+const projectContent: Record<string, { blocks: Block[] }> = {
+  arise: ariseContent as { blocks: Block[] },
+  "rl-haptics": rlHapticsContent as { blocks: Block[] },
+  "use-your-melon": useYourMelonContent as { blocks: Block[] },
+  safecracker: safecrackerContent as { blocks: Block[] },
+  "depth-charge": depthChargeContent as { blocks: Block[] },
+  "second-story": secondStoryContent as { blocks: Block[] },
+}
 
 interface Project {
   id: number
@@ -14,6 +30,8 @@ interface Project {
   subtitleUrl?: string
   featured?: boolean
   image?: string
+  heroImage?: string
+  metadata?: { label: string; value: string }[]
 }
 
 const projectsData: Project[] = contentData.projects
@@ -24,20 +42,18 @@ export async function generateStaticParams() {
   }))
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const project = projectsData.find((p) => p.slug === params.id)
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const project = projectsData.find((p) => p.slug === id)
   return {
     title: project?.title || "Project",
     description: project?.description || "Project details",
   }
 }
 
-const SectionHeader = ({ children }: { children: React.ReactNode }) => (
-  <h2 className="text-2xl font-black uppercase tracking-wider mb-6">{children}</h2>
-)
-
-export default function ProjectPage({ params }: { params: { id: string } }) {
-  const project = projectsData.find((p) => p.slug === params.id)
+export default async function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const project = projectsData.find((p) => p.slug === id)
 
   if (!project) {
     return (
@@ -52,6 +68,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
     )
   }
 
+  const content = projectContent[project.slug]
   const otherProjects = projectsData.filter((p) => p.id !== project.id)
 
   return (
@@ -64,51 +81,22 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
           </Link>
         </div>
 
-        {/* Header Card */}
-        <div className="bg-white border-4 border-black p-6 sm:p-8 mb-8">
-          <div className="border-b-4 border-black pb-6 mb-6">
-            <SectionHeader>{project.title}</SectionHeader>
-            <div className="space-y-2 mb-4">
-              {project.subtitleUrl ? (
-                <a
-                  href={project.subtitleUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-lg font-bold hover:underline inline-flex items-center gap-2"
-                >
-                  {project.subtitle}
-                  <ExternalLink className="h-4 w-4" />
-                </a>
-              ) : (
-                <p className="text-lg font-bold">{project.subtitle}</p>
-              )}
-              <p className="text-lg font-bold text-gray-600">{project.year}</p>
-            </div>
+        {/* Block-based project content */}
+        {content ? (
+          <BlockRenderer blocks={content.blocks} project={project} />
+        ) : (
+          <div className="bg-white border-4 border-black p-6 sm:p-8 mb-8">
+            <h2 className="text-2xl font-black uppercase tracking-wider mb-6">Coming Soon</h2>
+            <p className="text-base leading-relaxed text-gray-600">
+              This project page is under construction.
+            </p>
           </div>
-
-          <p className="text-base leading-relaxed mb-6">{project.description}</p>
-
-          {/* Tags */}
-          <div className="flex gap-2 flex-wrap">
-            {project.tags.map((tag) => (
-              <Tag key={tag} label={tag} />
-            ))}
-          </div>
-        </div>
-
-        {/* Placeholder Content */}
-        <div className="bg-white border-4 border-black p-6 sm:p-8 mb-8">
-          <SectionHeader>Coming Soon</SectionHeader>
-          <p className="text-base leading-relaxed text-gray-600">
-            This project page is under construction. More details about {project.title} will be added soon, including
-            process documentation, images, and detailed insights into the work.
-          </p>
-        </div>
+        )}
 
         {/* Other Projects */}
         {otherProjects.length > 0 && (
-          <div className="bg-white border-4 border-black p-6 sm:p-8">
-            <SectionHeader>Other Projects</SectionHeader>
+          <div className="bg-white border-4 border-black p-6 sm:p-8 mt-12">
+            <h2 className="text-2xl font-black uppercase tracking-wider mb-6">Other Projects</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {otherProjects.slice(0, 4).map((otherProject) => (
                 <Link

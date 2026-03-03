@@ -1,0 +1,319 @@
+{
+  "blocks": [
+    {
+      "type": "hero",
+      "variant": "banner",
+      "data": {}
+    },
+    {
+      "type": "text",
+      "variant": "bullets",
+      "section": { "number": 1, "label": "OVERVIEW", "color": "#3b82f6" },
+      "data": {
+        "heading": "My Contributions",
+        "items": [
+          "Led UX redesign of the ARISE mobile AR experience across iOS and Android, refreshing UI assets for 5 minigames",
+          "Conducted user research sessions with child life specialists at partnering hospitals to validate design decisions",
+          "Created gameplay flow diagrams, wireframes, and high-fidelity mockups in Figma, and implemented final designs in Unity/C#"
+        ]
+      }
+    },
+    {
+      "type": "text",
+      "variant": "default",
+      "data": {
+        "heading": "In a Clamshell 🦀",
+        "body": [
+          "ARISE is a mobile app that encourages pediatric patients to get up and move by sending them on an immersive undersea adventure. The app uses augmented reality to transform hospital hallways into an interactive ocean world where kids complete quests and collect virtual sea creatures.",
+          "I joined the ARISE team as the UX designer in charge of refreshing the app's beta interface. The existing UI was functional but cluttered, with low-contrast text, inconsistent navigation patterns, and visual noise that made it hard for young patients to focus on gameplay."
+        ]
+      }
+    },
+    {
+      "type": "image",
+      "variant": "contained",
+      "data": {
+        "src": "/media/projects/arise/hero/clamshell-overview.png",
+        "alt": "ARISE app overview showing the refreshed UI",
+        "caption": "Overview of the refreshed ARISE interface"
+      }
+    },
+    {
+      "type": "text",
+      "variant": "default",
+      "data": {
+        "heading": "Objectives",
+        "body": [
+          "01 — Simplify navigation so young patients can play independently without adult assistance",
+          "02 — Increase visual contrast and readability for use in varying hospital lighting conditions",
+          "03 — Unify the visual language across all 5 minigames while preserving each game's unique character"
+        ]
+      }
+    },
+    {
+      "type": "text",
+      "variant": "default",
+      "section": { "number": 2, "label": "FINAL DESIGNS", "color": "#22c55e" },
+      "data": {
+        "anchorId": "final-designs",
+        "body": [
+          "The UI refresh touched every screen in the app. Below are before/after comparisons of the four major sections: Main Menu, Inventory, Quests, and Accounts."
+        ]
+      }
+    },
+    {
+      "type": "before-after",
+      "variant": "side-by-side",
+      "data": {
+        "heading": "Main Menu",
+        "before": {
+          "label": "Pre-Refresh",
+          "image": "/media/projects/arise/before-after/menu-before.png",
+          "bullets": [
+            "Cluttered navigation with competing visual elements",
+            "Low contrast text difficult to read in bright environments",
+            "Inconsistent button sizing and placement"
+          ]
+        },
+        "after": {
+          "label": "Post-Refresh",
+          "image": "/media/projects/arise/before-after/menu-after.png",
+          "bullets": [
+            "Simplified navigation hierarchy with clear visual priority",
+            "High-contrast accessible color palette",
+            "Consistent, touch-friendly button sizing"
+          ]
+        }
+      }
+    },
+    {
+      "type": "before-after",
+      "variant": "side-by-side",
+      "data": {
+        "heading": "Inventory",
+        "before": {
+          "label": "Pre-Refresh",
+          "image": "/media/projects/arise/before-after/inventory-before.png",
+          "bullets": [
+            "Dense grid layout overwhelming for young users",
+            "No clear visual feedback for collected vs. uncollected items"
+          ]
+        },
+        "after": {
+          "label": "Post-Refresh",
+          "image": "/media/projects/arise/before-after/inventory-after.png",
+          "bullets": [
+            "Cleaner grid with breathing room between items",
+            "Clear visual states for collected, uncollected, and locked creatures"
+          ]
+        }
+      }
+    },
+    {
+      "type": "before-after",
+      "variant": "side-by-side",
+      "data": {
+        "heading": "Quests",
+        "before": {
+          "label": "Pre-Refresh",
+          "image": "/media/projects/arise/before-after/quests-before.png",
+          "bullets": [
+            "Quest objectives buried in small text",
+            "No progress indication for multi-step quests"
+          ]
+        },
+        "after": {
+          "label": "Post-Refresh",
+          "image": "/media/projects/arise/before-after/quests-after.png",
+          "bullets": [
+            "Large, scannable quest cards with clear objectives",
+            "Visual progress bar and step indicators",
+            "Added contextual help screen for first-time players"
+          ]
+        }
+      }
+    },
+    {
+      "type": "before-after",
+      "variant": "side-by-side",
+      "data": {
+        "heading": "Accounts",
+        "before": {
+          "label": "Pre-Refresh",
+          "image": "/media/projects/arise/before-after/accounts-before.png",
+          "bullets": [
+            "Complex account creation flow with too many steps",
+            "Avatar selection felt disconnected from the ocean theme"
+          ]
+        },
+        "after": {
+          "label": "Post-Refresh",
+          "image": "/media/projects/arise/before-after/accounts-after.png",
+          "bullets": [
+            "Streamlined 3-step account creation",
+            "Sea creature avatar selection tied to gameplay progression"
+          ]
+        }
+      }
+    },
+    {
+      "type": "text",
+      "variant": "numbered",
+      "section": { "number": 3, "label": "PROCESS", "color": "#f97316" },
+      "data": {
+        "stepNumber": "01",
+        "heading": "Gameplay Flow Diagrams"
+      }
+    },
+    {
+      "type": "image",
+      "variant": "full",
+      "data": {
+        "src": "/media/projects/arise/process/gameplay-flows.png",
+        "alt": "Gameplay flow diagrams mapping the user journey through ARISE",
+        "caption": "Flow diagrams mapping every screen and interaction path in the app"
+      }
+    },
+    {
+      "type": "text",
+      "variant": "default",
+      "data": {
+        "body": [
+          "Before touching any visuals, I mapped the entire app's screen-to-screen flow. This revealed redundant navigation paths and dead-end states that were confusing young users. The diagrams became our shared reference for the rest of the project."
+        ]
+      }
+    },
+    {
+      "type": "text",
+      "variant": "numbered",
+      "data": {
+        "stepNumber": "02",
+        "heading": "Research"
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "note",
+      "data": {
+        "text": "Due to patient privacy regulations (HIPAA), we were unable to conduct direct usability testing with pediatric patients. Instead, we validated our designs through interviews with child life specialists who work directly with patients daily."
+      }
+    },
+    {
+      "type": "gallery",
+      "variant": "grid",
+      "data": {
+        "columns": 2,
+        "images": [
+          {
+            "src": "/media/projects/arise/process/child-life-interviews.png",
+            "alt": "Interview session with child life specialist",
+            "caption": "Child Life Specialist Interviews"
+          },
+          {
+            "src": "/media/projects/arise/process/playtesting.jpg",
+            "alt": "ARISE being playtested in a hospital setting",
+            "caption": "In-context playtesting at a partner hospital"
+          }
+        ]
+      }
+    },
+    {
+      "type": "text",
+      "variant": "numbered",
+      "data": {
+        "stepNumber": "03",
+        "heading": "Design Workshops"
+      }
+    },
+    {
+      "type": "image",
+      "variant": "full",
+      "data": {
+        "src": "/media/projects/arise/process/design-workshops.png",
+        "alt": "Design workshop artifacts and collaborative sketching",
+        "caption": "Collaborative design workshop with the SpellBound team"
+      }
+    },
+    {
+      "type": "text",
+      "variant": "default",
+      "data": {
+        "body": [
+          "I facilitated design workshops with the SpellBound team to align on visual direction. We explored multiple aesthetic directions before converging on a clean, high-contrast style that maintained the playful ocean theme while improving usability."
+        ]
+      }
+    },
+    {
+      "type": "text",
+      "variant": "numbered",
+      "data": {
+        "stepNumber": "04",
+        "heading": "Sketches & Low-Fidelity"
+      }
+    },
+    {
+      "type": "gallery",
+      "variant": "grid",
+      "data": {
+        "columns": 2,
+        "images": [
+          {
+            "src": "/media/projects/arise/process/sketches.jpg",
+            "alt": "Hand-drawn sketches of UI concepts",
+            "caption": "Early hand-drawn sketches exploring layout options"
+          },
+          {
+            "src": "/media/projects/arise/process/wireframes.png",
+            "alt": "Low-fidelity wireframes in Figma",
+            "caption": "Low-fidelity wireframes for the main navigation flow"
+          }
+        ]
+      }
+    },
+    {
+      "type": "callout",
+      "variant": "stat",
+      "section": { "number": 4, "label": "IMPACT", "color": "#ef4444" },
+      "data": {
+        "statValue": "20+",
+        "text": "pediatric hospitals across the US using ARISE to improve the patient experience"
+      }
+    },
+    {
+      "type": "link-list",
+      "variant": "cards",
+      "data": {
+        "heading": "Other Projects with SpellBound",
+        "links": [
+          {
+            "label": "Poseidon's Plunder",
+            "url": "https://spellboundar.com/",
+            "description": "Underwater treasure hunt AR minigame"
+          },
+          {
+            "label": "Myth Card",
+            "url": "https://spellboundar.com/",
+            "description": "Collectible creature card game"
+          },
+          {
+            "label": "Magic Portal",
+            "url": "https://spellboundar.com/",
+            "description": "AR portal into an undersea world"
+          }
+        ]
+      }
+    },
+    {
+      "type": "text",
+      "variant": "default",
+      "data": {
+        "heading": "Wrapping Up",
+        "body": [
+          "Working on ARISE was a formative experience — designing for children in hospitals requires a unique blend of playfulness and sensitivity. Every design decision had to account for kids who might be tired, anxious, or in pain.",
+          "The refreshed UI shipped in 2021 and is currently in use at over 20 pediatric hospitals. I'm grateful to the child life specialists who gave us their time and insight, and to the SpellBound team for trusting me with this redesign.",
+          "Thanks for reading!"
+        ]
+      }
+    }
+  ]
+}

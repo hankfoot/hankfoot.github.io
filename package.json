@@ -3,26 +3,27 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "astro dev",
+    "build": "astro build",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d out -t true",
-    "start": "next start",
-    "lint": "next lint"
+    "deploy": "gh-pages -d dist -t true",
+    "start": "astro preview",
+    "check": "astro check"
   },
   "dependencies": {
     "lucide-react": "^0.294.0",
-    "next": "^16.1.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@astrojs/mdx": "^4.0.0",
+    "@astrojs/react": "^4.0.0",
+    "@astrojs/tailwind": "^5.0.0",
     "@types/node": "^20.10.6",
     "@types/react": "^18.2.46",
     "@types/react-dom": "^18.2.18",
-    "autoprefixer": "^10.4.16",
+    "astro": "^5.0.0",
     "gh-pages": "^6.3.0",
-    "postcss": "^8.4.32",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3"
   }

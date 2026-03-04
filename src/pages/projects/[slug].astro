@@ -1,0 +1,74 @@
+---
+// [slug].astro — the project detail page template.
+//
+// How it works:
+// 1. getStaticPaths() runs at build time and returns one route per MDX file.
+// 2. Astro generates a static HTML page for each project.
+// 3. render(entry) converts the MDX content into a React-renderable component.
+// 4. HeroBlock is rendered here (not in MDX) since it needs project metadata.
+// 5. <Content /> renders the rest of the MDX — sections, images, galleries, etc.
+
+import Layout from '../../layouts/Layout.astro'
+import { getCollection, render } from 'astro:content'
+import { HeroBlock } from '../../components/blocks/hero-block'
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects')
+  return projects.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }))
+}
+
+const { entry } = Astro.props
+const { Content } = await render(entry)
+
+// Fetch sibling projects for the "Other Projects" footer
+const allProjects = await getCollection('projects')
+const otherProjects = allProjects
+  .filter((p) => p.id !== entry.id)
+  .sort((a, b) => a.data.order - b.data.order)
+---
+
+<Layout title={entry.data.title} description={entry.data.description}>
+  <div class="min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+
+      <!-- Back button -->
+      <div class="mb-8">
+        <a
+          href="/#projects"
+          class="inline-flex items-center justify-center border-2 border-black font-black uppercase hover:bg-gray-100 px-4 py-2 transition-colors"
+        >
+          ← Back to Projects
+        </a>
+      </div>
+
+      <!-- Hero — rendered here with project frontmatter data, not inside MDX -->
+      <HeroBlock data={{ variant: 'banner' }} project={entry.data} />
+
+      <!-- MDX content: sections, text, images, galleries, etc. -->
+      <Content />
+
+      <!-- Other Projects -->
+      {otherProjects.length > 0 && (
+        <div class="bg-white border-4 border-black p-6 sm:p-8 mt-12">
+          <h2 class="text-2xl font-black uppercase tracking-wider mb-6">Other Projects</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {otherProjects.slice(0, 4).map((p) => (
+              <a
+                href={`/projects/${p.id}/`}
+                class="bg-white border-2 border-black p-4 hover:bg-gray-50 transition-colors group"
+              >
+                <h3 class="text-lg font-black uppercase mb-2 group-hover:underline">{p.data.title}</h3>
+                <p class="text-sm text-gray-600 mb-2 line-clamp-2">{p.data.description}</p>
+                <p class="text-xs font-bold text-gray-500">{p.data.year}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+    </div>
+  </div>
+</Layout>

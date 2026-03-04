@@ -1,0 +1,42 @@
+---
+// Layout.astro — wraps every page with sticky navbar + footer.
+// The <slot /> is where the page's content gets injected (like {children} in React).
+import '../styles/globals.css'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer.astro'
+
+interface Props {
+  title?: string
+  description?: string
+}
+
+const { title = 'Hank Duhaime', description = 'Design technologist specializing in immersive physical and digital media.' } = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <!-- Fixed header — client:load hydrates Navbar so its useState (mobile menu) works -->
+    <div class="fixed top-0 left-0 right-0 z-40 border-b-4 border-black">
+      <header class="bg-white">
+        <div class="max-w-5xl mx-auto px-3 sm:px-4 lg:px-6">
+          <Navbar client:load />
+        </div>
+      </header>
+    </div>
+
+    <!-- Offset content below fixed header -->
+    <div class="pt-16">
+      <slot />
+    </div>
+
+    <Footer />
+  </body>
+</html>

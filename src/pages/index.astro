@@ -1,0 +1,241 @@
+---
+// index.astro — the homepage.
+// Everything in this --- block runs at build time on the server.
+// No "use client", no useRouter — just data and markup.
+import Layout from '../layouts/Layout.astro'
+import { getCollection } from 'astro:content'
+import { bio, aboutParagraphs, experience, skillGroups, publications, education, social } from '../data/content'
+import { Tag } from '../components/tag'
+import { SocialLinks } from '../components/social-links'
+import { MediaContent } from '../components/media-content'
+
+const allProjects = await getCollection('projects')
+const projects = allProjects.sort((a, b) => a.data.order - b.data.order)
+
+const sectionHeaderClasses = "flex items-center gap-3 text-white p-3 border-b-4 border-black"
+const sectionNumberClasses = "inline-flex items-center justify-center w-10 h-10 bg-white text-black border-4 border-black font-black text-lg shadow-lg"
+const cardClasses = "border-4 border-black bg-white p-4"
+---
+
+<Layout title={`${bio.name} — Portfolio`}>
+  <div class="min-h-screen">
+    <div class="max-w-5xl mx-auto px-3 sm:px-4 lg:px-6 pt-4 pb-12">
+
+      <!-- 1. INTRO -->
+      <section class="mb-12 border-4 border-black">
+        <div class={sectionHeaderClasses} style="background-color: #ef4444">
+          <div class={sectionNumberClasses}>1</div>
+          <h2 class="text-2xl font-black">INTRO</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center p-8" style="background-color: #FFEBEE">
+          <div>
+            <h1 class="text-4xl lg:text-5xl font-black text-black leading-tight mb-4 tracking-tighter">
+              My name's <span style="color: #E53935">Hank</span>, nice to meet you!
+            </h1>
+            <p class="text-base text-gray-800 font-semibold leading-relaxed mb-6">
+              I'm a design technologist specializing in immersive physical and digital media.
+              <br /><br />
+              I'm currently prototyping the future of haptics, wearables, and robotics experiences at <a href="https://tech.facebook.com/reality-labs/" class="font-bold text-gray-600 mt-0.5 underline hover:text-black">Meta Reality Labs Research.</a>
+            </p>
+            <div class="flex gap-4 flex-wrap">
+              <a href="#projects" class="inline-flex items-center justify-center bg-black text-white hover:bg-gray-800 font-black px-6 py-2 text-sm border-2 border-black transition-colors">
+                VIEW WORK
+              </a>
+              <a href="#contact" class="inline-flex items-center justify-center border-4 border-black text-black hover:bg-black hover:text-white font-black px-6 py-2 text-sm transition-colors">
+                CONTACT
+              </a>
+            </div>
+          </div>
+          <div class="h-80 relative bg-transparent">
+            <img
+              src="/media/home/intro/hero.png"
+              alt="Hank Duhaime"
+              class="w-full h-full object-contain grayscale"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. FEATURED WORK -->
+      <section id="projects" class="mb-12 border-4 border-black scroll-mt-20">
+        <div class={sectionHeaderClasses} style="background-color: #3b82f6">
+          <div class={sectionNumberClasses}>2</div>
+          <h2 class="text-2xl font-black">FEATURED WORK</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-8 bg-blue-50">
+          {projects.map((project) => {
+            const isClickable = project.data.featured !== false
+            return (
+              <div class="relative">
+                <div
+                  class={`relative bg-white border-4 border-black ${isClickable ? 'hover:shadow-[12px_12px_0px_rgba(0,0,0,0.2)]' : 'cursor-default'} transition-shadow duration-200 h-full overflow-visible flex flex-col`}
+                >
+                  <div class="h-64 relative bg-gray-100 border-b-4 border-black overflow-hidden">
+                    {project.data.thumbnail && (
+                      <MediaContent
+                        type={project.data.thumbnail.type}
+                        src={project.data.thumbnail.src}
+                        alt={project.data.title}
+                      />
+                    )}
+                  </div>
+                  <div class="p-6 pb-3 flex flex-col flex-grow">
+                    <div class="mb-1.5">
+                      <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-black text-black m-0">{project.data.title}</h3>
+                        <span class="text-xs text-gray-500">{project.data.year}</span>
+                      </div>
+                      {project.data.subtitle && (
+                        project.data.subtitleUrl ? (
+                          <a
+                            href={project.data.subtitleUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="relative z-10 text-xs font-bold text-gray-600 mt-0.5 underline hover:text-black"
+                          >
+                            {project.data.subtitle}
+                          </a>
+                        ) : (
+                          <p class="text-xs font-bold text-gray-600 mt-0.5">{project.data.subtitle}</p>
+                        )
+                      )}
+                    </div>
+                    <p class="text-xs text-gray-700 font-normal leading-relaxed mb-3">
+                      {project.data.description}
+                    </p>
+                    <div class="flex gap-2 flex-wrap mb-3">
+                      {project.data.tags.map((tag: string) => (
+                        <Tag label={tag} />
+                      ))}
+                    </div>
+                    {isClickable && (
+                      <a
+                        href={`/projects/${project.id}/`}
+                        class="after:absolute after:inset-0 w-full inline-flex items-center justify-center bg-black text-white hover:bg-gray-800 font-black py-2.5 text-xs border-2 border-black uppercase mt-auto transition-colors"
+                      >
+                        VIEW WORK
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </section>
+
+      <!-- 3. ABOUT -->
+      <section id="about" class="mb-20 border-4 border-black scroll-mt-20">
+        <div class={sectionHeaderClasses} style="background-color: #22c55e">
+          <div class={sectionNumberClasses}>3</div>
+          <h2 class="text-2xl font-black">ABOUT</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-0 bg-green-50">
+          <!-- Left: Bio + Publications -->
+          <div class="p-8 border-r-4 border-black">
+            <h3 class="text-2xl font-black text-black mb-6">Bio</h3>
+            <div class="relative w-full h-80 mb-6 border-4 border-black bg-white">
+              <img
+                src="/media/home/about/hank-duck.jpg"
+                alt="Hank Duhaime"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <div class="space-y-4">
+              {aboutParagraphs.map((para, idx) => (
+                <p class={`text-base text-gray-800 leading-relaxed ${idx === 0 ? 'font-semibold' : ''}`}>{para}</p>
+              ))}
+            </div>
+            <h3 class="text-2xl font-black text-black mb-6 mt-10">Publications</h3>
+            <div class="space-y-4">
+              {publications.map((pub) => (
+                pub.link ? (
+                  <a
+                    href={pub.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="block border-4 border-black bg-black p-4 hover:bg-gray-800 transition-colors cursor-pointer"
+                  >
+                    <p class="text-xs text-white leading-snug font-semibold">{pub.title}</p>
+                  </a>
+                ) : (
+                  <div class="border-4 border-black bg-black p-4">
+                    <p class="text-xs text-white leading-snug font-semibold">{pub.title}</p>
+                  </div>
+                )
+              ))}
+            </div>
+          </div>
+
+          <!-- Right: Experience, Education, Skills -->
+          <div class="p-8">
+            <h3 class="text-2xl font-black text-black mb-2">Experience</h3>
+            <p class="text-xs text-gray-600 mb-6">
+              Check out my <a href="#contact" class="underline hover:text-black font-bold">resume</a> or <a href="https://www.linkedin.com/in/henryduhaime/" target="_blank" rel="noopener noreferrer" class="underline hover:text-black font-bold">LinkedIn</a> for more detail!
+            </p>
+            <div class="space-y-4 mb-10">
+              {experience.map((role) => (
+                <div class={cardClasses}>
+                  <div class="flex justify-between items-baseline mb-1">
+                    <p class="text-xs font-black text-gray-600 uppercase tracking-wider">{role.company}</p>
+                    <p class="text-[10px] font-bold text-gray-600">{role.dates}</p>
+                  </div>
+                  <p class="text-sm font-bold text-black mb-1">{role.title}</p>
+                  <p class="text-xs text-gray-700 leading-snug">{role.description}</p>
+                </div>
+              ))}
+            </div>
+
+            <h3 class="text-2xl font-black text-black mb-6">Education</h3>
+            <div class="space-y-4 mb-10">
+              {education.map((ed) => (
+                <div class={cardClasses}>
+                  <p class="text-xs font-black text-gray-600 uppercase tracking-wider mb-1">{ed.institution}</p>
+                  <p class="text-sm font-bold text-black">{ed.degree}</p>
+                </div>
+              ))}
+            </div>
+
+            <h3 class="text-2xl font-black text-black mb-4">Skills</h3>
+            <div class="space-y-6 mb-10">
+              {skillGroups.slice(0, 3).map((group) => (
+                <div>
+                  <p class="text-xs font-black text-gray-600 uppercase tracking-wider mb-2">{group.group}</p>
+                  <div class="flex flex-wrap gap-2">
+                    {group.skills.map((skill: string) => (
+                      <Tag label={skill} />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. CONTACT -->
+      <section id="contact" class="mb-0 border-4 border-black scroll-mt-20">
+        <div class={sectionHeaderClasses} style="background-color: #f97316">
+          <div class={sectionNumberClasses}>4</div>
+          <h2 class="text-2xl font-black">CONTACT</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-0">
+          <div class="p-8 border-r-4 border-black bg-orange-50">
+            <p class="text-lg font-bold text-black mb-4">Come find me on the internet!</p>
+            <p class="text-base text-gray-800 mb-8 leading-relaxed">{bio.contactMessage}</p>
+            <div class="space-y-6">
+              <div>
+                <p class="text-xs font-bold text-gray-600 mb-2 tracking-wider">LOCATION</p>
+                <p class="text-base font-semibold text-black">{bio.location}</p>
+              </div>
+            </div>
+          </div>
+          <div class="p-8 bg-orange-50">
+            <SocialLinks social={social} variant="button" />
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,61 @@
+---
+// Footer.astro — pure Astro component, zero JS sent to the browser.
+// Data imported directly at build time from src/data/content.ts.
+import { bio, social } from '../data/content'
+import { getCollection } from 'astro:content'
+import { SocialLinks } from './social-links'
+
+const projects = await getCollection('projects')
+const sortedProjects = projects.sort((a, b) => a.data.order - b.data.order)
+
+const linkHoverClasses = "text-gray-300 hover:text-white transition-colors"
+---
+
+<footer class="bg-black text-white border-t-4 border-white">
+  <div class="max-w-5xl mx-auto px-3 sm:px-4 lg:px-6 grid grid-cols-1 md:grid-cols-3 gap-0">
+    <!-- Column 1 - Name & Bio -->
+    <div class="py-8 px-8 border-l-4 border-r-4 border-white">
+      <h3 class="text-2xl font-black mb-3 uppercase">{bio.name}</h3>
+      <p class="text-sm font-semibold text-gray-300 leading-relaxed mb-4">
+        Design technologist specializing in immersive physical and digital media
+      </p>
+      <div class="flex gap-4">
+        <SocialLinks social={social} variant="icon" />
+      </div>
+    </div>
+
+    <!-- Column 2 - Shortcuts -->
+    <div class="py-8 px-8 border-r-4 border-white">
+      <h4 class="text-base font-black mb-4 uppercase tracking-wider">Shortcuts</h4>
+      <ul class="space-y-2.5 text-sm font-semibold">
+        <li><a href="/#projects" class={linkHoverClasses}>Featured Projects</a></li>
+        <li><a href="/#about" class={linkHoverClasses}>About</a></li>
+        <li><a href="/#contact" class={linkHoverClasses}>Contact</a></li>
+        <li><a href={social.resume} target="_blank" rel="noopener noreferrer" class={linkHoverClasses}>Resume</a></li>
+      </ul>
+    </div>
+
+    <!-- Column 3 - Projects -->
+    <div class="py-8 px-8 border-r-4 border-white">
+      <h4 class="text-base font-black mb-4 uppercase tracking-wider">Projects</h4>
+      <ul class="space-y-2.5 text-sm font-semibold">
+        {sortedProjects.slice(0, 5).map((project) => (
+          <li>
+            <a href={`/projects/${project.id}/`} class={linkHoverClasses}>
+              {project.data.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t-4 border-white p-6 text-center">
+    <p class="text-xs font-semibold text-gray-400 mb-2">
+      © {new Date().getFullYear()} {bio.name}
+    </p>
+    <p class="text-xs font-semibold text-gray-400">
+      vibe coded with ♥ using <a href="https://github.com/features/copilot" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:text-white transition-colors underline">copilot</a>
+    </p>
+  </div>
+</footer>

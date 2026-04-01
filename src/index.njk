@@ -41,7 +41,8 @@ title: Hank Duhaime — Portfolio
     </div>
     <div class="projects-grid section-body-blue">
       {% for project in collections.projects %}
-      <div class="project-card">
+      {% set isWide = (loop.index0 % 3 == 0) %}
+      <a href="{{ project.url }}" class="project-card{% if isWide %} project-card--wide{% endif %}">
         <div class="project-card-thumb">
           {% if project.data.thumbnail %}
             {% if project.data.thumbnail | isVideo %}
@@ -54,27 +55,19 @@ title: Hank Duhaime — Portfolio
           {% endif %}
         </div>
         <div class="project-card-body">
-          <div class="project-card-header">
-            <h3 class="project-card-title">{{ project.data.title }}</h3>
-            <span class="project-card-year">{{ project.data.period or project.data.year }}</span>
-          </div>
+          <h3 class="project-card-title">{{ project.data.title }}</h3>
           {% if project.data.org %}
             <p class="project-card-subtitle">{{ project.data.org }}</p>
           {% endif %}
-          <p class="project-card-desc">{{ project.data.description }}</p>
-          {% if project.data.tags %}
-          <div class="tags">
-            {% for tag in project.data.tags %}
-              <span class="tag">{{ tag }}</span>
-            {% endfor %}
-          </div>
-          {% endif %}
-          {% if project.data.featured != false %}
-            <a href="{{ project.url }}" class="project-card-btn">View Work</a>
-          {% endif %}
         </div>
-      </div>
+      </a>
       {% endfor %}
+      <a href="/projects/" class="project-card project-card--view-all">
+        <div class="view-all-body">
+          <span class="view-all-label">View All Projects</span>
+          <span class="view-all-arrow">→</span>
+        </div>
+      </a>
     </div>
   </section>
 

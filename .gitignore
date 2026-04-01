@@ -1,6 +1,7 @@
 .next
 dist
 build
+_site
 node_modules
 *.log
 .env

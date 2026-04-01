@@ -1,0 +1,50 @@
+---
+layout: base.njk
+title: All Projects — Hank Duhaime
+permalink: /projects/
+---
+
+<div class="container page-content">
+  <section class="section-block">
+    <div class="section-header section-blue">
+      <div class="section-number">★</div>
+      <h2 class="section-title">ALL PROJECTS</h2>
+    </div>
+    <div class="all-projects-grid section-body-blue">
+      {% for project in collections.projects %}
+      <a href="{{ project.url }}" class="project-card">
+        <div class="project-card-thumb">
+          {% if project.data.thumbnail %}
+            {% if project.data.thumbnail | isVideo %}
+              <video src="{{ project.data.thumbnail }}" autoplay muted loop playsinline></video>
+            {% else %}
+              <img src="{{ project.data.thumbnail }}" alt="{{ project.data.title }}">
+            {% endif %}
+          {% else %}
+            <div class="project-card-thumb-empty">No preview</div>
+          {% endif %}
+        </div>
+        <div class="project-card-body">
+          <h3 class="project-card-title">{{ project.data.title }}</h3>
+          {% if project.data.org %}
+            <p class="project-card-subtitle">{{ project.data.org }}</p>
+          {% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+{% block styles %}
+  <style>
+    .all-projects-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      padding: 2rem;
+    }
+    @media (min-width: 640px)  { .all-projects-grid { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 1024px) { .all-projects-grid { grid-template-columns: 1fr 1fr 1fr; } }
+  </style>
+{% endblock %}

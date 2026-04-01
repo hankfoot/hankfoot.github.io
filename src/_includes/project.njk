@@ -1,0 +1,66 @@
+{% extends "base.njk" %}
+
+{% block content %}
+<div class="project-container">
+
+  <a href="/#projects" class="project-back">← Back to Projects</a>
+
+  <!-- Hero -->
+  <div class="project-hero">
+    <div class="project-hero-header">
+      <h1 class="project-page-title">{{ title }}</h1>
+
+      {% if subtitle %}
+        <p class="project-page-subtitle">{{ subtitle }}</p>
+      {% endif %}
+
+      <div class="project-page-meta">
+        {% if org %}<span class="project-page-meta-item"><strong>{{ org }}</strong></span>{% endif %}
+        {% if period %}<span class="project-page-meta-item">{{ period }}</span>{% endif %}
+        {% if award %}<span class="project-page-meta-item" style="color:#fbbf24">★ {{ award }}</span>{% endif %}
+      </div>
+
+      {% if tags %}
+      <div class="tags">
+        {% for tag in tags %}
+          <span class="tag">{{ tag }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    {% if thumbnail %}
+    <div class="project-hero-img">
+      <img src="{{ page.url }}{{ thumbnail }}" alt="{{ title }}">
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Content -->
+  <div class="project-content">
+    <div class="project-body">
+      {{ content | safe }}
+    </div>
+  </div>
+
+  <!-- Other Projects -->
+  {% set otherProjects = collections.projects | selectattr("url", "ne", page.url) %}
+  {% if collections.projects.length > 1 %}
+  <div class="other-projects">
+    <h2 class="other-projects-title">Other Projects</h2>
+    <div class="other-projects-grid">
+      {% for project in collections.projects %}
+        {% if project.url != page.url %}
+        <a href="{{ project.url }}" class="other-project-card">
+          <h3 class="other-project-title">{{ project.data.title }}</h3>
+          <p class="other-project-desc">{{ project.data.description }}</p>
+          <p class="other-project-year">{{ project.data.period }}</p>
+        </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

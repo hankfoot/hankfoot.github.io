@@ -604,6 +604,7 @@ figcaption {
   animation: none;
 }
 
+
 /* ─── Reduced Motion ─────────────────────────────────────────── */
 [data-reduced-motion="true"] #hand-cursor {
   display: none;

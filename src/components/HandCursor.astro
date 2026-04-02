@@ -2,55 +2,85 @@
 <div id="hand-cursor" aria-hidden="true">✋</div>
 
 <script>
-  const LERP = 0.16;
-  const MAX_PX_PER_FRAME = 22;
+  const LERP = 0.16;                    // normal ambient movement (navbar/title)
+  const MAX_PX_PER_FRAME = 22;          // normal speed cap
+  const GRAB_TRAVEL_LERP = 0.36;        // snappier lerp when flying to the right edge
+  const GRAB_TRAVEL_MAX_PX = 50;        // higher speed cap for grab travel
+  const GRAB_PULL_PX_PER_FRAME = 14;    // slow pull — gives the panel some mass
 
-  const el = document.getElementById('hand-cursor') as HTMLElement;
+  let el = document.getElementById('hand-cursor') as HTMLElement;
   let targetX = 0, targetY = 0;
   let currentX = 0, currentY = 0;
   let waving = false;
   let rafStarted = false;
+  let tickGen = 0;  // incremented on restart; stale loops self-terminate
   let clickLocked: string | null = null;
+  let pendingGrab = false;   // traveling toward the right edge via normal LERP
+  let grabMode = false;      // arrived, gripping and pulling
+  let panelAnim: Animation | null = null; // WAAPI animation for the panel slide-in
+  let contentClone: HTMLElement | null = null; // snapshot of old page — fades out during slide
 
   type Mode = 'wave' | 'point';
   let currentMode: Mode = 'wave';  // what is currently displayed
   let targetMode: Mode = 'wave';   // what mode we're heading toward
   const ARRIVAL_THRESHOLD = 8;     // px — snap emoji when this close to destination
 
-  function tick() {
+  function tick(gen: number) {
+    if (gen !== tickGen) return; // stale loop after a view transition — stop
     const dx = targetX - currentX;
     const dy = targetY - currentY;
     const dist = Math.sqrt(dx * dx + dy * dy);
-    const step = Math.min(dist * LERP, MAX_PX_PER_FRAME);
+    const lerp    = pendingGrab ? GRAB_TRAVEL_LERP    : LERP;
+    const maxStep = grabMode    ? GRAB_PULL_PX_PER_FRAME
+                  : pendingGrab ? GRAB_TRAVEL_MAX_PX
+                  :               MAX_PX_PER_FRAME;
+    const step = Math.min(dist * lerp, maxStep);
     if (dist > 0.01) {
       currentX += (dx / dist) * step;
       currentY += (dy / dist) * step;
     }
 
-    // Drive emoji from mode state — snap to final mode on arrival
-    const modeChanging = currentMode !== targetMode;
-    if (modeChanging && dist < ARRIVAL_THRESHOLD) {
-      currentMode = targetMode;
-    }
-
-    let rotation: number;
-    if (modeChanging && currentMode !== targetMode) {
-      // In transit — sideways fist facing the direction of horizontal travel
-      el.textContent = dx >= 0 ? '🤜' : '🤛';
+    if (grabMode) {
+      // Stick hand directly to the panel's left edge — no LERP, true attachment
+      const panel = document.querySelector<HTMLElement>('.project-panel');
+      if (panel) {
+        const panelRect = panel.getBoundingClientRect();
+        const emojiW = el.getBoundingClientRect().width;
+        currentX = panelRect.left - emojiW * 0.4;
+        currentY = window.innerHeight * 0.5 - el.getBoundingClientRect().height * 0.5;
+        targetX = currentX;
+        targetY = currentY;
+      }
       el.style.transformOrigin = '50% 50%';
-      rotation = 0;
-    } else if (currentMode === 'wave') {
-      el.textContent = '✋';
-      el.style.transformOrigin = '50% 100%';
-      rotation = Math.sin(performance.now() / 550 * Math.PI) * 10;
+      el.style.transform = `translate(${currentX}px, ${currentY}px)`;
     } else {
-      el.textContent = '👈';
-      el.style.transformOrigin = '50% 100%';
-      rotation = 0;
+      // Drive emoji from mode state — snap to final mode on arrival.
+      // Suppress snap during pendingGrab to avoid a 👈 flicker before 🤚 shows.
+      const modeChanging = currentMode !== targetMode;
+      if (!pendingGrab && modeChanging && dist < ARRIVAL_THRESHOLD) {
+        currentMode = targetMode;
+      }
+
+      let rotation: number;
+      if (modeChanging && currentMode !== targetMode) {
+        // In transit — sideways fist facing the direction of horizontal travel
+        el.textContent = dx >= 0 ? '🤜' : '🤛';
+        el.style.transformOrigin = '50% 50%';
+        rotation = 0;
+      } else if (currentMode === 'wave') {
+        el.textContent = '✋';
+        el.style.transformOrigin = '50% 100%';
+        rotation = Math.sin(performance.now() / 550 * Math.PI) * 10;
+      } else {
+        el.textContent = '👈';
+        el.style.transformOrigin = '50% 100%';
+        rotation = 0;
+      }
+
+      el.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotation}deg)`;
     }
 
-    el.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotation}deg)`;
-    requestAnimationFrame(tick);
+    requestAnimationFrame(() => tick(gen));
   }
 
   function waveAtTagline() {
@@ -79,19 +109,147 @@
     waving = false;
   }
 
+  // Move toward the right edge via normal LERP — no teleport
+  function moveToGrabPosition() {
+    pendingGrab = true;
+    grabMode = false;
+    waving = false;
+    clickLocked = null;
+    el.style.opacity = '1'; // lock visible — prevent CSS opacity:0 re-applying during swap
+    const emojiRect = el.getBoundingClientRect();
+    targetX = window.innerWidth - emojiRect.width - 24;
+    targetY = window.innerHeight / 2 - emojiRect.height / 2;
+    targetMode = 'point';  // keeps transit emoji logic working during travel
+  }
+
+  // Resolves once the hand reaches the grab position.
+  // Fetched concurrently with the new page — Astro won't swap until both are ready.
+  function waitForGrabArrival(): Promise<void> {
+    return new Promise(resolve => {
+      function check() {
+        if (!pendingGrab) { resolve(); return; } // aborted (e.g. user navigated away)
+        const dx = targetX - currentX;
+        const dy = targetY - currentY;
+        if (Math.sqrt(dx * dx + dy * dy) < ARRIVAL_THRESHOLD) {
+          pendingGrab = false;
+          grabMode = true;
+          el.textContent = '🤚';  // open hand — arrived, ready to grip
+          // Snapshot the content area at grab time. It will be injected into the
+          // new DOM and fade out simultaneously with the panel sliding in.
+          const contentArea = document.querySelector<HTMLElement>('.content-area');
+          if (contentArea) {
+            const rect = contentArea.getBoundingClientRect();
+            contentClone = contentArea.cloneNode(true) as HTMLElement;
+            Object.assign(contentClone.style, {
+              position: 'fixed',
+              top: `${rect.top}px`,
+              left: `${rect.left}px`,
+              width: `${rect.width}px`,
+              overflow: 'hidden',
+              pointerEvents: 'none',
+              zIndex: '10',
+            });
+            // Hide any images that haven't fully decoded — they'd flash as
+            // placeholder boxes for one frame before painting from cache.
+            contentClone.querySelectorAll<HTMLImageElement>('img').forEach(img => {
+              if (!img.complete || img.naturalWidth === 0) {
+                img.style.visibility = 'hidden';
+              }
+            });
+          }
+          resolve();
+        } else {
+          requestAnimationFrame(check);
+        }
+      }
+      requestAnimationFrame(check);
+    });
+  }
+
+  function cleanupContentClone() {
+    contentClone?.remove();
+    contentClone = null;
+  }
+
+  // Intercept Astro's navigation loader so the page waits for the hand to arrive
+  document.addEventListener('astro:before-preparation', (e: Event) => {
+    cleanupContentClone(); // discard any leftover clone from a previous nav
+    if (!pendingGrab) return;
+    const event = e as any;
+    const originalLoader = event.loader.bind(event);
+    event.loader = () => Promise.all([originalLoader(), waitForGrabArrival()]);
+  });
+
+  // Hand has arrived and page is about to swap in — grip and pull toward content area
+  document.addEventListener('astro:before-swap', () => {
+    if (!grabMode) return;
+    el.textContent = '✊';
+    // targetX/Y are now driven by panel position tracking in tick() — nothing to set here
+  });
+
+  // Re-query el immediately after the DOM swap so tick() animates the live node.
+  // Also kick off the panel slide via WAAPI (not CSS view-transition) so getBoundingClientRect()
+  // reflects the live visual position — which tick() uses to stick the hand to the panel edge.
+  document.addEventListener('astro:after-swap', () => {
+    el = document.getElementById('hand-cursor') as HTMLElement;
+
+    // Inject the homepage snapshot and fade it out — simultaneously with the panel slide.
+    if (contentClone) {
+      document.body.appendChild(contentClone);
+      requestAnimationFrame(() => {
+        if (!contentClone) return;
+        contentClone.style.transition = 'opacity 0.45s ease';
+        contentClone.style.opacity = '0';
+        contentClone.addEventListener('transitionend', cleanupContentClone, { once: true });
+      });
+    }
+
+    const panel = document.querySelector<HTMLElement>('.project-panel');
+    if (panel) {
+      const duration = grabMode ? 950 : 220;
+      let initialTransform: string;
+      if (grabMode) {
+        // Align the panel's initial left edge with the hand's current position —
+        // prevents a teleport on the first grabMode tick frame.
+        // (translateX(100%) is element-relative, not viewport-relative, so it
+        //  undershoots — the hand would jump left by ~panelWidth pixels.)
+        const panelRect = panel.getBoundingClientRect(); // natural position, before animate()
+        const emojiW = el.getBoundingClientRect().width;
+        const initialTranslate = currentX + emojiW * 0.4 - panelRect.left;
+        initialTransform = `translateX(${initialTranslate}px)`;
+      } else {
+        initialTransform = 'translateX(100%)';
+      }
+      // Pin panel off-screen synchronously — before the browser gets a chance to
+      // paint its natural CSS position (left: var(--sidebar-w)). WAAPI's fill:
+      // 'backwards' isn't guaranteed to apply before the first paint, so this
+      // inline style acts as a zero-flash hard stop until the animation takes over.
+      panel.style.transform = initialTransform;
+      panelAnim = panel.animate(
+        [{ transform: initialTransform }, { transform: 'translateX(0)' }],
+        { duration, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', fill: 'both' }
+      );
+    }
+
+    if (grabMode) {
+      el.style.opacity = '1';
+      el.textContent = '✊';
+    } else if (pendingGrab) {
+      el.style.opacity = '1';
+    }
+  });
+
   const SECTIONS = [
-    { key: 'intro',   selector: '.page-intro',  action: () => waveAtTagline() },
-    { key: 'projects', selector: '#projects',      action: () => pointAtNavLink('projects') },
-    { key: 'about',   selector: '#about',        action: () => pointAtNavLink('about') },
-    { key: 'cv',      selector: '#cv',            action: () => pointAtNavLink('cv') },
-    { key: 'contact', selector: '#contact',      action: () => pointAtNavLink('contact') },
+    { key: 'intro',    selector: '.page-intro', action: () => waveAtTagline() },
+    { key: 'projects', selector: '#projects',   action: () => pointAtNavLink('projects') },
+    { key: 'about',    selector: '#about',      action: () => pointAtNavLink('about') },
+    { key: 'cv',       selector: '#cv',         action: () => pointAtNavLink('cv') },
+    { key: 'contact',  selector: '#contact',    action: () => pointAtNavLink('contact') },
   ];
 
   function updateHand() {
-    if (clickLocked) return; // held until user scrolls or resizes
+    if (clickLocked || pendingGrab || grabMode) return;
 
-    // At the very bottom the contact section may be too short to cross scrollMid,
-    // so force it when there's nowhere left to scroll.
     const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80;
     if (atBottom) { pointAtNavLink('contact'); return; }
 
@@ -110,8 +268,40 @@
   window.addEventListener('resize', () => { clickLocked = null; updateHand(); }, { passive: true });
 
   document.addEventListener('astro:page-load', () => {
+    const wasPulling = grabMode; // read before reset — pull needs to finish first
+    pendingGrab = false;
+    if (!wasPulling) grabMode = false; // keep grabMode alive during pull completion
+    // Re-query after transition:persist may have moved/replaced the DOM node
+    el = document.getElementById('hand-cursor') as HTMLElement;
     el.style.opacity = '1';
-    updateHand();
+
+    // Restart the tick loop each page-load (old loop self-terminates via tickGen)
+    tickGen++;
+    requestAnimationFrame(() => tick(tickGen));
+
+    if (wasPulling) {
+      // Wait for the panel slide to fully complete, then release the hand
+      const release = () => {
+        grabMode = false;
+        panelAnim = null;
+        currentMode = 'point'; // enter point mode cleanly — no transit emoji for the return
+        cleanupContentClone();  // remove clone if transitionend somehow didn't fire
+        // Clear the inline transform that was pinning the panel off-screen —
+        // the WAAPI fill holds translateX(0) so the panel stays put visually.
+        document.querySelector<HTMLElement>('.project-panel')?.style.removeProperty('transform');
+        if (window.location.pathname.startsWith('/projects/')) pointAtNavLink('projects');
+        else updateHand();
+      };
+      (panelAnim?.finished ?? Promise.resolve())
+        .then(() => setTimeout(release, 180))
+        .catch(release);
+    } else if (window.location.pathname.startsWith('/projects/')) {
+      cleanupContentClone();
+      pointAtNavLink('projects');
+    } else {
+      cleanupContentClone();
+      updateHand();
+    }
 
     // Lock hand to clicked nav section until the user scrolls
     document.querySelectorAll<HTMLElement>('a[data-section]').forEach(link => {
@@ -122,10 +312,16 @@
         else pointAtNavLink(section);
       });
     });
+
+    // Move toward right edge when a project card is clicked
+    document.querySelectorAll<HTMLElement>('.project-card').forEach(card => {
+      card.addEventListener('click', moveToGrabPosition);
+    });
   });
 
   if (!rafStarted) {
     rafStarted = true;
-    tick();
+    tickGen++;
+    requestAnimationFrame(() => tick(tickGen));
   }
 </script>

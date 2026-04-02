@@ -1,54 +1,46 @@
 ---
-const formerly = [
-  'meta reality labs research',
-  'publicis sapient',
-  'spellbound ar',
-];
 ---
 <aside class="sidebar">
   <div class="sidebar-top">
     <p class="sidebar-name">hank duhaime <span class="sidebar-hand">👋</span></p>
     <p class="sidebar-bio">
-      a <span>programmer</span> turned<br />
-      <em>interaction designer</em> —<br />
-      specializing in playful,<br />
-      hands-on experiences
+      interaction designer<br />
+      + <code class="intro-code">creative technologist</code>
     </p>
-
-    <div class="formerly">
-      <p class="formerly-label">formerly @</p>
-      <ul class="formerly-list">
-        {formerly.map(co => <li>{co}</li>)}
-      </ul>
-    </div>
   </div>
 
   <nav class="sidebar-nav">
     <a href="/">work 👉</a>
-    <a href={`https://hankduhaime.com/s/DuhaimeResume2023-V-Nov.pdf`} target="_blank" rel="noopener">resume</a>
     <a href="/#about">about</a>
+    <a href="https://hankduhaime.com/s/DuhaimeResume2023-V-Nov.pdf" target="_blank" rel="noopener">resume</a>
+    <a href="/#contact">contact</a>
   </nav>
 
   <footer class="sidebar-footer">
-    <p>seattle, wa</p>
-    <a href="mailto:hello.hank.d@gmail.com">hello.hank.d@gmail.com</a>
-    <br />
-    <a href="https://www.linkedin.com/in/henryduhaime/" target="_blank" rel="noopener">
-      linkedin.com/in/henryduhaime/
-    </a>
+    <p class="sidebar-location">seattle, wa</p>
+    <a href="mailto:hello.hank.d@gmail.com" class="sidebar-email">hello.hank.d@gmail.com</a>
+    <div class="sidebar-social">
+      <a href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5" fill="currentColor"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/henryduhaime/" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="3"/><path d="M7 10v7M7 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/></svg>
+      </a>
+    </div>
 
-    <button
-      class="motion-toggle"
-      id="motion-toggle"
-      aria-label="Toggle reduced motion"
-      data-on="false"
-    >
-      <span class="motion-icon">✕</span>
-      <span class="motion-toggle-track"></span>
-      <span class="motion-emoji">👋</span>
-    </button>
   </footer>
 </aside>
+
+<button
+  class="motion-toggle"
+  id="motion-toggle"
+  aria-label="Toggle reduced motion"
+  data-on="false"
+>
+  <span class="motion-icon">✕</span>
+  <span class="motion-toggle-track"></span>
+  <span class="motion-emoji">👋</span>
+</button>
 
 <script>
   function initToggle() {

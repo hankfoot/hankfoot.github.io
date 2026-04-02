@@ -7,6 +7,16 @@ const projects = await getCollection('projects');
 const sorted = projects.sort((a, b) => b.data.year - a.data.year);
 ---
 <Base title="Hank Duhaime — Design Technologist">
+  <section class="page-intro">
+    <p class="intro-tagline">a <code class="intro-code">programmer</code> turned<br /><em>interaction designer</em></p>
+    <p class="intro-sub">specializing in playful, hands-on experiences</p>
+    <div class="intro-formerly">
+      <span class="intro-formerly-label">formerly @</span>
+      <span>meta reality labs research</span>
+      <span>publicis sapient</span>
+      <span>spellbound ar</span>
+    </div>
+  </section>
   <div class="project-grid">
     {sorted.map(project => (
       <ProjectCard

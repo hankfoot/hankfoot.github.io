@@ -270,6 +270,10 @@ a {
   border-top: 1px solid var(--color-border);
 }
 
+#cv {
+  min-height: 80vh;
+}
+
 #contact {
   min-height: unset;
 }

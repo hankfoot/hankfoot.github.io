@@ -18,7 +18,7 @@ const sorted = projects.sort((a, b) => b.data.year - a.data.year);
       <span>spellbound ar</span>
     </div>
   </section>
-  <div class="project-grid">
+  <div class="project-grid" id="work">
     {sorted.map(project => (
       <ProjectCard
         href={`/work/${project.id.replace(/\.[^.]+$/, '')}`}
@@ -38,8 +38,8 @@ const sorted = projects.sort((a, b) => b.data.year - a.data.year);
     </div>
   </section>
 
-  <section class="page-section" id="resume">
-    <p class="section-label">resume</p>
+  <section class="page-section" id="cv">
+    <p class="section-label">cv</p>
     <div class="section-body">
       <p class="section-placeholder">Experience and credentials coming soon.</p>
       <a

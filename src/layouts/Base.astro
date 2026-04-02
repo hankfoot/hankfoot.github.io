@@ -37,6 +37,6 @@ const { title = 'Hank Duhaime' } = Astro.props;
   <main class="content-area">
     <slot />
   </main>
-  <HandCursor />
+  <HandCursor transition:persist="hand-cursor" />
 </body>
 </html>

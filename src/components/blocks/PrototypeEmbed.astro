@@ -1,0 +1,17 @@
+---
+interface Props {
+  src: string;
+  caption?: string;
+}
+
+const { src, caption } = Astro.props;
+---
+<figure class="block-prototype">
+  <iframe
+    src={src}
+    title="Interactive prototype"
+    allowfullscreen
+    loading="lazy"
+  />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>

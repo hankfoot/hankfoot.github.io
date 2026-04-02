@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProjectPanel from '../../components/ProjectPanel.astro';
+import VideoEmbed from '../../components/blocks/VideoEmbed.astro';
+import ImageGrid from '../../components/blocks/ImageGrid.astro';
+import Callout from '../../components/blocks/Callout.astro';
+import PrototypeEmbed from '../../components/blocks/PrototypeEmbed.astro';
+import Specs from '../../components/blocks/Specs.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map(project => ({
+    params: { slug: project.id.replace(/\.[^.]+$/, '') },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+
+// Auto-injected into MDX scope — authors don't need to import these
+const components = { VideoEmbed, ImageGrid, Callout, PrototypeEmbed, Specs };
+---
+<Base title={`${project.data.title} — Hank Duhaime`}>
+  <ProjectPanel
+    title={project.data.title}
+    year={project.data.year}
+    tags={project.data.tags}
+  >
+    <Content components={components} />
+  </ProjectPanel>
+</Base>

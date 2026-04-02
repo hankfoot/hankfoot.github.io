@@ -1,0 +1,12 @@
+---
+interface Props {
+  src: string;
+  caption?: string;
+}
+
+const { src, caption } = Astro.props;
+---
+<figure class="block-video">
+  <video src={src} controls preload="metadata" />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>

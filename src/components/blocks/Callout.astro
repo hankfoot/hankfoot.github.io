@@ -1,0 +1,11 @@
+---
+interface Props {
+  type: 'note' | 'warning';
+  text: string;
+}
+
+const { type = 'note', text } = Astro.props;
+---
+<aside class={`block-callout block-callout--${type}`} role="note">
+  <p>{text}</p>
+</aside>

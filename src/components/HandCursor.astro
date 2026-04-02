@@ -12,6 +12,11 @@
   let rafStarted = false;
   let clickLocked: string | null = null;
 
+  type Mode = 'wave' | 'point';
+  let currentMode: Mode = 'wave';  // what is currently displayed
+  let targetMode: Mode = 'wave';   // what mode we're heading toward
+  const ARRIVAL_THRESHOLD = 8;     // px — snap emoji when this close to destination
+
   function tick() {
     const dx = targetX - currentX;
     const dy = targetY - currentY;
@@ -21,7 +26,29 @@
       currentX += (dx / dist) * step;
       currentY += (dy / dist) * step;
     }
-    const rotation = waving ? Math.sin(performance.now() / 550 * Math.PI) * 10 : 0;
+
+    // Drive emoji from mode state — snap to final mode on arrival
+    const modeChanging = currentMode !== targetMode;
+    if (modeChanging && dist < ARRIVAL_THRESHOLD) {
+      currentMode = targetMode;
+    }
+
+    let rotation: number;
+    if (modeChanging && currentMode !== targetMode) {
+      // In transit — sideways fist facing the direction of horizontal travel
+      el.textContent = dx >= 0 ? '🤜' : '🤛';
+      el.style.transformOrigin = '50% 50%';
+      rotation = 0;
+    } else if (currentMode === 'wave') {
+      el.textContent = '✋';
+      el.style.transformOrigin = '50% 100%';
+      rotation = Math.sin(performance.now() / 550 * Math.PI) * 10;
+    } else {
+      el.textContent = '👈';
+      el.style.transformOrigin = '50% 100%';
+      rotation = 0;
+    }
+
     el.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotation}deg)`;
     requestAnimationFrame(tick);
   }
@@ -35,7 +62,7 @@
     const emojiH = el.getBoundingClientRect().height;
     targetX = rect.right + 12;
     targetY = rect.top + rect.height / 2 - emojiH * 0.5;
-    el.textContent = '✋';
+    targetMode = 'wave';
     waving = true;
   }
 
@@ -48,7 +75,7 @@
     const emojiH = el.getBoundingClientRect().height;
     targetX = rect.right + 8;
     targetY = rect.top + rect.height / 2 - emojiH / 2;
-    el.textContent = '👈';
+    targetMode = 'point';
     waving = false;
   }
 

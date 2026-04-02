@@ -95,6 +95,14 @@ a {
   border-bottom: 1px solid var(--color-border);
 }
 
+.intro-greeting {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+}
+
 .intro-tagline {
   font-size: clamp(1.5rem, 3vw, 2.5rem);
   font-weight: 700;
@@ -251,6 +259,73 @@ a {
 
 .motion-toggle[data-on="true"] .motion-toggle-track::after {
   transform: translateX(12px);
+}
+
+/* ─── Page Sections ──────────────────────────────────────────── */
+.page-section {
+  margin-top: 4rem;
+  padding-top: 2.5rem;
+  padding-bottom: 4rem;
+  min-height: 50vh;
+  border-top: 1px solid var(--color-border);
+}
+
+#contact {
+  min-height: unset;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--color-muted);
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  margin-bottom: 1.5rem;
+}
+
+.section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.section-placeholder {
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+}
+
+.section-cta {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text);
+  border: 1px solid var(--color-text);
+  border-radius: 3px;
+  padding: 0.35rem 0.65rem;
+  display: inline-block;
+  align-self: flex-start;
+  transition: background 0.15s, color 0.15s;
+}
+
+.section-cta:hover {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+.contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.contact-item {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  transition: color 0.15s;
+}
+
+.contact-item:hover {
+  color: var(--color-text);
 }
 
 /* ─── Project Grid ───────────────────────────────────────────── */
@@ -484,7 +559,8 @@ figcaption {
   top: 0;
   left: 0;
   pointer-events: none;
-  font-size: 1.375rem;
+  font-size: 2.2rem;
+  transform-origin: 50% 100%;
   z-index: 9999;
   user-select: none;
   will-change: transform;
@@ -492,6 +568,7 @@ figcaption {
   transition: opacity 0.3s;
   line-height: 1;
 }
+
 
 /* ─── Reduced Motion ─────────────────────────────────────────── */
 [data-reduced-motion="true"] #hand-cursor {

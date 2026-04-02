@@ -3,13 +3,14 @@
 
 <script>
   const LERP = 0.16;
-  const MAX_PX_PER_FRAME = 22; // caps travel speed so hand glides, not whips
+  const MAX_PX_PER_FRAME = 22;
 
   const el = document.getElementById('hand-cursor') as HTMLElement;
   let targetX = 0, targetY = 0;
   let currentX = 0, currentY = 0;
   let waving = false;
   let rafStarted = false;
+  let clickLocked: string | null = null;
 
   function tick() {
     const dx = targetX - currentX;
@@ -20,14 +21,12 @@
       currentX += (dx / dist) * step;
       currentY += (dy / dist) * step;
     }
-    // Rotation in the same transform string = rotates around post-translate center
     const rotation = waving ? Math.sin(performance.now() / 550 * Math.PI) * 10 : 0;
     el.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotation}deg)`;
     requestAnimationFrame(tick);
   }
 
   function waveAtTagline() {
-    // Use Range for text-tight bounds on the block-level heading
     const heading = document.querySelector<HTMLElement>('.intro-greeting');
     if (!heading) return;
     const range = document.createRange();
@@ -43,7 +42,6 @@
   function pointAtNavLink(section: string) {
     const link = document.querySelector<HTMLElement>(`a[data-section="${section}"]`);
     if (!link) return;
-    // Measure actual text bounds, not the full-width element box
     const range = document.createRange();
     range.selectNodeContents(link);
     const rect = range.getBoundingClientRect();
@@ -54,54 +52,49 @@
     waving = false;
   }
 
-  // Priority-ordered sections; first match wins
   const SECTIONS = [
     { key: 'intro',   selector: '.page-intro',  action: () => waveAtTagline() },
-    { key: 'work',    selector: '.project-grid', action: () => pointAtNavLink('work') },
+    { key: 'work',    selector: '#work',         action: () => pointAtNavLink('work') },
     { key: 'about',   selector: '#about',        action: () => pointAtNavLink('about') },
-    { key: 'resume',  selector: '#resume',       action: () => pointAtNavLink('resume') },
+    { key: 'cv',      selector: '#cv',            action: () => pointAtNavLink('cv') },
     { key: 'contact', selector: '#contact',      action: () => pointAtNavLink('contact') },
   ];
 
-  const visible = new Set<string>();
+  function updateHand() {
+    if (clickLocked) return; // held until user scrolls or resizes
 
-  function attachObservers() {
-    visible.clear();
+    // At the very bottom the contact section may be too short to cross scrollMid,
+    // so force it when there's nowhere left to scroll.
+    const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80;
+    if (atBottom) { pointAtNavLink('contact'); return; }
+
+    const scrollMid = window.scrollY + window.innerHeight * 0.5;
+    let best: typeof SECTIONS[number] | null = null;
     for (const s of SECTIONS) {
       const node = document.querySelector(s.selector);
       if (!node) continue;
-      // rootMargin clips the intersection root to the middle 40% of the viewport,
-      // so a section is only "active" when it occupies the center of the screen
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) visible.add(s.key);
-          else visible.delete(s.key);
-          updateHand();
-        },
-        { rootMargin: '-30% 0px -30% 0px', threshold: 0 }
-      );
-      observer.observe(node);
+      const docTop = node.getBoundingClientRect().top + window.scrollY;
+      if (docTop <= scrollMid) best = s;
     }
+    if (best) best.action();
   }
 
-  function isAtBottom(): boolean {
-    return window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 32;
-  }
-
-  function updateHand() {
-    if (isAtBottom()) { pointAtNavLink('contact'); return; }
-    for (const s of SECTIONS) {
-      if (visible.has(s.key)) { s.action(); return; }
-    }
-  }
-
-  // Re-calc on scroll and resize so positions stay relative to layout
-  window.addEventListener('scroll', () => updateHand(), { passive: true });
-  window.addEventListener('resize', () => updateHand(), { passive: true });
+  window.addEventListener('scroll', () => { clickLocked = null; updateHand(); }, { passive: true });
+  window.addEventListener('resize', () => { clickLocked = null; updateHand(); }, { passive: true });
 
   document.addEventListener('astro:page-load', () => {
     el.style.opacity = '1';
-    attachObservers();
+    updateHand();
+
+    // Lock hand to clicked nav section until the user scrolls
+    document.querySelectorAll<HTMLElement>('a[data-section]').forEach(link => {
+      link.addEventListener('click', () => {
+        const section = link.dataset.section!;
+        clickLocked = section;
+        if (section === 'intro') waveAtTagline();
+        else pointAtNavLink(section);
+      });
+    });
   });
 
   if (!rafStarted) {

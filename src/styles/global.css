@@ -7,7 +7,7 @@
 
 /* ─── Custom Properties ──────────────────────────────────────── */
 :root {
-  --sidebar-width: 240px;
+  --layout-max: 100%;
   --sidebar-border: 1px solid #e0e0e0;
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'Source Code Pro', 'Courier New', monospace;
@@ -23,7 +23,7 @@
 
 /* ─── Base ───────────────────────────────────────────────────── */
 html {
-  font-size: 14px;
+  font-size: clamp(14px, 1.3vw, 22px);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -34,8 +34,9 @@ body {
   color: var(--color-text);
   background: var(--color-bg);
   display: grid;
-  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-columns: 1fr 2fr;
   min-height: 100vh;
+  width: 100%;
 }
 
 a {
@@ -45,11 +46,10 @@ a {
 
 /* ─── Layout ─────────────────────────────────────────────────── */
 .sidebar {
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  width: var(--sidebar-width);
-  height: 100vh;
+  align-self: start;
+  height: 100svh;
   border-right: var(--sidebar-border);
   display: flex;
   flex-direction: column;
@@ -60,9 +60,7 @@ a {
 }
 
 .content-area {
-  grid-column: 2;
   padding: 2rem;
-  overflow-y: auto;
 }
 
 /* ─── Sidebar Sections ───────────────────────────────────────── */
@@ -199,7 +197,7 @@ a {
 /* ─── Project Grid ───────────────────────────────────────────── */
 .project-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 480px));
+  grid-template-columns: 1fr 1fr;
   gap: var(--grid-gap);
   align-items: start;
 }
@@ -223,7 +221,7 @@ a {
 .project-card-thumb {
   width: 100%;
   aspect-ratio: 4 / 3;
-  max-height: 380px;
+  max-height: clamp(180px, 22vh, 480px);
   background: #d8d8d8;
   border-radius: var(--card-radius);
   overflow: hidden;
@@ -282,7 +280,7 @@ a {
 
 /* ─── Project Panel ──────────────────────────────────────────── */
 .project-panel {
-  max-width: 680px;
+  max-width: clamp(580px, 55vw, 860px);
 }
 
 .project-panel-back {

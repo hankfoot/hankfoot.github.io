@@ -2,8 +2,9 @@
 
 ## Guidelines
 - Always use the `frontend-design` skill when editing the site
-- Always visually validate changes you've made to the site
+- Always visually validate changes you've made to the site. Use the Chrome extension, if available, otherwise use your built-in preview.
 - If a major refactor causes the content of this file to become outdated, ask the user if you should make the appropriate updates to keep it up-to-date.
+- Do not attempt to commit work unless the user has given the OK
 
 ## File Hierarchy
 

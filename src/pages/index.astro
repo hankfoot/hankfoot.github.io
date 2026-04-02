@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+
+const projects = await getCollection('projects');
+const sorted = projects.sort((a, b) => b.data.year - a.data.year);
+---
+<Base title="Hank Duhaime — Design Technologist">
+  <div class="project-grid">
+    {sorted.map(project => (
+      <ProjectCard
+        href={`/work/${project.id.replace(/\.[^.]+$/, '')}`}
+        title={project.data.title}
+        year={project.data.year}
+        tags={project.data.tags}
+        thumb={project.data.thumb}
+        summary={project.data.summary}
+      />
+    ))}
+  </div>
+</Base>

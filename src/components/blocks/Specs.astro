@@ -1,0 +1,20 @@
+---
+interface SpecItem {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  items: SpecItem[];
+}
+
+const { items } = Astro.props;
+---
+<dl class="block-specs">
+  {items.map(item => (
+    <>
+      <dt>{item.label}</dt>
+      <dd>{item.value}</dd>
+    </>
+  ))}
+</dl>

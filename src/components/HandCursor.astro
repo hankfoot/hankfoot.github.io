@@ -1,69 +1,109 @@
-<!-- Hand cursor: ambient emoji overlay, dual-cursor model (native cursor unaffected) -->
-<div id="hand-cursor" aria-hidden="true">👋</div>
+<!-- Hand cursor: ambient scroll-driven emoji, no cursor tracking -->
+<div id="hand-cursor" aria-hidden="true">✋</div>
 
 <script>
-  const LERP = 0.12;
-  const OFFSET_X = 24;
-  const OFFSET_Y = 16;
-
-  const STATES: Record<string, string> = {
-    idle: '👋',
-    pointing: '👆',
-    grabbing: '✊',
-  };
+  const LERP = 0.16;
+  const MAX_PX_PER_FRAME = 22; // caps travel speed so hand glides, not whips
 
   const el = document.getElementById('hand-cursor') as HTMLElement;
   let targetX = 0, targetY = 0;
   let currentX = 0, currentY = 0;
-  let currentState = 'idle';
+  let waving = false;
   let rafStarted = false;
 
-  function lerp(a: number, b: number, t: number): number {
-    return a + (b - a) * t;
-  }
-
   function tick() {
-    currentX = lerp(currentX, targetX + OFFSET_X, LERP);
-    currentY = lerp(currentY, targetY + OFFSET_Y, LERP);
-    el.style.transform = `translate(${currentX}px, ${currentY}px)`;
+    const dx = targetX - currentX;
+    const dy = targetY - currentY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const step = Math.min(dist * LERP, MAX_PX_PER_FRAME);
+    if (dist > 0.01) {
+      currentX += (dx / dist) * step;
+      currentY += (dy / dist) * step;
+    }
+    // Rotation in the same transform string = rotates around post-translate center
+    const rotation = waving ? Math.sin(performance.now() / 550 * Math.PI) * 10 : 0;
+    el.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotation}deg)`;
     requestAnimationFrame(tick);
   }
 
-  document.addEventListener('mousemove', (e: MouseEvent) => {
-    targetX = e.clientX;
-    targetY = e.clientY;
-  });
-
-  // Public API for external state control
-  (window as any).HandCursor = {
-    setState(state: string) {
-      if (currentState === state) return;
-      currentState = state;
-      el.textContent = STATES[state] ?? STATES.idle;
-    },
-  };
-
-  function attachListeners() {
-    // Nav links and buttons → pointing
-    document.querySelectorAll<HTMLElement>('a, button').forEach((node) => {
-      node.addEventListener('mouseenter', () => (window as any).HandCursor.setState('pointing'));
-      node.addEventListener('mouseleave', () => (window as any).HandCursor.setState('idle'));
-    });
-
-    // Project cards → grabbing (overrides pointing for cards that are links)
-    document.querySelectorAll<HTMLElement>('.project-card').forEach((card) => {
-      card.addEventListener('mouseenter', () => (window as any).HandCursor.setState('grabbing'));
-      card.addEventListener('mouseleave', () => (window as any).HandCursor.setState('idle'));
-    });
+  function waveAtTagline() {
+    // Use Range for text-tight bounds on the block-level heading
+    const heading = document.querySelector<HTMLElement>('.intro-greeting');
+    if (!heading) return;
+    const range = document.createRange();
+    range.selectNodeContents(heading);
+    const rect = range.getBoundingClientRect();
+    const emojiH = el.getBoundingClientRect().height;
+    targetX = rect.right + 12;
+    targetY = rect.top + rect.height / 2 - emojiH * 0.5;
+    el.textContent = '✋';
+    waving = true;
   }
 
-  // Show cursor and attach listeners on each page load
+  function pointAtNavLink(section: string) {
+    const link = document.querySelector<HTMLElement>(`a[data-section="${section}"]`);
+    if (!link) return;
+    // Measure actual text bounds, not the full-width element box
+    const range = document.createRange();
+    range.selectNodeContents(link);
+    const rect = range.getBoundingClientRect();
+    const emojiH = el.getBoundingClientRect().height;
+    targetX = rect.right + 8;
+    targetY = rect.top + rect.height / 2 - emojiH / 2;
+    el.textContent = '👈';
+    waving = false;
+  }
+
+  // Priority-ordered sections; first match wins
+  const SECTIONS = [
+    { key: 'intro',   selector: '.page-intro',  action: () => waveAtTagline() },
+    { key: 'work',    selector: '.project-grid', action: () => pointAtNavLink('work') },
+    { key: 'about',   selector: '#about',        action: () => pointAtNavLink('about') },
+    { key: 'resume',  selector: '#resume',       action: () => pointAtNavLink('resume') },
+    { key: 'contact', selector: '#contact',      action: () => pointAtNavLink('contact') },
+  ];
+
+  const visible = new Set<string>();
+
+  function attachObservers() {
+    visible.clear();
+    for (const s of SECTIONS) {
+      const node = document.querySelector(s.selector);
+      if (!node) continue;
+      // rootMargin clips the intersection root to the middle 40% of the viewport,
+      // so a section is only "active" when it occupies the center of the screen
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) visible.add(s.key);
+          else visible.delete(s.key);
+          updateHand();
+        },
+        { rootMargin: '-30% 0px -30% 0px', threshold: 0 }
+      );
+      observer.observe(node);
+    }
+  }
+
+  function isAtBottom(): boolean {
+    return window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 32;
+  }
+
+  function updateHand() {
+    if (isAtBottom()) { pointAtNavLink('contact'); return; }
+    for (const s of SECTIONS) {
+      if (visible.has(s.key)) { s.action(); return; }
+    }
+  }
+
+  // Re-calc on scroll and resize so positions stay relative to layout
+  window.addEventListener('scroll', () => updateHand(), { passive: true });
+  window.addEventListener('resize', () => updateHand(), { passive: true });
+
   document.addEventListener('astro:page-load', () => {
     el.style.opacity = '1';
-    attachListeners();
+    attachObservers();
   });
 
-  // Start RAF loop once
   if (!rafStarted) {
     rafStarted = true;
     tick();

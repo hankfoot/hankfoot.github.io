@@ -10,63 +10,63 @@
 
 ```
 hankfoot.github.io/
-├── .eleventy.js              # Eleventy config: collections, passthrough, filters
-├── package.json              # Scripts: dev, build, deploy
+├── astro.config.mjs              # Astro config: MDX integration, static output
+├── tsconfig.json                 # TypeScript config
+├── package.json                  # Scripts: dev, build, preview, deploy
 │
-├── src/                      # All source content (Eleventy input dir)
-│   ├── index.njk             # Homepage (hero, about, work, contact sections)
-│   ├── _data/
-│   │   └── site.js           # Global data: bio, experience, skills, publications, social, education
-│   ├── _includes/
-│   │   ├── base.njk          # Base layout: navbar, footer, ALL CSS, mobile JS
-│   │   └── project.njk       # Project detail page layout (extends base.njk)
-│   └── projects/
-│       ├── projects.json     # Sets layout: "project.njk" for all projects
-│       ├── arise-ar/
-│       │   └── index.md      # Project content (frontmatter + Markdown body)
-│       ├── depth-charge/
-│       │   └── index.md
-│       ├── rl-haptics/
-│       │   └── index.md
-│       ├── safecracker/
-│       │   └── index.md
-│       └── use-your-melon/
-│           └── index.md
+├── src/                          # Astro source directory
+│   ├── content.config.ts         # Content collections schema (projects)
+│   ├── layouts/
+│   │   └── Base.astro            # Global layout: sidebar, main content, hand cursor
+│   ├── pages/
+│   │   ├── index.astro           # Homepage: intro, projects grid, about, cv, contact
+│   │   └── projects/
+│   │       └── [slug].astro      # Dynamic project detail pages
+│   ├── components/
+│   │   ├── ProjectCard.astro     # Homepage project cards
+│   │   ├── ProjectPanel.astro    # Project detail page wrapper
+│   │   ├── Sidebar.astro         # Fixed sidebar navigation
+│   │   ├── HandCursor.astro      # Interactive hand cursor component
+│   │   └── blocks/               # Reusable MDX content blocks
+│   │       ├── Callout.astro
+│   │       ├── ImageGrid.astro
+│   │       ├── VideoEmbed.astro
+│   │       ├── PrototypeEmbed.astro
+│   │       └── Specs.astro
+│   ├── content/
+│   │   └── projects/
+│   │       ├── arise-ar.mdx      # Project content (MDX format)
+│   │       ├── depth-charge.mdx
+│   │       └── rl-haptics.mdx
+│   └── styles/
+│       └── global.css            # All global styles
 │
-├── public/                   # Static assets (copied to _site/ root at build)
-│   ├── favicon.svg
-│   └── media/                # Images and videos referenced in templates/content
+├── public/                       # Static assets (copied to dist/ root at build)
+│   └── favicon.svg
 │
-└── _site/                    # Build output (gitignored, deployed to GitHub Pages)
+└── dist/                         # Build output (gitignored, deployed to GitHub Pages)
 ```
 
 ## Authoring Content
 
-### Edit site-wide info
-All bio, experience, skills, publications, education, and social links live in **`src/_data/site.js`**. Accessed in templates as `site.*` (e.g. `site.bio.name`, `site.experience`).
-
 ### Edit a project
-Open `src/projects/[slug]/index.md`. The file has two parts:
+Open `src/content/projects/[slug].mdx`. The file has two parts:
 
 **Frontmatter** (controls card display and project page header):
 ```yaml
 ---
 title: Project Title
-org: Organization Name
-period: "2024"
-order: 1              # Sort order on homepage (lower = first)
-featured: true        # Show on homepage work section
-thumbnail: ""         # Relative path to hero image (e.g. hero.png)
-images: []            # Unused currently
+year: 2024
 tags:
   - Tag One
   - Tag Two
-award: null           # Award name string, or null
-description: "Short description shown on project cards."
+thumb: /placeholder.png     # Path to thumbnail image (under public/)
+featured: true               # Show on homepage projects grid
+summary: "Short description shown on project cards."
 ---
 ```
 
-**Body** (Markdown rendered into the project page's content area):
+**Body** (MDX rendered into the project page's content area):
 ```markdown
 ## Overview
 ...
@@ -75,25 +75,26 @@ description: "Short description shown on project cards."
 ...
 ```
 
+MDX components are auto-injected — use `<Callout>`, `<Specs>`, `<VideoEmbed>`, `<ImageGrid>`, and `<PrototypeEmbed>` directly without imports.
+
 ### Add a new project
-1. Create `src/projects/[slug]/index.md` with the frontmatter above.
-2. Place any project media in `src/projects/[slug]/` (jpg, png, mp4, etc.) — Eleventy copies them automatically via passthrough.
-3. Reference media in the body as relative paths (e.g. `![alt](image.png)`).
-4. Set `order` to control homepage sort position.
-5. Set `featured: true` to show the project card on the homepage.
+1. Create `src/content/projects/[slug].mdx` with the frontmatter above.
+2. Place project media in `public/` or a subdirectory, and reference via absolute path (e.g. `/media/myproject/hero.png`).
+3. Set `featured: true` to show the project card on the homepage.
 
 ### Edit styles or layout
-All CSS is in a single `<style>` block inside **`src/_includes/base.njk`**. No separate stylesheet files. Edit templates directly in `base.njk` (global layout) or `project.njk` (project pages).
+Global styles are in **`src/styles/global.css`**. Layout lives in `src/layouts/Base.astro` (global shell) and `src/pages/projects/[slug].astro` (project pages). Components are in `src/components/`.
 
-### Add/edit static media (shared assets)
-Place files in **`public/media/`**. They are copied to `_site/media/` at build and referenced in templates as `/media/...`.
+### Add/edit static media
+Place files in **`public/`**. They are served at the root and referenced as `/filename` or `/media/filename`.
 
 ## Building & Deploying
 
 ```bash
-npm run dev      # Start dev server with live reload at localhost:8080
-npm run build    # Build to _site/
-npm run deploy   # Build then push _site/ to GitHub Pages (gh-pages branch)
+npm run dev      # Start dev server with live reload at localhost:4321
+npm run build    # Build to dist/
+npm run preview  # Preview the built output locally
+npm run deploy   # Build then push dist/ to GitHub Pages (gh-pages branch)
 ```
 
-Build output goes to `_site/`. The `deploy` script uses `gh-pages` to push to the `gh-pages` branch, which GitHub Pages serves.
+Build output goes to `dist/`. The `deploy` script uses `gh-pages` to push to the `gh-pages` branch, which GitHub Pages serves.

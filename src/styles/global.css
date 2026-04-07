@@ -880,9 +880,7 @@ figcaption {
 }
 
 .block-credits-role {
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  text-transform: lowercase;
+  font-weight: 400;
   color: var(--color-inverse-muted);
 }
 

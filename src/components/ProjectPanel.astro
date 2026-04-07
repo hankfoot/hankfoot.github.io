@@ -26,57 +26,48 @@ const heroSrc = thumb && thumb !== '/placeholder.png' ? thumb : null;
 
     {hook && <p class="ph-hook">{hook}</p>}
 
-    <hr class="ph-rule" />
-
     <div class="ph-meta">
 
-      <!-- Left: Context + Year -->
-      <div class="ph-meta-col">
-        {org && (
-          <div class="ph-meta-field">
-            <span class="ph-meta-label">Context</span>
-            <ul class="ph-meta-list">
-              <li class="ph-meta-value">{org}</li>
-            </ul>
-          </div>
-        )}
+      {org && (
         <div class="ph-meta-field">
-          <span class="ph-meta-label">Year</span>
+          <span class="ph-meta-label">Context</span>
           <ul class="ph-meta-list">
-            <li class="ph-meta-value">{year}</li>
+            <li class="ph-meta-value">{org}</li>
           </ul>
         </div>
+      )}
+
+      <div class="ph-meta-field">
+        <span class="ph-meta-label">Year</span>
+        <ul class="ph-meta-list">
+          <li class="ph-meta-value">{year}</li>
+        </ul>
       </div>
 
-      <!-- Middle: Contributions + Tools -->
-      <div class="ph-meta-col">
-        {contributions && contributions.length > 0 && (
-          <div class="ph-meta-field">
-            <span class="ph-meta-label">Contributions</span>
-            <ul class="ph-meta-list">
-              {contributions.map(c => <li class="ph-meta-value">{c}</li>)}
-            </ul>
-          </div>
-        )}
-        {tools && tools.length > 0 && (
-          <div class="ph-meta-field">
-            <span class="ph-meta-label">Tools</span>
-            <ul class="ph-meta-list">
-              {tools.map(t => <li class="ph-meta-value">{t}</li>)}
-            </ul>
-          </div>
-        )}
-      </div>
+      {contributions && contributions.length > 0 && (
+        <div class="ph-meta-field">
+          <span class="ph-meta-label">Contributions</span>
+          <ul class="ph-meta-list">
+            {contributions.map(c => <li class="ph-meta-value">{c}</li>)}
+          </ul>
+        </div>
+      )}
 
-      <!-- Right: Outcomes -->
+      {tools && tools.length > 0 && (
+        <div class="ph-meta-field">
+          <span class="ph-meta-label">Tools</span>
+          <ul class="ph-meta-list">
+            {tools.map(t => <li class="ph-meta-value">{t}</li>)}
+          </ul>
+        </div>
+      )}
+
       {outcomes && outcomes.length > 0 && (
-        <div class="ph-meta-col">
-          <div class="ph-meta-field">
-            <span class="ph-meta-label">Outcomes</span>
-            <ul class="ph-meta-list">
-              {outcomes.map(o => <li class="ph-meta-value">{o}</li>)}
-            </ul>
-          </div>
+        <div class="ph-meta-field">
+          <span class="ph-meta-label">Outcomes</span>
+          <ul class="ph-meta-list">
+            {outcomes.map(o => <li class="ph-meta-value">{o}</li>)}
+          </ul>
         </div>
       )}
 

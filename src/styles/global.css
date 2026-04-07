@@ -489,6 +489,8 @@ a {
   display: flex;
   flex-direction: column;
   gap: var(--space-section);
+  max-width: 860px;
+  margin-inline: auto;
 }
 
 /* Header wrapper */

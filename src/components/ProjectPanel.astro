@@ -1,22 +1,92 @@
 ---
 interface Props {
   title: string;
+  hook?: string;
+  summary?: string;
   year: number;
   tags: string[];
+  org?: string;
+  contributions?: string[];
+  tools?: string[];
+  outcomes?: string[];
+  thumb?: string;
 }
 
-const { title, year, tags } = Astro.props;
+const { title, hook, summary, year, tags, org, contributions, tools, outcomes, thumb } = Astro.props;
+const heroSrc = thumb && thumb !== '/placeholder.png' ? thumb : null;
 ---
+
 <article class="project-panel">
   <a href="/" class="project-panel-back">← back</a>
 
-  <header class="project-panel-header">
-    <h1 class="project-panel-title">{title}</h1>
-    <p class="project-panel-meta">{year}</p>
-    <ul class="tags">
-      {tags.map(tag => <li class="tag">{tag}</li>)}
-    </ul>
+  <header class="ph-header">
+    <h1 class="ph-title">{title}</h1>
+
+    {hook && <p class="ph-hook">{hook}</p>}
+
+    <hr class="ph-rule" />
+
+    <div class="ph-meta">
+
+      <!-- Left: Context + Year -->
+      <div class="ph-meta-col">
+        {org && (
+          <div class="ph-meta-field">
+            <span class="ph-meta-label">Context</span>
+            <ul class="ph-meta-list">
+              <li class="ph-meta-value">{org}</li>
+            </ul>
+          </div>
+        )}
+        <div class="ph-meta-field">
+          <span class="ph-meta-label">Year</span>
+          <ul class="ph-meta-list">
+            <li class="ph-meta-value">{year}</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Middle: Contributions + Tools -->
+      <div class="ph-meta-col">
+        {contributions && contributions.length > 0 && (
+          <div class="ph-meta-field">
+            <span class="ph-meta-label">Contributions</span>
+            <ul class="ph-meta-list">
+              {contributions.map(c => <li class="ph-meta-value">{c}</li>)}
+            </ul>
+          </div>
+        )}
+        {tools && tools.length > 0 && (
+          <div class="ph-meta-field">
+            <span class="ph-meta-label">Tools</span>
+            <ul class="ph-meta-list">
+              {tools.map(t => <li class="ph-meta-value">{t}</li>)}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      <!-- Right: Outcomes -->
+      {outcomes && outcomes.length > 0 && (
+        <div class="ph-meta-col">
+          <div class="ph-meta-field">
+            <span class="ph-meta-label">Outcomes</span>
+            <ul class="ph-meta-list">
+              {outcomes.map(o => <li class="ph-meta-value">{o}</li>)}
+            </ul>
+          </div>
+        </div>
+      )}
+
+    </div>
   </header>
+
+  <div class="ph-hero">
+    {heroSrc
+      ? <img src={heroSrc} alt={title} />
+      : <div class="ph-hero-placeholder" />
+    }
+  </div>
 
   <div class="project-panel-body">
     <slot />

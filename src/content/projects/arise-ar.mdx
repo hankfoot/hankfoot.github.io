@@ -13,30 +13,57 @@ contributions:
   - UX Design
 tools:
   - Figma
-hook: A playful UI refresh for player login and inventory flows
+hook: A playful UI refresh for account creation, quests, and inventory
 outcomes:
   - Shipped to App Store
   - Used across 3 hospital sites
   - Reduced patient anxiety scores
 ---
 
-## Overview
+<Section label="summary">
+ARISE is an augmented reality scavenger hunt for pediatric hospital patients, built to make the ward feel less clinical and more like an adventure. Kids discover AR sea creatures hidden throughout the hospital, collect items, and complete challenges — all while getting the movement their recovery requires.
 
-ARISE is an augmented reality scavenger hunt designed for pediatric hospital patients, encouraging them to get up, walk around, and engage with their environment through an immersive undersea adventure.
+The project was a UI refresh ahead of the app's beta launch, focused on the login flow, inventory system, and onboarding experience.
+</Section>
 
-<Callout type="note" text="Designed in close collaboration with hospital staff and child-life specialists to ensure the experience was clinically appropriate and genuinely delightful." />
+<Section>
+<BentoGrid images={[
+  { src: "https://placehold.co/800x600/e8e8e8/999999", alt: "App home screen", wide: true },
+  { src: "https://placehold.co/800x600/dde8e0/888888", alt: "AR scavenger view" },
+  { src: "https://placehold.co/800x600/e8e0dd/888888", alt: "Inventory screen" },
+  { src: "https://placehold.co/800x600/dde0e8/888888", alt: "Onboarding flow", wide: true },
+]} />
+</Section>
 
-## Role
+<Section label="outcomes">
+<Outcomes items={[
+  "Shipped to App Store ahead of beta deadline",
+  "Deployed across 3 pediatric hospital sites",
+  "Measurable reduction in patient anxiety scores post-launch",
+  "Featured in SpellBound AR's 2020 impact report",
+]} />
+</Section>
 
-UX Designer and Engineer at SpellBound AR. Responsible for interaction design, AR experience design, and front-end implementation.
+<Section label="cool features">
+<Feature
+  image="https://placehold.co/960x640/e8e8e8/999999"
+  alt="Login screen"
+  label="Friendly onboarding"
+  description="The login flow was redesigned to feel approachable for kids — large tap targets, friendly copy, and an animated mascot guide players through setup without requiring a parent at every step."
+/>
 
-## Details
+<Feature
+  image="https://placehold.co/960x640/dde8e0/999999"
+  alt="Inventory UI"
+  label="Collectible inventory"
+  description="Each collected creature gets a dedicated card in the inventory — showing its name, rarity, and a short fact. The card flip animation was a deliberate moment of delight designed to reward exploration."
+  flip={true}
+/>
+</Section>
 
-Hospital stays are stressful for children. ARISE reframes the hospital environment as an adventure — patients discover AR sea creatures and collect items hidden throughout the ward, making movement therapeutic and engaging rather than clinical.
-
-<Specs items={[
-  { label: "Role", value: "UX Designer / Engineer" },
-  { label: "Org", value: "SpellBound AR" },
-  { label: "Year", value: "2020" },
-  { label: "Platform", value: "iOS / ARKit" }
+<Credits people={[
+  { name: "Hank Duhaime", role: "UX Design & Front-end Engineering" },
+  { name: "Jane Kim", role: "Product Management" },
+  { name: "Ravi Patel", role: "iOS Engineering" },
+  { name: "Mia Chen", role: "Illustration" },
 ]} />

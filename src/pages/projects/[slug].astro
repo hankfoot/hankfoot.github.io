@@ -25,8 +25,15 @@ const components = { VideoEmbed, ImageGrid, Callout, PrototypeEmbed, Specs };
 <Base title={`${project.data.title} — Hank Duhaime`}>
   <ProjectPanel
     title={project.data.title}
+    hook={project.data.hook}
+    summary={project.data.summary}
     year={project.data.year}
     tags={project.data.tags}
+    org={project.data.org}
+    contributions={project.data.contributions}
+    tools={project.data.tools}
+    outcomes={project.data.outcomes}
+    thumb={project.data.thumb}
   >
     <Content components={components} />
   </ProjectPanel>

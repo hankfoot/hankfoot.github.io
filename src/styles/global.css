@@ -468,6 +468,116 @@ a {
   color: var(--color-muted);
 }
 
+/* ─── Project Header (locked-in A1 layout) ───────────────────── */
+
+/* Header wrapper — provides bottom margin before the hero */
+.ph-header {
+  margin-bottom: 0;
+}
+
+/* Title — lowercase via CSS, large and bold with tight tracking */
+.ph-title {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  text-transform: lowercase;
+  margin-bottom: 0.5rem;
+}
+
+/* Hook — punchy one-liner, muted */
+.ph-hook {
+  color: var(--color-muted);
+  font-size: 1rem;
+  line-height: 1.4;
+  margin-bottom: 2.5rem;
+}
+
+/* Rule — hidden, whitespace does the separating */
+.ph-rule {
+  display: none;
+}
+
+/* Metadata grid — 3 fixed columns: left, middle, outcomes-right */
+.ph-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0 2rem;
+}
+
+/* Each column — stacks two fields vertically */
+.ph-meta-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Each field within a column — label above value list */
+.ph-meta-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+/* Label — mono, small caps style, muted */
+.ph-meta-label {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* Value list — dashed bullets, stacked lines */
+.ph-meta-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+/* Each value — mono, dash bullet via ::before */
+.ph-meta-value {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text);
+  line-height: 1.35;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.ph-meta-value:not(:only-child)::before {
+  content: '–';
+  color: var(--color-muted);
+  flex-shrink: 0;
+}
+
+/* ─── Hero Block ─────────────────────────────────────────────── */
+
+/* Full-width hero image or placeholder */
+.ph-hero {
+  width: 100%;
+  margin-top: 2rem;
+  margin-bottom: 5rem;
+}
+
+.ph-hero img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+}
+
+/* Grey placeholder when no real image is provided */
+.ph-hero-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #e0e0e0;
+  border-radius: 12px;
+}
+
 /* ─── Project Panel Body (MDX prose) ─────────────────────────── */
 .project-panel-body {
   line-height: 1.7;

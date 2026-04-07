@@ -1,0 +1,21 @@
+---
+interface Props {
+  image: string;
+  alt?: string;
+  label: string;
+  description: string;
+  flip?: boolean;
+}
+
+const { image, alt = '', label, description, flip = false } = Astro.props;
+---
+
+<div class:list={['block-feature', { 'block-feature--flip': flip }]}>
+  <div class="block-feature-image">
+    <img src={image} alt={alt} loading="lazy" />
+  </div>
+  <div class="block-feature-text">
+    <p class="block-feature-label">{label}</p>
+    <p class="block-feature-desc">{description}</p>
+  </div>
+</div>

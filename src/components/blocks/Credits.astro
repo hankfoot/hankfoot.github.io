@@ -1,0 +1,20 @@
+---
+interface Props {
+  people: Array<{ name: string; role: string }>;
+}
+
+const { people } = Astro.props;
+---
+
+<div class="block-credits">
+  <p class="block-credits-label">Credits</p>
+  <ul class="block-credits-list">
+    {people.map((person) => (
+      <li class="block-credits-person">
+        <span class="block-credits-name">{person.name}</span>
+        <span class="block-credits-sep"> — </span>
+        <span class="block-credits-role">{person.role}</span>
+      </li>
+    ))}
+  </ul>
+</div>

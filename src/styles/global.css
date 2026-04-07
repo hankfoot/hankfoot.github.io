@@ -517,11 +517,15 @@ a {
   margin-bottom: 1.5rem;
 }
 
-/* Metadata strip — each field is an equal-weight flex item */
+/* Metadata grid — 6 equal columns, last field spans 2 */
 .ph-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem 3rem;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.75rem 1.5rem;
+}
+
+.ph-meta-field:last-child {
+  grid-column: span 2;
 }
 
 /* Each field — label stacked above value list */

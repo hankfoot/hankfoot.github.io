@@ -845,7 +845,7 @@ figcaption {
   border-radius: var(--radius-md); /* PASS: normalized to --radius-sm/md/lg */
   padding: 1.25rem 1.75rem;
   /* Pull credits closer to the features section above it */
-  margin-top: calc(var(--space-block) - var(--space-section));
+  margin-top: calc(var(--space-block) * 2 - var(--space-section));
 }
 
 .block-credits .block-credits-label {

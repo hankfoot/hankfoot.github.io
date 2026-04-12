@@ -12,8 +12,7 @@ interface Props {
   thumb?: string;
 }
 
-const { title, hook, summary, year, tags, org, contributions, tools, outcomes, thumb } = Astro.props;
-const heroSrc = thumb && thumb !== '/placeholder.png' ? thumb : null;
+const { title, hook, summary, year, tags, org, contributions, tools, outcomes } = Astro.props;
 ---
 
 <article class="project-panel">
@@ -73,12 +72,6 @@ const heroSrc = thumb && thumb !== '/placeholder.png' ? thumb : null;
 
     </div>
 
-    <div class="ph-hero">
-      {heroSrc
-        ? <img src={heroSrc} alt={title} />
-        : <div class="ph-hero-placeholder" />
-      }
-    </div>
   </header>
 
   <div class="project-panel-body">

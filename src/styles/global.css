@@ -570,29 +570,6 @@ a {
 }
 
 
-/* ─── Hero Block ─────────────────────────────────────────────── */
-
-/* Full-width hero image or placeholder */
-.ph-hero {
-  width: 100%;
-  margin-top: var(--space-block);
-}
-
-.ph-hero img {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  border-radius: var(--radius-lg); /* PASS: normalized to --radius-sm/md/lg */
-  display: block;
-}
-
-/* Grey placeholder when no real image is provided */
-.ph-hero-placeholder {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: var(--color-placeholder); /* FIX: was hardcoded #e0e0e0, now uses --color-placeholder */
-  border-radius: var(--radius-lg); /* PASS: normalized to --radius-sm/md/lg */
-}
 
 /* ─── Project Panel Body (MDX prose) ─────────────────────────── */
 .project-panel-body {
@@ -771,7 +748,6 @@ figcaption {
 
 .block-bento-cell--wide {
   grid-column: span 2;
-  aspect-ratio: 16 / 7;
 }
 
 .block-bento-cell img {

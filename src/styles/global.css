@@ -17,14 +17,28 @@
   --color-muted: #666666;
   --color-border: #e0e0e0;
   --color-accent: #111111;
-  --card-radius: 4px;
+  /* FIX: added surface/tint/inverse variables to replace hardcoded grays throughout components */
+  --color-surface: #f7f7f7;     /* subtle tint — replaces #f7f7f7 in callouts */
+  --color-surface-mid: #f0f0f0; /* mid tint — replaces #f0f0f0 in code backgrounds */
+  --color-placeholder: #d8d8d8; /* placeholder/skeleton color — replaces #d8d8d8, #e0e0e0 */
+  --color-inverse-bg: #111111;  /* dark surface — replaces #111 in credits block */
+  --color-inverse-text: #ffffff;/* text on dark surface — replaces #fff in credits block */
+  --color-inverse-muted: #888888; /* muted on dark surface — replaces #888 in credits block */
+  /* FIX: standardized label tracking — all mono labels now use one of two scales */
+  --label-tracking-tight: 0.04em;  /* section-level labels (section-label, ph-meta-label, h2) */
+  --label-tracking-loose: 0.08em;  /* feature/credits caps labels */
+  --radius-sm: 4px;    /* tags, CTAs, small UI — replaces 2px, 3px, 4px, 5px */
+  --radius-md: 12px;   /* block components: bento, feature, credits */
+  --radius-lg: 24px;   /* hero images */
+  --space-section: 5rem; /* gap between major sections (header, body sections) */
+  --space-block: 2rem;   /* gap between related blocks within a section (meta→hero, feature→feature) */
   --grid-gap: 1.5rem;
   --stagger-offset: 80px;
 }
 
 /* ─── Base ───────────────────────────────────────────────────── */
 html {
-  font-size: clamp(15px, 1.5vw, 22px);
+  font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -97,7 +111,7 @@ a {
 }
 
 .intro-greeting {
-  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-size: 4rem;
   font-weight: 700;
   letter-spacing: -0.04em;
   line-height: 1;
@@ -105,7 +119,7 @@ a {
 }
 
 .intro-tagline {
-  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-size: 2.25rem;
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.15;
@@ -120,8 +134,8 @@ a {
 .intro-code {
   font-family: var(--font-mono);
   font-size: 0.85em;
-  background: #f0f0f0;
-  border-radius: 5px;
+  background: var(--color-surface-mid); /* FIX: was hardcoded #f0f0f0 */
+  border-radius: var(--radius-sm); /* PASS: normalized to --radius-sm/md/lg */
   padding: 0.05em 0.35em;
 }
 
@@ -283,7 +297,7 @@ a {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   color: var(--color-muted);
-  letter-spacing: 0.06em;
+  letter-spacing: var(--label-tracking-tight); /* FIX: was 0.06em, normalized to --label-tracking-tight */
   text-transform: lowercase;
   margin-bottom: 1.5rem;
 }
@@ -304,7 +318,7 @@ a {
   font-size: 0.75rem;
   color: var(--color-text);
   border: 1px solid var(--color-text);
-  border-radius: 3px;
+  border-radius: var(--radius-sm); /* PASS: normalized to --radius-sm/md/lg */
   padding: 0.35rem 0.65rem;
   display: inline-block;
   align-self: flex-start;
@@ -361,8 +375,8 @@ a {
   width: 100%;
   aspect-ratio: 4 / 3;
   max-height: clamp(180px, 22vh, 480px);
-  background: #d8d8d8;
-  border-radius: var(--card-radius);
+  background: var(--color-placeholder); /* FIX: was hardcoded #d8d8d8 */
+  border-radius: var(--radius-sm);
   overflow: hidden;
   margin-bottom: 0.625rem;
 }
@@ -413,7 +427,7 @@ a {
   font-size: 0.6875rem;
   padding: 0.15rem 0.4rem;
   border: 1px solid var(--color-border);
-  border-radius: 2px;
+  border-radius: var(--radius-sm); /* PASS: normalized to --radius-sm/md/lg */
   color: var(--color-muted);
 }
 
@@ -435,17 +449,18 @@ a {
 
 .project-panel-back {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   color: var(--color-muted);
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  margin-bottom: 2rem;
-  transition: color 0.15s;
+  margin-bottom: 1.25rem;
+  transition: color 0.15s, letter-spacing 0.15s;
 }
 
 .project-panel-back:hover {
   color: var(--color-text);
+  letter-spacing: 0.01em;
 }
 
 .project-panel-header {
@@ -468,23 +483,134 @@ a {
   color: var(--color-muted);
 }
 
-/* ─── Project Panel Body (MDX prose) ─────────────────────────── */
-.project-panel-body {
-  line-height: 1.7;
+/* ─── Project Header (locked-in A1 layout) ───────────────────── */
+
+/* Sections wrapper — flex column gaps header / hero / body uniformly */
+.pp-sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-section);
+  max-width: 860px;
+  margin-inline: auto;
 }
 
-.project-panel-body h2 {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-muted);
-  margin-top: 2rem;
+/* Header wrapper */
+.ph-header {
+  margin-bottom: 0;
+}
+
+/* Title — lowercase via CSS, large and bold with tight tracking */
+.ph-title {
+  font-size: 2.75rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  text-transform: lowercase;
   margin-bottom: 0.5rem;
 }
 
-.project-panel-body h2:first-child {
-  margin-top: 0;
+/* Hook — punchy one-liner, muted */
+.ph-hook {
+  color: var(--color-muted);
+  font-size: 1rem;
+  line-height: 1.4;
+  margin-bottom: 1.5rem;
+}
+
+/* Metadata grid — 6 equal columns, last field spans 2 */
+.ph-meta {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.75rem 1.5rem;
+}
+
+.ph-meta-field:last-child {
+  grid-column: span 2;
+}
+
+/* Each field — label stacked above value list */
+.ph-meta-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+/* Label — mono, muted */
+.ph-meta-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--label-tracking-tight);
+  text-transform: lowercase;
+  color: var(--color-muted);
+}
+
+/* Value list */
+.ph-meta-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+/* Each value — sans-serif for readability, consistent with body copy */
+.ph-meta-value {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--color-text);
+  line-height: 1.3;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.ph-meta-value:not(:only-child)::before {
+  content: '-';
+  color: var(--color-muted);
+  flex-shrink: 0;
+}
+
+
+/* ─── Hero Block ─────────────────────────────────────────────── */
+
+/* Full-width hero image or placeholder */
+.ph-hero {
+  width: 100%;
+  margin-top: var(--space-block);
+}
+
+.ph-hero img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radius-lg); /* PASS: normalized to --radius-sm/md/lg */
+  display: block;
+}
+
+/* Grey placeholder when no real image is provided */
+.ph-hero-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--color-placeholder); /* FIX: was hardcoded #e0e0e0, now uses --color-placeholder */
+  border-radius: var(--radius-lg); /* PASS: normalized to --radius-sm/md/lg */
+}
+
+/* ─── Project Panel Body (MDX prose) ─────────────────────────── */
+.project-panel-body {
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-section);
+}
+
+/* Section wrapper — each body section is a discrete flex child */
+.pp-body-section-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 400;
+  text-transform: lowercase;
+  letter-spacing: var(--label-tracking-tight);
+  color: var(--color-muted);
+  margin-bottom: 0.75rem;
 }
 
 .project-panel-body p {
@@ -498,7 +624,7 @@ a {
   border-left: 3px solid var(--color-text);
   padding: 0.75rem 1rem;
   margin: 1.5rem 0;
-  background: #f7f7f7;
+  background: var(--color-surface); /* FIX: was hardcoded #f7f7f7 */
 }
 
 .block-callout--warning {
@@ -541,9 +667,9 @@ a {
 .block-video video,
 .block-prototype iframe {
   width: 100%;
-  border-radius: var(--card-radius);
+  border-radius: var(--radius-sm); /* PASS: normalized to --radius-sm/md/lg */
   border: 1px solid var(--color-border);
-  background: #f0f0f0;
+  background: var(--color-surface-mid); /* FIX: was hardcoded #f0f0f0 */
 }
 
 .block-prototype iframe {
@@ -558,7 +684,7 @@ a {
 
 .block-image-grid img {
   width: 100%;
-  border-radius: var(--card-radius);
+  border-radius: var(--radius-sm); /* PASS: normalized to --radius-sm/md/lg */
   border: 1px solid var(--color-border);
 }
 
@@ -604,6 +730,163 @@ figcaption {
   animation: none;
 }
 
+
+/* ─── Block: Outcomes ────────────────────────────────────────── */
+.block-outcomes {
+  list-style: none;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.block-outcomes-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.6; /* FIX: was unset — normalized to 1.6 to match body prose line-height */
+  color: var(--color-text);
+}
+
+.block-outcomes-dash {
+  color: var(--color-muted);
+  flex-shrink: 0;
+}
+
+/* ─── Block: BentoGrid ───────────────────────────────────────── */
+.block-bento {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.block-bento-cell {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-placeholder); /* FIX: was hardcoded #e0e0e0 */
+  aspect-ratio: 4 / 3;
+}
+
+.block-bento-cell--wide {
+  grid-column: span 2;
+  aspect-ratio: 16 / 7;
+}
+
+.block-bento-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ─── Block: Feature ─────────────────────────────────────────── */
+.block-feature {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 3rem;
+  align-items: center;
+  margin: 0;
+}
+
+
+/* Gap between consecutive features within the same section */
+.block-feature + .block-feature {
+  margin-top: 3.5rem;
+}
+
+.block-feature--flip {
+  grid-template-columns: 2fr 3fr;
+}
+
+.block-feature--flip .block-feature-image {
+  order: 2;
+}
+
+.block-feature--flip .block-feature-text {
+  order: 1;
+}
+
+.block-feature-image {
+  border-radius: var(--radius-md); /* PASS: normalized to --radius-sm/md/lg */
+  overflow: hidden;
+}
+
+.block-feature-image img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.block-feature-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.block-feature .block-feature-label {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+  color: var(--color-text);
+  margin: 0; /* reset: .project-panel-body p adds margin-bottom */
+}
+
+.block-feature .block-feature-desc {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  margin: 0; /* reset: .project-panel-body p adds margin-bottom */
+}
+
+/* ─── Block: Credits ─────────────────────────────────────────── */
+.block-credits {
+  background: var(--color-inverse-bg);
+  color: var(--color-inverse-text);
+  border-radius: var(--radius-md); /* PASS: normalized to --radius-sm/md/lg */
+  padding: 1.25rem 1.75rem;
+  /* Pull credits closer to the features section above it */
+  margin-top: calc(var(--space-block) * 2 - var(--space-section));
+}
+
+.block-credits .block-credits-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: var(--label-tracking-tight);
+  text-transform: lowercase;
+  color: var(--color-inverse-muted);
+  margin-bottom: 0.75rem;
+}
+
+.block-credits-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.block-credits-person {
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.block-credits-name {
+  font-weight: 600;
+  color: var(--color-inverse-text);
+}
+
+.block-credits-sep {
+  color: var(--color-inverse-muted);
+}
+
+.block-credits-role {
+  font-weight: 400;
+  color: var(--color-inverse-muted);
+}
 
 /* ─── Reduced Motion ─────────────────────────────────────────── */
 [data-reduced-motion="true"] #hand-cursor {

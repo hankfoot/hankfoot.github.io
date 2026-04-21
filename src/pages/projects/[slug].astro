@@ -6,6 +6,11 @@ import ImageGrid from '../../components/blocks/ImageGrid.astro';
 import Callout from '../../components/blocks/Callout.astro';
 import PrototypeEmbed from '../../components/blocks/PrototypeEmbed.astro';
 import Specs from '../../components/blocks/Specs.astro';
+import Outcomes from '../../components/blocks/Outcomes.astro';
+import BentoGrid from '../../components/blocks/BentoGrid.astro';
+import Feature from '../../components/blocks/Feature.astro';
+import Credits from '../../components/blocks/Credits.astro';
+import Section from '../../components/blocks/Section.astro';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -20,13 +25,20 @@ const { project } = Astro.props;
 const { Content } = await render(project);
 
 // Auto-injected into MDX scope — authors don't need to import these
-const components = { VideoEmbed, ImageGrid, Callout, PrototypeEmbed, Specs };
+const components = { VideoEmbed, ImageGrid, Callout, PrototypeEmbed, Specs, Outcomes, BentoGrid, Feature, Credits, Section };
 ---
 <Base title={`${project.data.title} — Hank Duhaime`}>
   <ProjectPanel
     title={project.data.title}
+    hook={project.data.hook}
+    summary={project.data.summary}
     year={project.data.year}
     tags={project.data.tags}
+    org={project.data.org}
+    contributions={project.data.contributions}
+    tools={project.data.tools}
+    outcomes={project.data.outcomes}
+    thumb={project.data.thumb}
   >
     <Content components={components} />
   </ProjectPanel>

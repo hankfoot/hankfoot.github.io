@@ -1,0 +1,15 @@
+---
+interface Props {
+  images: Array<{ src: string; alt: string; wide?: boolean }>;
+}
+
+const { images } = Astro.props;
+---
+
+<div class="block-bento">
+  {images.map((image) => (
+    <div class:list={['block-bento-cell', { 'block-bento-cell--wide': image.wide }]}>
+      <img src={image.src} alt={image.alt} loading="lazy" />
+    </div>
+  ))}
+</div>

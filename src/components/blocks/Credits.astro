@@ -1,6 +1,8 @@
 ---
+import { parseInlineLinks } from '../../utils/text';
+
 interface Props {
-  people: Array<{ name: string; role: string; url?: string }>;
+  people: Array<{ name: string; role: string }>;
 }
 
 const { people } = Astro.props;
@@ -11,10 +13,7 @@ const { people } = Astro.props;
   <ul class="block-credits-list">
     {people.map((person) => (
       <li class="block-credits-person">
-        {person.url
-          ? <a href={person.url} class="block-credits-name" target="_blank" rel="noopener noreferrer">{person.name}</a>
-          : <span class="block-credits-name">{person.name}</span>
-        }
+        <span class="block-credits-name" set:html={parseInlineLinks(person.name)} />
         <span class="block-credits-sep"> - </span>
         <span class="block-credits-role">{person.role}</span>
       </li>

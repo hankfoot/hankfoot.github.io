@@ -569,6 +569,18 @@ a {
   flex-shrink: 0;
 }
 
+.ph-meta-value a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--color-muted);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.ph-meta-value a:hover {
+  text-decoration-color: var(--color-text);
+}
+
 
 
 /* ─── Project Panel Body (MDX prose) ─────────────────────────── */

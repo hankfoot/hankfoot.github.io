@@ -28,7 +28,9 @@ hankfoot.github.io/
 │   │   ├── Sidebar.astro         # Fixed sidebar navigation
 │   │   ├── HandCursor.astro      # Interactive hand cursor component
 │   │   └── blocks/               # Reusable MDX content blocks
+│   │       ├── BentoGrid.astro
 │   │       ├── Callout.astro
+│   │       ├── Feature.astro
 │   │       ├── ImageGrid.astro
 │   │       ├── VideoEmbed.astro
 │   │       ├── PrototypeEmbed.astro
@@ -75,7 +77,9 @@ summary: "Short description shown on project cards."
 ...
 ```
 
-MDX components are auto-injected — use `<Callout>`, `<Specs>`, `<VideoEmbed>`, `<ImageGrid>`, and `<PrototypeEmbed>` directly without imports.
+MDX components are auto-injected — use `<BentoGrid>`, `<Callout>`, `<Feature>`, `<ImageGrid>`, `<Specs>`, `<VideoEmbed>`, and `<PrototypeEmbed>` directly without imports.
+
+**Image note**: All image-rendering components (`BentoGrid`, `Feature`, `ImageGrid`, `ProjectCard`) use Astro's `<Image>` component. Images in `public/` use pre-set `width`/`height` defaults; pass explicit `width`/`height` on `BentoGrid` image objects to override.
 
 ### Add a new project
 1. Create `src/content/projects/[slug].mdx` with the frontmatter above.

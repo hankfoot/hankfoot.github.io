@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+
 interface Props {
   title: string;
   year: number;
@@ -13,7 +15,7 @@ const { title, year, tags, thumb, summary, href } = Astro.props;
 <a href={href} class="project-card">
   <div class="project-card-thumb">
     {thumb && thumb !== '/placeholder.png' && (
-      <img src={thumb} alt={title} loading="lazy" />
+      <Image src={thumb} alt={title} width={800} height={600} />
     )}
   </div>
   <h2 class="project-card-title">{title}</h2>

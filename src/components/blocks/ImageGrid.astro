@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+
 interface Props {
   images: string[];
   caption?: string;
@@ -8,7 +10,7 @@ const { images, caption } = Astro.props;
 ---
 <figure class="block-image-grid">
   {images.map((src, i) => (
-    <img src={src} alt={`Image ${i + 1}`} loading="lazy" />
+    <Image src={src} alt={`Image ${i + 1}`} width={1200} height={900} />
   ))}
   {caption && <figcaption style="grid-column: 1 / -1">{caption}</figcaption>}
 </figure>

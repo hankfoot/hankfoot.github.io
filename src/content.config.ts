@@ -10,10 +10,16 @@ const projects = defineCollection({
     featured: z.boolean(),
     summary: z.string(),
     org: z.string().optional(),
+    orgUrl: z.string().url().optional(),
     contributions: z.array(z.string()).optional(),
     tools: z.array(z.string()).optional(),
     hook: z.string().optional(),
-    outcomes: z.array(z.string()).optional(),
+    outcomes: z.array(
+      z.union([
+        z.string(),
+        z.object({ text: z.string(), url: z.string().url() }),
+      ])
+    ).optional(),
   }),
 });
 

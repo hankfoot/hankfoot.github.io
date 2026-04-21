@@ -870,8 +870,13 @@ figcaption {
   text-decoration: none;
 }
 
-a.block-credits-name:hover {
+a.block-credits-name:hover,
+.block-credits-name a:hover {
   text-decoration: underline;
+}
+
+.block-credits-name a {
+  color: var(--color-inverse-text);
 }
 
 .block-credits-sep {

@@ -5,7 +5,7 @@ interface Props {
   title: string;
   hook?: string;
   summary?: string;
-  year: number;
+  timeline: string;
   tags: string[];
   org?: string;
   orgUrl?: string;
@@ -17,7 +17,7 @@ interface Props {
 
 import { parseInlineLinks } from '../utils/text';
 
-const { title, hook, summary, year, tags, org, orgUrl, contributions, tools, outcomes } = Astro.props;
+const { title, hook, summary, timeline, tags, org, orgUrl, contributions, tools, outcomes } = Astro.props;
 ---
 
 <article class="project-panel">
@@ -42,9 +42,9 @@ const { title, hook, summary, year, tags, org, orgUrl, contributions, tools, out
       )}
 
       <div class="ph-meta-field">
-        <span class="ph-meta-label">Year</span>
+        <span class="ph-meta-label">Timeline</span>
         <ul class="ph-meta-list">
-          <li class="ph-meta-value">{year}</li>
+          <li class="ph-meta-value">{timeline}</li>
         </ul>
       </div>
 

@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+
 interface Props {
   image: string;
   alt?: string;
@@ -12,7 +14,7 @@ const { image, alt = '', label, description, flip = false } = Astro.props;
 
 <div class:list={['block-feature', { 'block-feature--flip': flip }]}>
   <div class="block-feature-image">
-    <img src={image} alt={alt} loading="lazy" />
+    <Image src={image} alt={alt} width={960} height={640} />
   </div>
   <div class="block-feature-text">
     <p class="block-feature-label">{label}</p>

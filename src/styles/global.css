@@ -661,6 +661,7 @@ a {
 
 .block-image-grid img {
   width: 100%;
+  height: auto;
   border-radius: var(--radius-sm); /* PASS: normalized to --radius-sm/md/lg */
   border: 1px solid var(--color-border);
 }
@@ -791,6 +792,7 @@ figcaption {
 
 .block-feature-image img {
   width: 100%;
+  height: auto;
   display: block;
   object-fit: cover;
 }

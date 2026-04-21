@@ -853,6 +853,11 @@ figcaption {
 .block-credits-name {
   font-weight: 600;
   color: var(--color-inverse-text);
+  text-decoration: none;
+}
+
+a.block-credits-name:hover {
+  text-decoration: underline;
 }
 
 .block-credits-sep {

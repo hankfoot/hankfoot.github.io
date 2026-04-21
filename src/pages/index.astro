@@ -4,7 +4,7 @@ import ProjectCard from '../components/ProjectCard.astro';
 import { getCollection } from 'astro:content';
 
 const projects = await getCollection('projects');
-const sorted = projects.sort((a, b) => b.data.year - a.data.year);
+const sorted = projects.sort((a, b) => b.data.timeline.localeCompare(a.data.timeline));
 ---
 <Base title="Hank Duhaime — Design Technologist">
   <section class="page-intro">
@@ -23,7 +23,7 @@ const sorted = projects.sort((a, b) => b.data.year - a.data.year);
       <ProjectCard
         href={`/projects/${project.id.replace(/\.[^.]+$/, '')}`}
         title={project.data.title}
-        year={project.data.year}
+        timeline={project.data.timeline}
         tags={project.data.tags}
         thumb={project.data.thumb}
         summary={project.data.summary}

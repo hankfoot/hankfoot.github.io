@@ -1,0 +1,461 @@
+---
+import Base from '../layouts/Base.astro';
+import Outcomes from '../components/blocks/Outcomes.astro';
+import Credits from '../components/blocks/Credits.astro';
+import Feature from '../components/blocks/Feature.astro';
+import BentoGrid from '../components/blocks/BentoGrid.astro';
+import Section from '../components/blocks/Section.astro';
+---
+<Base title="Design System — Hank Duhaime">
+  <div class="styles-page">
+
+    <!-- ─── Page Header ──────────────────────────────────── -->
+    <header class="styles-page-header">
+      <p class="styles-meta-label">design system</p>
+      <h1 class="styles-page-title">type &amp; components</h1>
+      <p class="styles-page-sub">A living reference of every text style, component, and UI element used across this portfolio. Rendered from source — no screenshots.</p>
+    </header>
+
+    <!-- ─── Section: Typography ─────────────────────────── -->
+    <section class="styles-section">
+      <p class="styles-section-label">typography</p>
+
+      <div class="styles-row">
+        <p class="styles-token-label">display title · .ph-title</p>
+        <h1 class="ph-title">arise: spatial ar for retail</h1>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">hook / subtitle · .ph-hook</p>
+        <p class="ph-hook">Redesigning the fitting room for a world without mirrors.</p>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">section label · .section-label</p>
+        <p class="section-label">projects</p>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">body section label · .pp-body-section-label</p>
+        <p class="pp-body-section-label">cool features</p>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">body text · p (0.9375rem / lh 1.6)</p>
+        <p style="font-size: 0.9375rem; line-height: 1.6; color: var(--color-text);">
+          Interaction design sits at the boundary between the physical and digital. Good work here demands both systems thinking and a sensitivity to how people actually hold, touch, and move through the world.
+        </p>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">mono text · var(--font-mono)</p>
+        <p style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--color-text);">
+          const experience = design + code + empathy;
+        </p>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">muted text · color: var(--color-muted)</p>
+        <p style="font-size: 0.9375rem; color: var(--color-muted); line-height: 1.6;">
+          Supporting details, timestamps, and secondary context appear in this muted tone.
+        </p>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">meta label · .ph-meta-label</p>
+        <span class="ph-meta-label">Contributions</span>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">nav link · .sidebar-nav a</p>
+        <a href="#" class="styles-nav-demo" onclick="return false;">projects</a>
+      </div>
+
+    </section>
+
+    <!-- ─── Section: Metadata Grid ───────────────────────── -->
+    <section class="styles-section">
+      <p class="styles-section-label">metadata grid · .ph-meta</p>
+
+      <div class="ph-meta">
+        <div class="ph-meta-col">
+          <div class="ph-meta-field">
+            <span class="ph-meta-label">Context</span>
+            <ul class="ph-meta-list">
+              <li class="ph-meta-value">Meta Reality Labs Research</li>
+            </ul>
+          </div>
+          <div class="ph-meta-field">
+            <span class="ph-meta-label">Year</span>
+            <ul class="ph-meta-list">
+              <li class="ph-meta-value">2023</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="ph-meta-col">
+          <div class="ph-meta-field">
+            <span class="ph-meta-label">Contributions</span>
+            <ul class="ph-meta-list">
+              <li class="ph-meta-value">Interaction Design</li>
+              <li class="ph-meta-value">Prototyping</li>
+              <li class="ph-meta-value">User Research</li>
+            </ul>
+          </div>
+          <div class="ph-meta-field">
+            <span class="ph-meta-label">Tools</span>
+            <ul class="ph-meta-list">
+              <li class="ph-meta-value">Figma</li>
+              <li class="ph-meta-value">Spark AR</li>
+              <li class="ph-meta-value">Unity</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="ph-meta-col">
+          <div class="ph-meta-field">
+            <span class="ph-meta-label">Outcomes</span>
+            <ul class="ph-meta-list">
+              <li class="ph-meta-value">Shipped to 10k+ users</li>
+              <li class="ph-meta-value">Featured at Connect 2023</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Section: Block Components ───────────────────── -->
+    <section class="styles-section">
+      <p class="styles-section-label">block components</p>
+
+      <div class="styles-block-group">
+        <p class="styles-token-label">Outcomes</p>
+        <Outcomes items={[
+          'Reduced task completion time by 40% in usability studies',
+          'Shipped to 12,000 beta users across North America',
+          'Nominated for Best Interaction Design at Webby Awards 2024',
+        ]} />
+      </div>
+
+      <div class="styles-block-group">
+        <p class="styles-token-label">Credits</p>
+        <Credits people={[
+          { name: 'Hank Duhaime', role: 'Interaction Design, Prototyping' },
+          { name: 'Mara Fontaine', role: 'Visual Design' },
+          { name: 'Jonas Reyes', role: 'Engineering' },
+        ]} />
+      </div>
+
+      <div class="styles-block-group">
+        <p class="styles-token-label">Feature (image left)</p>
+        <Feature
+          image="https://placehold.co/800x540/e0e0e0/888888?text=feature+image"
+          alt="Feature image placeholder"
+          label="Spatial Interaction"
+          description="Hand-tracking gestures replace traditional touch input in this AR interface, letting users interact with virtual objects as naturally as physical ones. The challenge was designing for a 6DoF space with no established conventions."
+        />
+      </div>
+
+      <div class="styles-block-group">
+        <p class="styles-token-label">Feature (image right, flipped)</p>
+        <Feature
+          image="https://placehold.co/800x540/e0e0e0/888888?text=feature+flipped"
+          alt="Feature flipped placeholder"
+          label="Onboarding Flow"
+          description="A progressive disclosure onboarding that surfaces complexity only when users are ready for it. First-session completion rate increased from 61% to 88% after this redesign."
+          flip={true}
+        />
+      </div>
+
+      <div class="styles-block-group">
+        <p class="styles-token-label">BentoGrid</p>
+        <BentoGrid images={[
+          { src: 'https://placehold.co/800x600/d8d8d8/888888?text=01', alt: 'Grid image 01', wide: true },
+          { src: 'https://placehold.co/800x600/e0e0e0/888888?text=02', alt: 'Grid image 02' },
+          { src: 'https://placehold.co/800x600/cccccc/888888?text=03', alt: 'Grid image 03' },
+        ]} />
+      </div>
+
+      <div class="styles-block-group">
+        <p class="styles-token-label">Section (with label)</p>
+        <Section label="outcomes">
+          <Outcomes items={[
+            'Reduced task completion time by 40%',
+            'Shipped to 12,000 beta users',
+          ]} />
+        </Section>
+      </div>
+
+      <div class="styles-block-group">
+        <p class="styles-token-label">Section (no label — e.g. gallery)</p>
+        <Section>
+          <BentoGrid images={[
+            { src: 'https://placehold.co/800x600/d8d8d8/888888?text=01', alt: 'Image 01', wide: true },
+            { src: 'https://placehold.co/800x600/e0e0e0/888888?text=02', alt: 'Image 02' },
+            { src: 'https://placehold.co/800x600/cccccc/888888?text=03', alt: 'Image 03' },
+          ]} />
+        </Section>
+      </div>
+
+    </section>
+
+    <!-- ─── Section: UI Elements ─────────────────────────── -->
+    <section class="styles-section">
+      <p class="styles-section-label">ui elements</p>
+
+      <div class="styles-row">
+        <p class="styles-token-label">back link · .project-panel-back</p>
+        <a href="#" class="project-panel-back" onclick="return false;">← back</a>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">tag pills · .tag</p>
+        <ul class="tags" style="margin-top: 0;">
+          <li class="tag">Interaction Design</li>
+          <li class="tag">AR / XR</li>
+          <li class="tag">Prototyping</li>
+          <li class="tag">Unity</li>
+        </ul>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">CTA button · .section-cta</p>
+        <div class="section-body" style="padding: 0;">
+          <a href="#" class="section-cta" onclick="return false;">download pdf ↗</a>
+        </div>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">sidebar-bio code · .intro-code</p>
+        <p class="sidebar-bio">
+          interaction designer + <code class="intro-code">creative technologist</code>
+        </p>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">figcaption</p>
+        <figcaption>Fig. 1 — Gesture vocabulary exploration, iteration 3 of 7</figcaption>
+      </div>
+
+    </section>
+
+    <!-- ─── Section: Spacing Tokens ─────────────────────── -->
+    <section class="styles-section">
+      <p class="styles-section-label">spacing tokens</p>
+
+      <div class="styles-row">
+        <p class="styles-token-label">--space-section · 5rem — between major sections (header→body, summary→gallery→outcomes…)</p>
+        <div class="styles-spacing-demo">
+          <div class="styles-spacing-bar" style="width: var(--space-section);"></div>
+          <span class="styles-spacing-label">5rem</span>
+        </div>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">--space-block · 2rem — between related blocks (meta→hero, feature→feature, features→credits)</p>
+        <div class="styles-spacing-demo">
+          <div class="styles-spacing-bar" style="width: var(--space-block);"></div>
+          <span class="styles-spacing-label">2rem</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ─── Section: Color Tokens ────────────────────────── -->
+    <section class="styles-section">
+      <p class="styles-section-label">color tokens</p>
+      <div class="styles-color-grid">
+        <div class="styles-swatch">
+          <div class="styles-swatch-block" style="background: var(--color-bg); border: 1px solid var(--color-border);"></div>
+          <p class="styles-swatch-name">--color-bg</p>
+          <p class="styles-swatch-value">#ffffff</p>
+        </div>
+        <div class="styles-swatch">
+          <div class="styles-swatch-block" style="background: var(--color-text);"></div>
+          <p class="styles-swatch-name">--color-text</p>
+          <p class="styles-swatch-value">#111111</p>
+        </div>
+        <div class="styles-swatch">
+          <div class="styles-swatch-block" style="background: var(--color-muted);"></div>
+          <p class="styles-swatch-name">--color-muted</p>
+          <p class="styles-swatch-value">#666666</p>
+        </div>
+        <div class="styles-swatch">
+          <div class="styles-swatch-block" style="background: var(--color-border);"></div>
+          <p class="styles-swatch-name">--color-border</p>
+          <p class="styles-swatch-value">#e0e0e0</p>
+        </div>
+        <div class="styles-swatch">
+          <div class="styles-swatch-block" style="background: var(--color-surface);"></div>
+          <p class="styles-swatch-name">--color-surface</p>
+          <p class="styles-swatch-value">#f7f7f7</p>
+        </div>
+        <div class="styles-swatch">
+          <div class="styles-swatch-block" style="background: var(--color-surface-mid);"></div>
+          <p class="styles-swatch-name">--color-surface-mid</p>
+          <p class="styles-swatch-value">#f0f0f0</p>
+        </div>
+        <div class="styles-swatch">
+          <div class="styles-swatch-block" style="background: var(--color-placeholder);"></div>
+          <p class="styles-swatch-name">--color-placeholder</p>
+          <p class="styles-swatch-value">#d8d8d8</p>
+        </div>
+        <div class="styles-swatch">
+          <div class="styles-swatch-block" style="background: var(--color-inverse-bg);"></div>
+          <p class="styles-swatch-name">--color-inverse-bg</p>
+          <p class="styles-swatch-value">#111111</p>
+        </div>
+        <div class="styles-swatch">
+          <div class="styles-swatch-block" style="background: var(--color-inverse-text); border: 1px solid var(--color-border);"></div>
+          <p class="styles-swatch-name">--color-inverse-text</p>
+          <p class="styles-swatch-value">#ffffff</p>
+        </div>
+        <div class="styles-swatch">
+          <div class="styles-swatch-block" style="background: var(--color-inverse-muted);"></div>
+          <p class="styles-swatch-name">--color-inverse-muted</p>
+          <p class="styles-swatch-value">#888888</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</Base>
+
+<style>
+/* ── Styles page layout ─────────────────────────────────── */
+.styles-page {
+  max-width: 860px;
+}
+
+.styles-page-header {
+  padding-bottom: 2.5rem;
+  margin-bottom: 3rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.styles-meta-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--color-muted);
+  letter-spacing: var(--label-tracking-tight);
+  text-transform: lowercase;
+  margin-bottom: 0.75rem;
+}
+
+.styles-page-title {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  text-transform: lowercase;
+  margin-bottom: 0.75rem;
+}
+
+.styles-page-sub {
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+  line-height: 1.6;
+  max-width: 52ch;
+}
+
+/* ── Section structure ──────────────────────────────────── */
+.styles-section {
+  margin-bottom: 5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.styles-section-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--color-muted);
+  letter-spacing: var(--label-tracking-tight);
+  text-transform: lowercase;
+  margin-bottom: 2.5rem;
+}
+
+/* ── Individual style rows ──────────────────────────────── */
+.styles-row {
+  margin-bottom: 2.5rem;
+}
+
+.styles-token-label {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: var(--label-tracking-loose);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-bottom: 0.6rem;
+  opacity: 0.6;
+}
+
+/* ── Block group (for full-width blocks) ────────────────── */
+.styles-block-group {
+  margin-bottom: 3.5rem;
+}
+
+.styles-block-group .styles-token-label {
+  margin-bottom: 1rem;
+}
+
+/* ── Nav demo (shows sidebar-nav link style inline) ─────── */
+.styles-nav-demo {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  display: inline-block;
+  transition: opacity 0.15s;
+}
+
+.styles-nav-demo:hover {
+  opacity: 0.5;
+}
+
+/* ── Color swatch grid ──────────────────────────────────── */
+.styles-color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1.5rem;
+}
+
+.styles-swatch-block {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  border-radius: var(--card-radius);
+  margin-bottom: 0.5rem;
+}
+
+.styles-swatch-name {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+.styles-swatch-value {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  color: var(--color-muted);
+}
+
+/* ── Spacing demo ───────────────────────────────────────── */
+.styles-spacing-demo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.styles-spacing-bar {
+  height: 6px;
+  background: var(--color-text);
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.styles-spacing-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--color-muted);
+}
+</style>

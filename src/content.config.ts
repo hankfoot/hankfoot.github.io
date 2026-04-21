@@ -9,6 +9,11 @@ const projects = defineCollection({
     thumb: z.string(),
     featured: z.boolean(),
     summary: z.string(),
+    org: z.string().optional(),
+    contributions: z.array(z.string()).optional(),
+    tools: z.array(z.string()).optional(),
+    hook: z.string().optional(),
+    outcomes: z.array(z.string()).optional(),
   }),
 });
 

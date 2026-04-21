@@ -3,16 +3,16 @@
 
 <script>
   // ─── Speed constants ──────────────────────────────────────────
-  const LERP                  = 0.16;  // ambient movement (idle resting, flick travel)
+  const LERP                  = 0.16;  // ambient movement
   const MAX_PX_PER_FRAME      = 22;    // ambient speed cap
-  const GRAB_TRAVEL_LERP      = 0.36;  // snappier lerp when flying to the right edge
-  const GRAB_TRAVEL_MAX_PX    = 50;    // higher speed cap for grab travel
+  const GRAB_TRAVEL_LERP      = 0.36;  // snappier lerp for fast travel (grab + flick)
+  const GRAB_TRAVEL_MAX_PX    = 50;    // higher speed cap for fast travel
   const GRAB_PULL_PX_PER_FRAME = 14;   // slow pull — gives the panel some mass
   const ARRIVAL_THRESHOLD     = 8;     // px — considered "arrived" within this distance
 
   // ─── State machine ────────────────────────────────────────────
   // Priority tiers:
-  //   1 (highest) — Navigational: grab-travel, grab-pull, flick-travel, flick-hold, flick-linger
+  //   1 (highest) — Navigational: grab-travel, grab-pull, flick-travel, flick-push
   //   2           — Easter eggs:  (future) easter-egg-*
   //   3           — Idle resting: idle (scroll-driven wave/point)
   //   4 (lowest)  — Idle animations: (future) bored-*
@@ -21,11 +21,10 @@
   // guard with `if (state !== 'idle') return` — one check replaces all old flags.
   type HandState =
     | 'idle'           // tier 3: scroll-driven resting
-    | 'grab-travel'    // tier 1: 🤜 fast travel to right edge
-    | 'grab-pull'      // tier 1: ✊ gripping and pulling panel in
-    | 'flick-travel'   // tier 1: 🤜 ambient-speed travel to panel edge
-    | 'flick-hold'     // tier 1: 👌→🫳 emoji sequence, awaiting navigation
-    | 'flick-linger';  // tier 1: 🫳 post-swap linger before returning
+    | 'grab-travel'    // tier 1: fast travel to right edge
+    | 'grab-pull'      // tier 1: 🤚 gripping and pulling panel in
+    | 'flick-travel'   // tier 1: fast travel to panel's left edge
+    | 'flick-push';    // tier 1: 🫸 following panel edge as it slides off-right
 
   let state: HandState = 'idle';
 
@@ -53,11 +52,12 @@
     const dy = targetY - currentY;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
-    // Speed by state
-    const lerp    = state === 'grab-travel' ? GRAB_TRAVEL_LERP     : LERP;
-    const maxStep = state === 'grab-pull'   ? GRAB_PULL_PX_PER_FRAME
-                  : state === 'grab-travel' ? GRAB_TRAVEL_MAX_PX
-                  :                           MAX_PX_PER_FRAME;
+    // Fast travel for both grab-travel and flick-travel
+    const isFastTravel = state === 'grab-travel' || state === 'flick-travel';
+    const lerp    = isFastTravel ? GRAB_TRAVEL_LERP : LERP;
+    const maxStep = state === 'grab-pull' ? GRAB_PULL_PX_PER_FRAME
+                  : isFastTravel          ? GRAB_TRAVEL_MAX_PX
+                  :                         MAX_PX_PER_FRAME;
     const step = Math.min(dist * lerp, maxStep);
     if (dist > 0.01) {
       currentX += (dx / dist) * step;
@@ -76,19 +76,24 @@
         targetY = currentY;
       }
       el.style.transformOrigin = '50% 50%';
-      el.style.transform = `translate(${currentX}px, ${currentY}px)`;
+      el.style.transform = `translate(${currentX}px, ${currentY}px) rotate(90deg)`;
 
-    } else if (state === 'flick-hold' || state === 'flick-linger') {
-      // Emoji locked (👌/🫳 in progress) — only update position
-      el.style.transform = `translate(${currentX}px, ${currentY}px)`;
-
-    } else if (dist > ARRIVAL_THRESHOLD) {
-      // ── GLOBAL TRANSIT ── fist in direction of travel.
-      // Fires for ALL states while moving — no per-state opt-in needed.
-      // Future tiers (easter eggs, boredom) get this automatically.
-      el.textContent = dx >= 0 ? '🤜' : '🤛';
+    } else if (state === 'flick-push') {
+      // Stick directly to the clone's left edge — same pattern as grab-pull
+      currentX = targetX;
+      currentY = targetY;
       el.style.transformOrigin = '50% 50%';
       el.style.transform = `translate(${currentX}px, ${currentY}px)`;
+
+    } else if (dist > ARRIVAL_THRESHOLD && (state !== 'idle' || currentMode !== targetMode)) {
+      // ── GLOBAL TRANSIT ── travel hand for meaningful moves.
+      // Fires when navigating (any non-idle state) OR crossing modes (wave↔point).
+      // Skipped when idle and already in the right mode — e.g. gliding between
+      // nav links stays as 👈 without flashing the travel hand.
+      el.textContent = '🫳';
+      el.style.transformOrigin = '50% 50%';
+      const flipX = dx >= 0 ? 1 : -1;
+      el.style.transform = `translate(${currentX}px, ${currentY}px) scaleX(${flipX})`;
 
     } else {
       // At destination — state-specific resting emoji
@@ -102,8 +107,7 @@
         el.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotation}deg)`;
       }
       // grab-travel: waitForGrabArrival() sets 🤚 on arrival
-      // flick-travel: waitForFlick/checkArrival sets 👌 on arrival
-      // future states: add resting emoji branch here
+      // flick-travel: animatePush switches to 🫸 when hand arrives
     }
 
     requestAnimationFrame(() => tick(gen));
@@ -116,7 +120,7 @@
     const range = document.createRange();
     range.selectNodeContents(heading);
     const rect = range.getBoundingClientRect();
-    const emojiH = el.getBoundingClientRect().height;
+    const emojiH = el.offsetHeight; // offsetHeight ignores CSS transforms (e.g. rotate from grab-pull)
     targetX = rect.right + 12;
     targetY = rect.top + rect.height / 2 - emojiH * 0.5;
     targetMode = 'wave';
@@ -128,7 +132,7 @@
     const range = document.createRange();
     range.selectNodeContents(link);
     const rect = range.getBoundingClientRect();
-    const emojiH = el.getBoundingClientRect().height;
+    const emojiH = el.offsetHeight; // offsetHeight ignores CSS transforms (e.g. rotate from grab-pull)
     targetX = rect.right + 8;
     targetY = rect.top + rect.height / 2 - emojiH / 2;
     targetMode = 'point';
@@ -171,7 +175,6 @@
     const emojiRect = el.getBoundingClientRect();
     targetX = window.innerWidth - emojiRect.width - 24;
     targetY = window.innerHeight / 2 - emojiRect.height / 2;
-    // targetMode not needed — grab-travel uses global transit fist
   }
 
   // Resolves when hand arrives at the right edge.
@@ -184,7 +187,7 @@
         const dy = targetY - currentY;
         if (Math.sqrt(dx * dx + dy * dy) < ARRIVAL_THRESHOLD) {
           state = 'grab-pull';
-          el.textContent = '🤚'; // open hand — arrived, ready to grip
+          el.textContent = '🤚'; // raised back of hand — braced to receive the panel
           // Snapshot the content area — will fade out during the panel slide-in
           const contentArea = document.querySelector<HTMLElement>('.content-area');
           if (contentArea) {
@@ -210,60 +213,6 @@
         }
       }
       requestAnimationFrame(check);
-    });
-  }
-
-  // Flies hand to the panel edge, does the emoji sequence, then resolves (triggering nav).
-  // Snapshots the panel for the WAAPI flick animation in astro:after-swap.
-  function waitForFlick(): Promise<void> {
-    return new Promise(resolve => {
-      const panel = document.querySelector<HTMLElement>('.project-panel');
-      if (!panel) { resolve(); return; }
-
-      state = 'flick-travel';
-
-      // Aim for the panel's left edge
-      const panelRect = panel.getBoundingClientRect();
-      const emojiW = el.getBoundingClientRect().width;
-      targetX = panelRect.left - emojiW * 0.3;
-      targetY = window.innerHeight * 0.5 - el.getBoundingClientRect().height * 0.5;
-      // targetMode not needed — flick-travel uses global transit fist
-
-      function checkArrival() {
-        const dx = targetX - currentX;
-        const dy = targetY - currentY;
-        if (Math.sqrt(dx * dx + dy * dy) < ARRIVAL_THRESHOLD) {
-          state = 'flick-hold';
-          el.style.transformOrigin = '50% 50%';
-
-          // Snapshot panel at its current viewport position —
-          // WAAPI flicks it off-right after the DOM swap (mirrors contentClone pattern)
-          const snapRect = panel.getBoundingClientRect();
-          panelClone = panel.cloneNode(true) as HTMLElement;
-          Object.assign(panelClone.style, {
-            position: 'fixed',
-            top: `${snapRect.top}px`,
-            left: `${snapRect.left}px`,
-            width: `${snapRect.width}px`,
-            height: `${snapRect.height}px`,
-            overflow: 'hidden',
-            pointerEvents: 'none',
-            zIndex: '100',
-            margin: '0',
-            transform: 'none',
-          });
-
-          // 👌 hold 300ms → 🫳 triggers navigation
-          el.textContent = '👌';
-          setTimeout(() => {
-            el.textContent = '🫳';
-            resolve(); // navigation fires; astro:after-swap starts the flick animation
-          }, 300);
-        } else {
-          requestAnimationFrame(checkArrival);
-        }
-      }
-      requestAnimationFrame(checkArrival);
     });
   }
 
@@ -299,7 +248,7 @@
 
   // ─── Astro lifecycle ──────────────────────────────────────────
 
-  // Intercept the navigation loader so the page waits for the hand animation
+  // Intercept the navigation loader so the page waits for the hand animation (grab only)
   document.addEventListener('astro:before-preparation', (e: Event) => {
     cleanupContentClone();
     cleanupPanelClone();
@@ -309,16 +258,40 @@
     if (state === 'grab-travel') {
       // Outgoing grab: wait for hand to reach the right edge before swapping
       event.loader = () => Promise.all([originalLoader(), waitForGrabArrival()]);
+
     } else if (window.location.pathname.startsWith('/projects/') && state !== 'grab-pull') {
-      // Leaving a project page: flick the panel away before swapping
-      event.loader = () => Promise.all([originalLoader(), waitForFlick()]);
+      // Leaving a project page: snapshot the panel now (before DOM swap),
+      // then fly the hand to its left edge. Navigation is NOT delayed.
+      const panel = document.querySelector<HTMLElement>('.project-panel');
+      if (panel) {
+        const snapRect = panel.getBoundingClientRect();
+        panelClone = panel.cloneNode(true) as HTMLElement;
+        Object.assign(panelClone.style, {
+          position: 'fixed',
+          top: `${snapRect.top}px`,
+          left: `${snapRect.left}px`,
+          width: `${snapRect.width}px`,
+          height: `${snapRect.height}px`,
+          overflow: 'hidden',
+          pointerEvents: 'none',
+          zIndex: '100',
+          margin: '0',
+          transform: 'none',
+        });
+        // Fly hand to the panel's left edge (grab-travel speed)
+        const emojiRect = el.getBoundingClientRect();
+        targetX = snapRect.left - emojiRect.width * 0.8;
+        targetY = window.innerHeight * 0.5 - emojiRect.height * 0.5;
+        state = 'flick-travel';
+        clickLocked = null;
+      }
     }
   });
 
-  // Hand has arrived and page is about to swap in — close the fist to grip
+  // Hand has arrived and page is about to swap in — keep 🤚
   document.addEventListener('astro:before-swap', () => {
     if (state !== 'grab-pull') return;
-    el.textContent = '✊';
+    el.textContent = '🤚';
   });
 
   // Re-query el after DOM swap; kick off panel animation and clone effects
@@ -342,15 +315,12 @@
       const duration = state === 'grab-pull' ? 950 : 220;
       let initialTransform: string;
       if (state === 'grab-pull') {
-        // Align panel's initial left edge with hand's current position —
-        // prevents a teleport on the first grab-pull tick frame
         const panelRect = panel.getBoundingClientRect();
         const emojiW = el.getBoundingClientRect().width;
         initialTransform = `translateX(${currentX + emojiW * 0.4 - panelRect.left}px)`;
       } else {
         initialTransform = 'translateX(100%)';
       }
-      // Pin synchronously before first paint — fill:'backwards' isn't guaranteed
       panel.style.transform = initialTransform;
       panelAnim = panel.animate(
         [{ transform: initialTransform }, { transform: 'translateX(0)' }],
@@ -361,23 +331,57 @@
     // Ensure re-queried el has the right emoji for the current state
     if (state === 'grab-pull') {
       el.style.opacity = '1';
-      el.textContent = '✊';
+      el.textContent = '🤚';
     } else if (state === 'grab-travel') {
-      el.style.opacity = '1'; // mid-travel; tick handles the fist
+      el.style.opacity = '1';
     }
 
-    // Flick exit: transition to flick-linger, inject panelClone, animate off-right,
-    // fade in the incoming homepage content simultaneously
+    // Push exit: inject panelClone and drive it off-right with a manual rAF loop.
+    // targetX tracks the clone's left edge each frame so the hand follows it.
     if (panelClone) {
-      state = 'flick-linger';
-      el.textContent = '🫳';
       el.style.opacity = '1';
       document.body.appendChild(panelClone);
-      panelClone.animate(
-        [{ transform: 'translateX(0)' }, { transform: `translateX(${window.innerWidth}px)` }],
-        { duration: 400, easing: 'cubic-bezier(0.2, 0, 1, 0.9)', fill: 'both' }
-      ).finished.then(cleanupPanelClone).catch(cleanupPanelClone);
 
+      const cloneStartLeft = parseFloat(panelClone.style.left);
+      const exitDistance   = window.innerWidth - cloneStartLeft; // move left edge to right of viewport
+      const duration = 900; // ms — ease-in so hand can catch up before acceleration
+      const startTime = performance.now();
+      const emojiW = el.getBoundingClientRect().width;
+
+      function animatePush(now: number) {
+        if (!panelClone) return; // aborted (new nav started)
+
+        const t = Math.min((now - startTime) / duration, 1);
+        // Ease-in cubic: starts slow so the hand catches up, then accelerates
+        const eased = t * t * t;
+        const cloneLeft = cloneStartLeft + exitDistance * eased;
+
+        panelClone.style.left = `${cloneLeft}px`;
+
+        // Hand follows the clone's left edge
+        targetX = cloneLeft - emojiW * 0.8;
+
+        // Switch to push emoji once hand has arrived near the panel edge
+        if (state === 'flick-travel') {
+          const dxHand = targetX - currentX;
+          const dyHand = targetY - currentY;
+          if (Math.sqrt(dxHand * dxHand + dyHand * dyHand) < ARRIVAL_THRESHOLD * 4) {
+            state = 'flick-push';
+            el.textContent = '🫸';
+          }
+        }
+
+        if (t < 1) {
+          requestAnimationFrame(animatePush);
+        } else {
+          cleanupPanelClone();
+          state = 'idle';
+          updateHand();
+        }
+      }
+      requestAnimationFrame(animatePush);
+
+      // Fade in incoming homepage content
       const incomingContent = document.querySelector<HTMLElement>('.content-area');
       if (incomingContent) {
         incomingContent.style.opacity = '0';
@@ -412,7 +416,7 @@
       const release = () => {
         state = 'idle';
         panelAnim = null;
-        currentMode = 'point'; // clean entry to idle without transit fist
+        currentMode = 'point';
         cleanupContentClone();
         document.querySelector<HTMLElement>('.project-panel')?.style.removeProperty('transform');
         if (window.location.pathname.startsWith('/projects/')) pointAtNavLink('projects');
@@ -422,15 +426,8 @@
         .then(() => setTimeout(release, 180))
         .catch(release);
 
-    } else if (prevState === 'flick-hold' || prevState === 'flick-linger') {
-      // Ensure we're in linger state (after-swap may not have run if nav was instant)
-      state = 'flick-linger';
-      // Hold 🫳 for 300ms, then set a destination and release — fist shows during return
-      setTimeout(() => {
-        clickLocked = null;
-        state = 'idle';   // must be idle before updateHand() or its guard returns early
-        updateHand();
-      }, 300);
+    } else if (prevState === 'flick-travel' || prevState === 'flick-push') {
+      // animatePush is running and will set state = 'idle' when done — nothing to do
 
     } else {
       state = 'idle';
@@ -443,7 +440,7 @@
     // Nav links: lock hand to clicked section until scroll (only when idle)
     document.querySelectorAll<HTMLElement>('a[data-section]').forEach(link => {
       link.addEventListener('click', () => {
-        if (state !== 'idle') return; // nav takes priority
+        if (state !== 'idle') return;
         const section = link.dataset.section!;
         clickLocked = section;
         if (section === 'intro') waveAtTagline();

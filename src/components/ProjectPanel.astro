@@ -1,4 +1,6 @@
 ---
+type OutcomeItem = string | { text: string; url: string };
+
 interface Props {
   title: string;
   hook?: string;
@@ -6,13 +8,16 @@ interface Props {
   year: number;
   tags: string[];
   org?: string;
+  orgUrl?: string;
   contributions?: string[];
   tools?: string[];
-  outcomes?: string[];
+  outcomes?: OutcomeItem[];
   thumb?: string;
 }
 
-const { title, hook, summary, year, tags, org, contributions, tools, outcomes } = Astro.props;
+import { parseInlineLinks } from '../utils/text';
+
+const { title, hook, summary, year, tags, org, orgUrl, contributions, tools, outcomes } = Astro.props;
 ---
 
 <article class="project-panel">
@@ -31,7 +36,7 @@ const { title, hook, summary, year, tags, org, contributions, tools, outcomes } 
         <div class="ph-meta-field">
           <span class="ph-meta-label">Context</span>
           <ul class="ph-meta-list">
-            <li class="ph-meta-value">{org}</li>
+            <li class="ph-meta-value" set:html={orgUrl ? `<a href="${orgUrl}" target="_blank" rel="noopener noreferrer">${org}</a>` : parseInlineLinks(org)} />
           </ul>
         </div>
       )}
@@ -65,7 +70,14 @@ const { title, hook, summary, year, tags, org, contributions, tools, outcomes } 
         <div class="ph-meta-field">
           <span class="ph-meta-label">Outcomes</span>
           <ul class="ph-meta-list">
-            {outcomes.map(o => <li class="ph-meta-value">{o}</li>)}
+            {outcomes.map(o => (
+              <li
+                class="ph-meta-value"
+                set:html={typeof o === 'string'
+                  ? parseInlineLinks(o)
+                  : `<a href="${o.url}" target="_blank" rel="noopener noreferrer">${o.text}</a>`}
+              />
+            ))}
           </ul>
         </div>
       )}

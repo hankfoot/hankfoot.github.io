@@ -3,21 +3,21 @@ type OutcomeItem = string | { text: string; url: string };
 
 interface Props {
   title: string;
-  hook?: string;
   summary?: string;
   timeline: string;
   tags: string[];
-  org?: string;
-  orgUrl?: string;
-  contributions?: string[];
+  context?: string;
+  contextLabel?: string;
+  contextUrl?: string;
+  role?: string[];
   tools?: string[];
   outcomes?: OutcomeItem[];
   thumb?: string;
 }
 
-import { parseInlineLinks } from '../utils/text';
+import { parseInline } from '../utils/text';
 
-const { title, hook, summary, timeline, tags, org, orgUrl, contributions, tools, outcomes } = Astro.props;
+const { title, summary, timeline, tags, context, contextLabel, contextUrl, role, tools, outcomes } = Astro.props;
 ---
 
 <article class="project-panel">
@@ -28,15 +28,15 @@ const { title, hook, summary, timeline, tags, org, orgUrl, contributions, tools,
   <header class="ph-header">
     <h1 class="ph-title">{title}</h1>
 
-    {hook && <p class="ph-hook">{hook}</p>}
+    {summary && <p class="ph-hook">{summary}</p>}
 
     <div class="ph-meta">
 
-      {org && (
+      {context && (
         <div class="ph-meta-field">
-          <span class="ph-meta-label">Context</span>
+          <span class="ph-meta-label">{contextLabel ?? 'Client'}</span>
           <ul class="ph-meta-list">
-            <li class="ph-meta-value" set:html={orgUrl ? `<a href="${orgUrl}" target="_blank" rel="noopener noreferrer">${org}</a>` : parseInlineLinks(org)} />
+            <li class="ph-meta-value" set:html={contextUrl ? `<a href="${contextUrl}" target="_blank" rel="noopener noreferrer">${context}</a>` : parseInline(context)} />
           </ul>
         </div>
       )}
@@ -48,11 +48,11 @@ const { title, hook, summary, timeline, tags, org, orgUrl, contributions, tools,
         </ul>
       </div>
 
-      {contributions && contributions.length > 0 && (
+      {role && role.length > 0 && (
         <div class="ph-meta-field">
-          <span class="ph-meta-label">Contributions</span>
+          <span class="ph-meta-label">Role</span>
           <ul class="ph-meta-list">
-            {contributions.map(c => <li class="ph-meta-value">{c}</li>)}
+            {role.map(c => <li class="ph-meta-value">{c}</li>)}
           </ul>
         </div>
       )}
@@ -74,7 +74,7 @@ const { title, hook, summary, timeline, tags, org, orgUrl, contributions, tools,
               <li
                 class="ph-meta-value"
                 set:html={typeof o === 'string'
-                  ? parseInlineLinks(o)
+                  ? parseInline(o)
                   : `<a href="${o.url}" target="_blank" rel="noopener noreferrer">${o.text}</a>`}
               />
             ))}

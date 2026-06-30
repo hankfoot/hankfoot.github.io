@@ -1,17 +1,31 @@
 ---
 import { Image } from 'astro:assets';
+import { parseInline } from '../../utils/text';
 
 interface Props {
-  images: Array<{ src: string; alt: string; wide?: boolean; width?: number; height?: number }>;
+  images: Array<{ src: string; alt: string; wide?: boolean; width?: number; height?: number; caption?: string }>;
 }
 
 const { images } = Astro.props;
+
+const VIDEO_EXT = /\.(webm|mp4|mov)$/i;
+const videoBase = (src: string) => src.replace(VIDEO_EXT, '');
 ---
 
 <div class="block-bento">
   {images.map((image) => (
-    <div class:list={['block-bento-cell', { 'block-bento-cell--wide': image.wide }]}>
-      <Image src={image.src} alt={image.alt} width={image.width ?? 1200} height={image.height ?? 900} />
-    </div>
+    <figure class:list={['block-bento-item', { 'block-bento-item--wide': image.wide }]}>
+      <div class="block-bento-cell">
+        {VIDEO_EXT.test(image.src) ? (
+          <video autoplay loop muted playsinline aria-label={image.alt}>
+            <source src={`${videoBase(image.src)}.webm`} type="video/webm" />
+            <source src={`${videoBase(image.src)}.mp4`} type="video/mp4" />
+          </video>
+        ) : (
+          <Image src={image.src} alt={image.alt} width={image.width ?? 1200} height={image.height ?? 900} />
+        )}
+      </div>
+      {image.caption && <figcaption set:html={parseInline(image.caption)} />}
+    </figure>
   ))}
 </div>

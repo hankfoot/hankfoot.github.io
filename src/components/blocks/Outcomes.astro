@@ -1,4 +1,6 @@
 ---
+import { parseInline } from '../../utils/text';
+
 interface Props {
   items: string[];
 }
@@ -10,7 +12,7 @@ const { items } = Astro.props;
   {items.map((item) => (
     <li class="block-outcomes-item">
       <span class="block-outcomes-dash">—</span>
-      <span>{item}</span>
+      <span set:html={parseInline(item)} />
     </li>
   ))}
 </ul>

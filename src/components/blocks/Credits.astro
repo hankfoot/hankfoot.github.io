@@ -1,5 +1,5 @@
 ---
-import { parseInlineLinks } from '../../utils/text';
+import { parseInline } from '../../utils/text';
 
 interface Props {
   people: Array<{ name: string; role: string }>;
@@ -13,7 +13,7 @@ const { people } = Astro.props;
   <ul class="block-credits-list">
     {people.map((person) => (
       <li class="block-credits-person">
-        <span class="block-credits-name" set:html={parseInlineLinks(person.name)} />
+        <span class="block-credits-name" set:html={parseInline(person.name)} />
         <span class="block-credits-sep"> - </span>
         <span class="block-credits-role">{person.role}</span>
       </li>

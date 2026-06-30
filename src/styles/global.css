@@ -592,6 +592,18 @@ a {
 }
 
 /* Section wrapper — each body section is a discrete flex child */
+.pp-body-section a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--color-muted);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.pp-body-section a:hover {
+  text-decoration-color: var(--color-text);
+}
+
 .pp-body-section-label {
   font-family: var(--font-mono);
   font-size: 0.75rem;
@@ -627,6 +639,48 @@ a {
   line-height: 1.55;
   color: var(--color-text);
   margin: 0 !important;
+}
+
+/* ─── Quote ──────────────────────────────────────────────────── */
+/* Structural defaults only — reset figure margins, attach the cite.
+   The visual treatment (size, weight, accent) is yours to define
+   in .block-quote-text below. */
+.block-quote {
+  margin: var(--space-block) 0;
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--color-muted);
+}
+
+.block-quote-text p {
+  font-family: var(--font-sans);
+  font-style: italic;
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--color-text);
+  margin: 0 !important;
+}
+
+.block-quote-cite {
+  margin-top: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--label-tracking-tight);
+  text-transform: lowercase;
+  color: var(--color-muted);
+}
+
+.block-quote-cite::before {
+  content: '— ';
+}
+
+.block-quote-name {
+  color: var(--color-text);
+}
+
+.block-quote-source::before {
+  content: ', ';
+  color: var(--color-muted);
 }
 
 .block-specs {
@@ -683,6 +737,18 @@ figcaption {
   font-size: 0.75rem;
   color: var(--color-muted);
   margin-top: 0.4rem;
+}
+
+figcaption a {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: var(--color-muted);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+figcaption a:hover {
+  text-decoration-color: var(--color-text);
 }
 
 /* ─── Hand Cursor ────────────────────────────────────────────── */
@@ -745,11 +811,113 @@ figcaption {
   flex-shrink: 0;
 }
 
+.block-outcomes-item a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--color-muted);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.block-outcomes-item a:hover {
+  text-decoration-color: var(--color-text);
+}
+
+/* ─── Inline: Tooltip ────────────────────────────────────────── */
+/* Authored as {trigger|content}; rendered by parseInline(). Pure CSS,
+   revealed on hover and keyboard focus (the trigger is tabindex="0"). */
+.tip {
+  position: relative;
+  border-bottom: 1px dotted var(--color-muted);
+  cursor: help;
+  outline: none;
+}
+
+.tip-pop {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  z-index: 20;
+  width: max-content;
+  max-width: 18rem;
+  padding: 0.5rem 0.7rem;
+  background: var(--color-inverse-bg);
+  color: var(--color-inverse-text);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  text-align: left;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+.tip-pop::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--color-inverse-bg);
+}
+
+.tip:hover .tip-pop,
+.tip:focus .tip-pop,
+.tip:focus-visible .tip-pop {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.tip-pop a {
+  color: var(--color-inverse-text);
+  text-decoration: underline;
+}
+
+.tip-pop:has(.tip-list) {
+  max-width: 24rem;
+}
+
+.tip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.tip-list li {
+  position: relative;
+  padding-left: 0.9rem;
+}
+
+.tip-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--color-muted);
+}
+
 /* ─── Block: BentoGrid ───────────────────────────────────────── */
 .block-bento {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
+}
+
+.block-bento-item {
+  margin: 0;
+  min-width: 0;
+}
+
+.block-bento-item--wide {
+  grid-column: span 2;
 }
 
 .block-bento-cell {
@@ -759,11 +927,8 @@ figcaption {
   aspect-ratio: 4 / 3;
 }
 
-.block-bento-cell--wide {
-  grid-column: span 2;
-}
-
-.block-bento-cell img {
+.block-bento-cell img,
+.block-bento-cell video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -802,11 +967,18 @@ figcaption {
   overflow: hidden;
 }
 
-.block-feature-image img {
+.block-feature-image img,
+.block-feature-image video {
   width: 100%;
   height: auto;
   display: block;
   object-fit: cover;
+}
+
+/* Crop video features to a consistent 4:3 so 16:9 clips match the
+   still-image cards beside them instead of rendering short and wide. */
+.block-feature-image video {
+  aspect-ratio: 4 / 3;
 }
 
 .block-feature-text {
@@ -836,7 +1008,7 @@ figcaption {
 .block-credits {
   background: var(--color-inverse-bg);
   color: var(--color-inverse-text);
-  border-radius: var(--radius-md); /* PASS: normalized to --radius-sm/md/lg */
+  border-radius: var(--radius-lg); /* match the bento photos it sits beneath */
   padding: 1.25rem 1.75rem;
   /* Pull credits closer to the features section above it */
   margin-top: calc(var(--space-block) * 2 - var(--space-section));

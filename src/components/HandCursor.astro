@@ -150,6 +150,9 @@
     if (state !== 'idle') return; // tier 1/2 takes priority — single clean guard
     if (clickLocked) return;
 
+    // Project pages have none of the homepage sections — keep the hand on "projects"
+    if (window.location.pathname.startsWith('/projects/')) { pointAtNavLink('projects'); return; }
+
     const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80;
     if (atBottom) { pointAtNavLink('contact'); return; }
 

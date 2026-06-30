@@ -11,6 +11,7 @@ import BentoGrid from '../../components/blocks/BentoGrid.astro';
 import Feature from '../../components/blocks/Feature.astro';
 import Credits from '../../components/blocks/Credits.astro';
 import Section from '../../components/blocks/Section.astro';
+import Quote from '../../components/blocks/Quote.astro';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -25,18 +26,18 @@ const { project } = Astro.props;
 const { Content } = await render(project);
 
 // Auto-injected into MDX scope — authors don't need to import these
-const components = { VideoEmbed, ImageGrid, Callout, PrototypeEmbed, Specs, Outcomes, BentoGrid, Feature, Credits, Section };
+const components = { VideoEmbed, ImageGrid, Callout, PrototypeEmbed, Specs, Outcomes, BentoGrid, Feature, Credits, Section, Quote };
 ---
 <Base title={`${project.data.title} — Hank Duhaime`}>
   <ProjectPanel
     title={project.data.title}
-    hook={project.data.hook}
     summary={project.data.summary}
     timeline={project.data.timeline}
     tags={project.data.tags}
-    org={project.data.org}
-    orgUrl={project.data.orgUrl}
-    contributions={project.data.contributions}
+    context={project.data.context}
+    contextLabel={project.data.contextLabel}
+    contextUrl={project.data.contextUrl}
+    role={project.data.role}
     tools={project.data.tools}
     outcomes={project.data.outcomes}
     thumb={project.data.thumb}

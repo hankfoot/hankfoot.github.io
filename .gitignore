@@ -10,3 +10,4 @@ node_modules
 .astro/
 dist/
 .claude/worktrees/
+.video-backups/

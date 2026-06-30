@@ -10,14 +10,24 @@ interface Props {
 }
 
 const { image, alt = '', label, description, flip = false } = Astro.props;
+
+const VIDEO_EXT = /\.(webm|mp4|mov)$/i;
+const videoBase = (src: string) => src.replace(VIDEO_EXT, '');
 ---
 
 <div class:list={['block-feature', { 'block-feature--flip': flip }]}>
   <div class="block-feature-image">
-    <Image src={image} alt={alt} width={960} height={640} />
+    {VIDEO_EXT.test(image) ? (
+      <video autoplay loop muted playsinline aria-label={alt}>
+        <source src={`${videoBase(image)}.webm`} type="video/webm" />
+        <source src={`${videoBase(image)}.mp4`} type="video/mp4" />
+      </video>
+    ) : (
+      <Image src={image} alt={alt} width={960} height={640} />
+    )}
   </div>
   <div class="block-feature-text">
-    <p class="block-feature-label">{label}</p>
+    <h3 class="block-feature-label">{label}</h3>
     <p class="block-feature-desc">{description}</p>
   </div>
 </div>

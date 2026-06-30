@@ -1,0 +1,25 @@
+---
+import { parseInline } from '../../utils/text';
+
+interface Props {
+  // The quote body. Supports inline markdown (links + tooltips) via parseInline.
+  // Omit to provide the quote as slotted MDX content instead.
+  text?: string;
+  // Who said it — the primary attribution. Supports inline markdown.
+  cite?: string;
+  // Optional context for the attribution (role, org, publication).
+  // Rendered after `cite`, separated by a comma. Supports inline markdown.
+  source?: string;
+}
+
+const { text, cite, source } = Astro.props;
+---
+
+<figure class="block-quote">
+  <blockquote class="block-quote-text">
+    {text ? <p set:html={parseInline(text)} /> : <slot />}
+  </blockquote>
+  {cite && (
+    <figcaption class="block-quote-cite"><span class="block-quote-name" set:html={parseInline(cite)} />{source && <span class="block-quote-source" set:html={parseInline(source)} />}</figcaption>
+  )}
+</figure>

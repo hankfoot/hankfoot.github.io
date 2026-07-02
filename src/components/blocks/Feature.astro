@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import { isVideo, videoBase } from '../../utils/media';
 
 interface Props {
   image: string;
@@ -10,14 +11,11 @@ interface Props {
 }
 
 const { image, alt = '', label, description, flip = false } = Astro.props;
-
-const VIDEO_EXT = /\.(webm|mp4|mov)$/i;
-const videoBase = (src: string) => src.replace(VIDEO_EXT, '');
 ---
 
 <div class:list={['block-feature', { 'block-feature--flip': flip }]}>
   <div class="block-feature-image">
-    {VIDEO_EXT.test(image) ? (
+    {isVideo(image) ? (
       <video autoplay loop muted playsinline aria-label={alt}>
         <source src={`${videoBase(image)}.webm`} type="video/webm" />
         <source src={`${videoBase(image)}.mp4`} type="video/mp4" />

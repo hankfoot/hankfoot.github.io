@@ -1,0 +1,14 @@
+---
+// Sets data-reduced-motion on <html> before first paint (avoids a motion FOUC).
+// Reads the user's saved preference, falling back to the system setting.
+// MUST stay is:inline and live in <head> so it runs synchronously pre-paint.
+---
+<script is:inline>
+  (function () {
+    var stored = localStorage.getItem('hank-reduced-motion');
+    var sys = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (stored === 'true' || (stored === null && sys)) {
+      document.documentElement.setAttribute('data-reduced-motion', 'true');
+    }
+  })();
+</script>

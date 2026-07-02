@@ -28,6 +28,12 @@ interface Bubble { x: number; y: number; r: number; speed: number; phase: number
 const DECOYS = ['🪙', '🪙', '🪙', '🪙', '💰', '💰', '💎', '💎', '👑', '💍', '🏆', '🥇'];
 const EMOJI_FONT = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
 
+// The tap finger as a bundled Fluent Emoji SVG — same hand family as the
+// site's cursor and the bonus-level palm, on every platform. Falls back to
+// the native glyph for the frames before the SVG decodes.
+const fingerImg = typeof Image !== 'undefined' ? new Image() : null;
+if (fingerImg) fingerImg.src = '/ui/hand-point-up.svg';
+
 function roundRectPath(
   ctx: CanvasRenderingContext2D,
   x: number, y: number, w: number, h: number, r: number,
@@ -441,13 +447,17 @@ export function createTreasureHunt(opts: TreasureHuntOptions = {}): Game {
     const size = lens.w * 0.46 * (1 - press * 0.14);
     const y = lens.y + size * 0.4 - press * lens.w * 0.06;
     g.save();
-    g.textAlign = 'center';
-    g.textBaseline = 'middle';
-    g.font = `${size}px ${EMOJI_FONT}`;
     g.shadowColor = 'rgba(0,0,0,0.35)';
     g.shadowBlur = size * 0.14;
     g.shadowOffsetY = size * 0.05;
-    g.fillText('👆', lens.x, y);
+    if (fingerImg?.complete && fingerImg.naturalWidth) {
+      g.drawImage(fingerImg, lens.x - size / 2, y - size / 2, size, size);
+    } else {
+      g.textAlign = 'center';
+      g.textBaseline = 'middle';
+      g.font = `${size}px ${EMOJI_FONT}`;
+      g.fillText('👆', lens.x, y);
+    }
     g.restore();
   }
 
@@ -509,33 +519,21 @@ export function createTreasureHunt(opts: TreasureHuntOptions = {}): Game {
     (g as any).letterSpacing = prev ?? '0px';
   }
 
-  // A pointing hand nudging the button — the same character, now inside the game.
-  function drawMenuHand(g: CanvasRenderingContext2D, b: Rect, now: number, reduced: boolean) {
-    const size = b.h * 1.15;
-    const bob = reduced ? 0 : Math.sin(now * 3) * size * 0.06;
-    g.save();
-    g.textAlign = 'center';
-    g.textBaseline = 'middle';
-    g.font = `${size}px ${EMOJI_FONT}`;
-    g.shadowColor = 'rgba(0,0,0,0.3)';
-    g.shadowBlur = size * 0.12;
-    g.fillText('👆', b.x + b.w * 0.82, b.y + b.h + size * 0.45 + bob);
-    g.restore();
-  }
-
-  function drawMenu(g: CanvasRenderingContext2D, now: number, reduced: boolean, hover: boolean) {
+  function drawMenu(g: CanvasRenderingContext2D, hover: boolean) {
     dim(g);
     drawCard(g, menuPanel);
     const p = menuPanel;
     g.textAlign = 'center';
     g.textBaseline = 'middle';
 
+    // px floors: the panels clamp to minimum sizes on small canvases, so the
+    // type must too — S-proportional text alone goes sub-10px on a phone.
     g.fillStyle = '#111111';
-    g.font = `600 ${S * 0.056}px ${UI_FONT}`;
+    g.font = `600 ${Math.max(17, S * 0.056)}px ${UI_FONT}`;
     g.fillText(title, W / 2, p.y + p.h * 0.16);
 
     g.fillStyle = '#666666';
-    const bodySize = S * 0.033;
+    const bodySize = Math.max(12, S * 0.033);
     g.font = `400 ${bodySize}px ${UI_FONT}`;
     const lines = wrapText(g, instructions, p.w - S * 0.14);
     const lineH = bodySize * 1.4;
@@ -543,7 +541,6 @@ export function createTreasureHunt(opts: TreasureHuntOptions = {}): Game {
     for (const line of lines) { g.fillText(line, W / 2, ty); ty += lineH; }
 
     drawButton(g, startBtn, 'Start', hover);
-    drawMenuHand(g, startBtn, now, reduced);
   }
 
   function drawWon(g: CanvasRenderingContext2D, hover: boolean) {
@@ -557,11 +554,11 @@ export function createTreasureHunt(opts: TreasureHuntOptions = {}): Game {
     g.fillText(target, W / 2, p.y + p.h * 0.26);
 
     g.fillStyle = '#111111';
-    g.font = `600 ${S * 0.05}px ${UI_FONT}`;
+    g.font = `600 ${Math.max(16, S * 0.05)}px ${UI_FONT}`;
     g.fillText('Caught it!', W / 2, p.y + p.h * 0.52);
 
     g.fillStyle = '#666666';
-    g.font = `400 ${S * 0.03}px ${UI_FONT}`;
+    g.font = `400 ${Math.max(11, S * 0.03)}px ${UI_FONT}`;
     g.fillText('Badge unlocked.', W / 2, p.y + p.h * 0.64);
 
     drawButton(g, replayBtn, 'Replay', hover);
@@ -599,7 +596,7 @@ export function createTreasureHunt(opts: TreasureHuntOptions = {}): Game {
       if (phase === 'menu') {
         const over = pointInRect(pointer.x, pointer.y, startBtn.x, startBtn.y, startBtn.w, startBtn.h);
         gc.canvas.style.cursor = over ? 'pointer' : 'default';
-        drawMenu(g, now, gc.reducedMotion, over);
+        drawMenu(g, over);
         return;
       }
 

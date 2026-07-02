@@ -119,11 +119,13 @@ export function mountGame(
   };
 
   // Size the backing store for the device pixel ratio; draw in CSS pixels.
+  // Layout size (offsetWidth), NOT getBoundingClientRect — the host may mount
+  // the canvas mid-scale-transform (e.g. the overlay window popping in), and
+  // the transformed rect would bake that scale into the logical size.
   function applySize() {
-    const rect = canvas.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = Math.max(1, Math.round(rect.width));
-    const h = Math.max(1, Math.round(rect.height));
+    const w = Math.max(1, canvas.offsetWidth);
+    const h = Math.max(1, canvas.offsetHeight);
     const changed = w !== gc.width || h !== gc.height;
     gc.width = w;
     gc.height = h;

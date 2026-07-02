@@ -1,13 +1,26 @@
 ---
 // Generic Canvas2D game island. Two shapes:
 //
-//   <GameCanvas game="treasure-hunt" />          → launch trigger + inline reveal
+//   <GameCanvas game="treasure-hunt" />          → launch trigger + palm overlay
 //   <GameCanvas game="treasure-hunt" bare />     → inline canvas (test pages)
 //
 // The non-bare form renders a quiet "bonus level" easter-egg trigger. Clicking
-// it slides a block open vertically in the document flow (an accordion reveal),
-// mounting the game inside. Clicking again collapses it. The bare form just
-// mounts the canvas inline and boots at once.
+// it summons the site's hand cursor to the centre of the screen, where it
+// grows into a giant open palm. A little device window pops up in the palm's
+// centre, boots with a "PALM PILOT" loading screen, and the game appears on
+// it. Closing reverses everything: the window pops away, the palm shrinks
+// back down to the ordinary hand, and it returns to idle.
+//
+// HandCursor.astro plays the hand's side; the two are coordinated through
+// bonus:* document events:
+//
+//   bonus:open        host → hand    overlay opening — fly to centre screen
+//   bonus:hand-ready  hand → host    at the centre (hand hides; palm takes over)
+//   bonus:close       host → hand    closing — stand by
+//   bonus:closed      hand ← host    palm is gone; reappear at centre and idle
+//
+// Every step has a timeout fallback, so the overlay works even when the hand
+// is busy navigating or reduced motion is on.
 
 import { getGame } from '../games/manifest';
 
@@ -17,7 +30,7 @@ interface Props {
   prompt?: string;
   /** Per-instance option overrides merged over the manifest defaults. */
   options?: Record<string, unknown>;
-  /** Skip the launch/reveal chrome — used on the standalone test pages. */
+  /** Skip the launch/overlay chrome — used on the standalone test pages. */
   bare?: boolean;
 }
 
@@ -55,17 +68,33 @@ const icon = badge?.icon ?? String(options.target ?? '🏆');
         type="button"
         class="game-launch"
         aria-expanded="false"
-        aria-controls={`${domId}-reveal`}
+        aria-controls={`${domId}-overlay`}
         aria-label={`Play the ${meta.title} bonus level`}
       >
         <span class="game-launch-label">bonus level</span>
         <span class="game-launch-icon" aria-hidden="true">{icon}</span>
       </button>
 
-      <div class="game-reveal" id={`${domId}-reveal`}>
-        <div class="game-reveal-inner">
-          <div class="game-embed-stage">
-            <canvas class="game-embed-canvas" aria-label={meta.description}></canvas>
+      {/* Portaled to <body> on wire — .project-panel is a fixed/z-indexed
+          stacking context that would trap the overlay under the sidebar.
+          --aspect is repeated here since it stops inheriting from the section. */}
+      <div class="game-overlay" id={`${domId}-overlay`} style={`--aspect:${meta.aspect}`} hidden>
+        <div class="game-overlay-backdrop"></div>
+        {/* Palm + screen are one rig that scales together: the screen appears
+            on the small hand first, then the whole thing grows. The palm is a
+            bundled Fluent Emoji (MIT) rather than a native glyph so its
+            proportions and yellow are identical on every platform. */}
+        <div class="game-rig">
+          <img class="game-palm" src="/ui/hand-fist.svg" alt="" aria-hidden="true" />
+          <div class="game-window" role="dialog" aria-modal="true" aria-label={`${meta.title} bonus level`}>
+            <button type="button" class="game-window-close" aria-label="Close bonus level">✕</button>
+            <div class="game-embed-stage">
+              <canvas class="game-embed-canvas" aria-label={meta.description}></canvas>
+            </div>
+            <div class="game-boot" aria-hidden="true">
+              <span class="game-boot-label">palm pilot</span>
+              <span class="game-boot-dots"><i></i><i></i><i></i></span>
+            </div>
           </div>
         </div>
       </div>
@@ -117,11 +146,8 @@ const icon = badge?.icon ?? String(options.target ?? '🏆');
     transition: opacity 0.3s ease, color 0.3s ease;
   }
   .game-launch:hover,
-  .game-launch:focus-visible {
-    opacity: 1;
-    color: var(--color-text);
-  }
-  .game-embed.is-open .game-launch {
+  .game-launch:focus-visible,
+  .game-launch[aria-expanded='true'] {
     opacity: 1;
     color: var(--color-text);
   }
@@ -139,7 +165,7 @@ const icon = badge?.icon ?? String(options.target ?? '🏆');
   }
   .game-launch:hover .game-launch-icon,
   .game-launch:focus-visible .game-launch-icon,
-  .game-embed.is-open .game-launch-icon {
+  .game-launch[aria-expanded='true'] .game-launch-icon {
     filter: none;
     opacity: 1;
     transform: translateY(-2px) rotate(-10deg);
@@ -149,38 +175,244 @@ const icon = badge?.icon ?? String(options.target ?? '🏆');
   }
   :global([data-reduced-motion='true']) .game-launch:hover .game-launch-icon,
   :global([data-reduced-motion='true']) .game-launch:focus-visible .game-launch-icon,
-  :global([data-reduced-motion='true']) .game-embed.is-open .game-launch-icon {
+  :global([data-reduced-motion='true']) .game-launch[aria-expanded='true'] .game-launch-icon {
     transform: none;
   }
 
-  /* ── vertical accordion reveal ───────────────────────────────── */
-  /* 0fr → 1fr animates cleanly to the content's natural height. The stage
-     self-sizes via aspect-ratio, so it's fully painted behind the clip and
-     the row just uncovers it — like a curtain opening out of thin air. */
-  .game-reveal {
+  /* ── palm overlay ────────────────────────────────────────────── */
+  /* Fixed overlay + transform/opacity-only animation: nothing reflows, the
+     page never shifts, and the canvas boots while the window is still
+     invisible — the hand cursor's rAF loop stays smooth throughout. */
+  .game-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 900; /* above everything but the hand cursor (9999) */
     display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    place-items: center;
+    padding: 1rem;
   }
-  .game-embed.is-open .game-reveal {
-    grid-template-rows: 1fr;
+  .game-overlay[hidden] {
+    display: none;
   }
-  .game-reveal-inner {
-    min-height: 0;
-    overflow: hidden;
+  .game-overlay-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(30, 27, 21, 0.38);
+    opacity: 0;
+    transition: opacity 0.35s ease;
   }
-  .game-reveal .game-embed-stage {
-    margin-top: 1rem;
+  .game-overlay.is-open .game-overlay-backdrop {
+    opacity: 1;
+  }
+
+  /* The palm + screen rig — one element the grow/shrink animation scales, so
+     the screen is on the hand at every size. Grid-centred with NO transform
+     at rest (only `scale()` during the animations, pinned back to none after)
+     — a persistent transform would leave the browser compositing a raster
+     cached at the tiny start scale, blurring the SVG at full size. The
+     margin biases it up so the palm proper (glyph's lower half) sits at
+     centre; transform-origin keeps that same point fixed while scaling. */
+  .game-rig {
+    --rig: min(96vmin, 800px);
+    position: absolute;
+    /* static centring (no translate): the (50%, 54%) origin point — the palm
+       proper — sits exactly at viewport centre, where the hand cursor waits */
+    left: calc(50% - var(--rig) / 2);
+    top: calc(50% - var(--rig) * 0.54);
+    width: var(--rig);
+    aspect-ratio: 1;
+    transform: scale(0); /* closed pose; JS animates */
+    transform-origin: 50% 54%;
+    opacity: 0;
+  }
+  .game-palm {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* The device screen fills the fist's grip — a big near-circular squircle
+     covering the fist's centre, knuckles peeking above and a thin rim of
+     hand around the sides and bottom. Tinted in the hand's own yellows
+     (Fluent palette: #FFD140 / #E8AD3C / #DF8F0D) with a warm glow, so it
+     reads as part of the hand. */
+  .game-window {
+    position: absolute;
+    left: 17%;
+    top: 22%;
+    width: 66%;
+    padding: 8px;
+    border-radius: 26%;
+    background: linear-gradient(180deg, #ffd93f, #e8ad3c);
+    box-shadow:
+      0 24px 70px rgba(0, 0, 0, 0.3),
+      0 0 46px rgba(255, 200, 60, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.55),
+      inset 0 0 0 1px rgba(223, 143, 13, 0.5);
+  }
+  .game-window .game-embed-stage {
+    border-radius: 25%;
+    box-shadow: inset 0 0 0 1px rgba(223, 143, 13, 0.35);
+  }
+  .game-window-close {
+    position: absolute;
+    top: -2.3rem;
+    right: 0;
+    padding: 0.3rem 0.5rem;
+    background: none;
+    border: none;
+    color: rgba(90, 58, 6, 0.8);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+  .game-window-close:hover,
+  .game-window-close:focus-visible {
+    color: #3d2a05;
+    transform: scale(1.2);
+  }
+  .game-window-close:focus-visible {
+    outline: 1px solid rgba(90, 58, 6, 0.6);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Boot screen over the stage — an amber LCD that "activates", then fades
+     to reveal the live game underneath (already mounted and running). */
+  .game-boot {
+    position: absolute;
+    inset: 8px;
+    border-radius: 25%;
+    background: radial-gradient(circle at 50% 42%, #4a360c, #33240a 78%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    transition: opacity 0.45s ease, visibility 0s 0.45s;
+  }
+  .game-window.is-live .game-boot {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .game-boot-label {
+    color: #ffd140;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: var(--label-tracking-loose);
+    text-transform: uppercase;
+  }
+  .game-boot-dots {
+    display: flex;
+    gap: 0.45rem;
+  }
+  .game-boot-dots i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ffd140;
+    opacity: 0.25;
+    animation: game-boot-pulse 1.05s infinite;
+  }
+  .game-boot-dots i:nth-child(2) { animation-delay: 0.18s; }
+  .game-boot-dots i:nth-child(3) { animation-delay: 0.36s; }
+  @keyframes game-boot-pulse {
+    0%, 60%, 100% { opacity: 0.25; transform: none; }
+    30% { opacity: 1; transform: translateY(-3px); }
   }
 </style>
 
 <script>
   import { mountGame } from '../games/engine';
+  import type { Game } from '../games/engine';
   import { REGISTRY } from '../games/registry';
   import { awardBadge } from '../utils/badges';
 
   interface EmbedEl extends HTMLElement {
     _ctrl?: { destroy(): void };
+    _game?: Game;
+    _growAnim?: Animation | null;
+    _shrinkAnim?: Animation | null;
+    _overlay?: HTMLElement;
+  }
+
+  const HAND_WAIT = 900;   // grow the palm anyway if the hand can't come
+  const GROW_MS = 620;     // hand-size → giant palm-with-screen
+  const BOOT_MS = 1100;    // "palm pilot" loading beat before the game shows
+  const SHRINK_MS = 450;   // giant palm-with-screen → hand-size
+
+  const reduced = () =>
+    document.documentElement.getAttribute('data-reduced-motion') === 'true';
+
+  // Per-section sequence number, bumped on every open/close, so async steps
+  // from a superseded cycle (event waits, animation finishes) no-op.
+  const seqOf = (el: EmbedEl) => Number(el.dataset.seq || 0);
+  const bumpSeq = (el: EmbedEl) => {
+    el.dataset.seq = String(seqOf(el) + 1);
+    return seqOf(el);
+  };
+
+  function dispatch(type: string, detail: Record<string, unknown>) {
+    document.dispatchEvent(new CustomEvent(type, { detail }));
+  }
+
+  /** Resolve with the event detail when a bonus:* event for `id` arrives,
+   *  or with null after `ms` — whichever comes first. */
+  function eventOrTimeout(type: string, id: string, ms: number): Promise<any | null> {
+    return new Promise(resolve => {
+      const finish = (detail: any) => {
+        document.removeEventListener(type, handler);
+        clearTimeout(timer);
+        resolve(detail);
+      };
+      const handler = (e: Event) => {
+        const detail = (e as CustomEvent).detail;
+        if (detail?.id !== id) return;
+        finish(detail);
+      };
+      const timer = window.setTimeout(() => finish(null), ms);
+      document.addEventListener(type, handler);
+    });
+  }
+
+  /** Current rig scale from its computed transform (0 when hidden). */
+  function rigScale(rig: HTMLElement): number {
+    const t = getComputedStyle(rig).transform;
+    if (!t || t === 'none') return 1;
+    return new DOMMatrixReadOnly(t).a;
+  }
+
+  /** Await an animation's end, but never longer than its duration + slack —
+   *  a stalled/throttled animation must not wedge the sequence. */
+  function settle(anim: Animation | null | undefined, ms: number): Promise<void> {
+    return Promise.race([
+      anim ? anim.finished.then(() => {}, () => {}) : Promise.resolve(),
+      new Promise<void>(r => setTimeout(r, ms + 300)),
+    ]);
+  }
+
+  function partsOf(section: EmbedEl) {
+    const overlay = section._overlay ?? null;
+    return {
+      overlay,
+      rig: overlay?.querySelector<HTMLElement>('.game-rig') ?? null,
+      win: overlay?.querySelector<HTMLElement>('.game-window') ?? null,
+      canvas: (overlay ?? section).querySelector<HTMLCanvasElement>('.game-embed-canvas'),
+      launch: section.querySelector<HTMLElement>('.game-launch'),
+    };
+  }
+
+  // The scale at which the giant palm matches the ordinary hand cursor —
+  // the grow starts there and the shrink returns there, so the site hand and
+  // the rig swap seamlessly.
+  function handScale(rig: HTMLElement) {
+    const handPx = document.getElementById('hand-cursor')?.offsetHeight || 36;
+    return handPx / Math.max(1, rig.offsetHeight);
   }
 
   // Mount the canvas game (idempotent).
@@ -205,56 +437,140 @@ const icon = badge?.icon ?? String(options.target ?? '🏆');
       },
     });
 
+    el._game = game;
     el._ctrl = mountGame(canvas, game, { background: '#e9e6df' });
   }
 
   function unmount(el: EmbedEl) {
     el._ctrl?.destroy();
     el._ctrl = undefined;
+    el._game = undefined;
+    el._growAnim?.cancel();
+    el._growAnim = null;
+    el._shrinkAnim?.cancel();
+    el._shrinkAnim = null;
     el.dataset.ready = '';
   }
 
-  function openReveal(section: EmbedEl) {
+  async function open(section: EmbedEl) {
     if (section.dataset.open === 'true') return;
     section.dataset.open = 'true';
-    section.classList.add('is-open');
-    section.querySelector('.game-launch')?.setAttribute('aria-expanded', 'true');
-    // The stage self-sizes via aspect-ratio, so the canvas has layout while the
-    // reveal is still clipped. Mount on the next frame — otherwise the synchronous
-    // canvas boot blocks the main thread before the browser paints the transition's
-    // first frames, which reads as a stutter/delay at the start of the slide.
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => {
-        if (section.dataset.open === 'true') {
-          mount(section, section.querySelector<HTMLCanvasElement>('.game-embed-canvas'));
-        }
-      }),
-    );
+    const mySeq = bumpSeq(section);
+    const { overlay, rig, win, canvas, launch } = partsOf(section);
+    if (!overlay || !rig || !win) return;
+
+    launch?.setAttribute('aria-expanded', 'true');
+    overlay.hidden = false;
+    requestAnimationFrame(() => overlay.classList.add('is-open'));
+    // Dispatch FIRST so the hand starts moving on the same click — the game
+    // boots later, behind the compositor-driven grow, where its main-thread
+    // cost can't stutter anything.
+    dispatch('bonus:open', { id: section.id });
+
+    if (reduced()) {
+      // No theatrics: rig in place, game showing.
+      mount(section, canvas);
+      rig.style.opacity = '1';
+      rig.style.transform = 'none';
+      win.classList.add('is-live');
+      canvas?.focus({ preventScroll: true });
+      return;
+    }
+
+    // Wait for the hand to reach centre screen (or grow without it).
+    await eventOrTimeout('bonus:hand-ready', section.id, HAND_WAIT);
+    if (seqOf(section) !== mySeq) return;
+
+    // The rig takes over from the hand at the same size — screen already on
+    // the palm — and grows at once, no hold. WAAPI transform animations run
+    // on the compositor, so the game mount right after can't make them
+    // stutter.
+    const small = handScale(rig);
+    rig.style.transform = `scale(${small})`;
+    rig.style.opacity = '1';
+    section._growAnim?.cancel();
+    try {
+      section._growAnim = rig.animate(
+        [
+          { transform: `scale(${small})` },
+          { transform: 'scale(1)' },
+        ],
+        { duration: GROW_MS, easing: 'cubic-bezier(0.34, 1.3, 0.64, 1)', fill: 'forwards' },
+      );
+    } catch {
+      section._growAnim = null; // animation API hiccup — snap to grown below
+    }
+    mount(section, canvas); // boots behind the opaque boot face, mid-grow
+    await settle(section._growAnim, GROW_MS);
+    if (seqOf(section) !== mySeq) return;
+    // Rest with NO transform: forces a fresh crisp raster of the SVG at full
+    // size (a lingering scale keeps the compositor's tiny cached texture).
+    rig.style.transform = 'none';
+    section._growAnim?.cancel();
+    section._growAnim = null;
+
+    // "palm pilot" loading beat, then the game appears on the screen.
+    await new Promise(r => setTimeout(r, BOOT_MS));
+    if (seqOf(section) !== mySeq || section.dataset.open !== 'true') return;
+    win.classList.add('is-live');
+    canvas?.focus({ preventScroll: true });
   }
 
-  function closeReveal(section: EmbedEl) {
+  async function close(section: EmbedEl) {
     if (section.dataset.open !== 'true') return;
     section.dataset.open = '';
-    section.classList.remove('is-open');
-    section.querySelector('.game-launch')?.setAttribute('aria-expanded', 'false');
+    const mySeq = bumpSeq(section);
+    const { overlay, rig, win, launch } = partsOf(section);
 
-    // Unmount after the collapse finishes so the canvas doesn't blank mid-slide.
-    const reveal = section.querySelector<HTMLElement>('.game-reveal');
-    const done = () => {
-      reveal?.removeEventListener('transitionend', done);
-      if (section.dataset.open !== 'true') unmount(section);
+    launch?.setAttribute('aria-expanded', 'false');
+    dispatch('bonus:close', { id: section.id });
+
+    const finish = () => {
+      if (seqOf(section) !== mySeq) return;
+      unmount(section); // also cancels the rig animations
+      if (rig) {
+        rig.style.removeProperty('transform'); // back to the CSS closed pose
+        rig.style.opacity = '0';
+      }
+      win?.classList.remove('is-live');
+      if (overlay) overlay.hidden = true;
+      dispatch('bonus:closed', { id: section.id });
+      launch?.focus({ preventScroll: true });
     };
-    if (reveal) {
-      reveal.addEventListener('transitionend', done);
-      window.setTimeout(done, 650); // fallback (e.g. reduced motion — no transition)
-    } else {
-      unmount(section);
+
+    if (!overlay || !rig || !win || reduced()) {
+      overlay?.classList.remove('is-open');
+      finish();
+      return;
     }
+
+    // Palm + screen shrink back down to hand size while the backdrop lifts.
+    // Explicit from-keyframe at the CURRENT computed scale, so closing
+    // mid-grow shrinks from wherever the grow got to — no snap.
+    overlay.classList.remove('is-open');
+    const from = rigScale(rig);
+    section._growAnim?.cancel();
+    section._growAnim = null;
+    const small = handScale(rig);
+    section._shrinkAnim?.cancel();
+    try {
+      section._shrinkAnim = rig.animate(
+        [
+          { transform: `scale(${from})` },
+          { transform: `scale(${small})` },
+        ],
+        { duration: SHRINK_MS, easing: 'cubic-bezier(0.55, 0, 0.68, 1)', fill: 'forwards' },
+      );
+    } catch {
+      section._shrinkAnim = null;
+    }
+    await settle(section._shrinkAnim, SHRINK_MS);
+    finish(); // hands the character back to the site (bonus:closed)
   }
 
   function toggle(section: EmbedEl) {
-    if (section.dataset.open === 'true') closeReveal(section);
-    else openReveal(section);
+    if (section.dataset.open === 'true') close(section);
+    else open(section);
   }
 
   function wire(section: EmbedEl) {
@@ -266,9 +582,22 @@ const icon = badge?.icon ?? String(options.target ?? '🏆');
       return;
     }
 
-    section
-      .querySelector<HTMLElement>('.game-launch')
+    // Portal the overlay out of the page's stacking contexts (.project-panel
+    // is fixed + z-indexed and would trap it beneath the sidebar).
+    const overlay = section.querySelector<HTMLElement>('.game-overlay');
+    if (overlay) {
+      section._overlay = overlay;
+      document.body.appendChild(overlay);
+    }
+
+    section.querySelector<HTMLElement>('.game-launch')
       ?.addEventListener('click', () => toggle(section));
+    overlay
+      ?.querySelector<HTMLElement>('.game-overlay-backdrop')
+      ?.addEventListener('click', () => close(section));
+    overlay
+      ?.querySelector<HTMLElement>('.game-window-close')
+      ?.addEventListener('click', () => close(section));
   }
 
   function wireAll() {
@@ -276,12 +605,17 @@ const icon = badge?.icon ?? String(options.target ?? '🏆');
   }
 
   function teardown() {
-    document.querySelectorAll<EmbedEl>('.game-embed').forEach(unmount);
+    document.querySelectorAll<EmbedEl>('.game-embed').forEach((section) => {
+      unmount(section);
+      // Remove the body-portaled overlay — the swap only replaces page DOM.
+      section._overlay?.remove();
+      section._overlay = undefined;
+    });
   }
 
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
-    document.querySelectorAll<EmbedEl>('.game-embed').forEach(closeReveal);
+    document.querySelectorAll<EmbedEl>('.game-embed').forEach(close);
   });
 
   document.addEventListener('astro:page-load', wireAll);

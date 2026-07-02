@@ -1,7 +1,26 @@
-<!-- Hand cursor: ambient scroll-driven emoji, no cursor tracking -->
-<div id="hand-cursor" aria-hidden="true">✋</div>
+<!-- Hand cursor: ambient scroll-driven hand character, no cursor tracking -->
+<div id="hand-cursor" aria-hidden="true"><img src="/ui/hand-raised.svg" alt="" /></div>
 
 <script>
+  // ─── Hand artwork ─────────────────────────────────────────────
+  // Bundled Fluent Emoji SVGs (MIT, microsoft/fluentui-emoji) instead of
+  // native glyphs — one hand family on every platform, matching the giant
+  // palm in the bonus-level overlay.
+  const HAND_SRC = {
+    wave:   '/ui/hand-raised.svg',      // ✋ idle wave
+    point:  '/ui/hand-point-left.svg',  // 👈 pointing at nav
+    travel: '/ui/hand-palm-down.svg',   // 🫳 in transit
+    grab:   '/ui/hand-raised-back.svg', // 🤚 braced to receive the panel
+    push:   '/ui/hand-push.svg',        // 🫸 shoving the panel away
+  } as const;
+  // Preload so state swaps never flash an empty frame.
+  Object.values(HAND_SRC).forEach(src => { const i = new Image(); i.src = src; });
+
+  function setHand(name: keyof typeof HAND_SRC) {
+    const img = el?.querySelector('img');
+    if (img && !img.src.endsWith(HAND_SRC[name])) img.src = HAND_SRC[name];
+  }
+
   // ─── Speed constants ──────────────────────────────────────────
   const LERP                  = 0.16;  // ambient movement
   const MAX_PX_PER_FRAME      = 22;    // ambient speed cap
@@ -13,7 +32,7 @@
   // ─── State machine ────────────────────────────────────────────
   // Priority tiers:
   //   1 (highest) — Navigational: grab-travel, grab-pull, flick-travel, flick-push
-  //   2           — Easter eggs:  (future) easter-egg-*
+  //   2           — Easter eggs:  egg-* / in-game (bonus-level dive)
   //   3           — Idle resting: idle (scroll-driven wave/point)
   //   4 (lowest)  — Idle animations: (future) bored-*
   //
@@ -24,7 +43,9 @@
     | 'grab-travel'    // tier 1: fast travel to right edge
     | 'grab-pull'      // tier 1: 🤚 gripping and pulling panel in
     | 'flick-travel'   // tier 1: fast travel to panel's left edge
-    | 'flick-push';    // tier 1: 🫸 following panel edge as it slides off-right
+    | 'flick-push'     // tier 1: 🫸 following panel edge as it slides off-right
+    | 'egg-travel'     // tier 2: fast travel to centre screen
+    | 'in-game';       // tier 2: hidden — the overlay's giant palm has taken over
 
   let state: HandState = 'idle';
 
@@ -48,12 +69,18 @@
   function tick(gen: number) {
     if (gen !== tickGen) return; // stale loop — stop
 
+    // In-game the hand is hidden — the overlay's giant palm has taken over.
+    if (state === 'in-game') {
+      requestAnimationFrame(() => tick(gen));
+      return;
+    }
+
     const dx = targetX - currentX;
     const dy = targetY - currentY;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
-    // Fast travel for grab-travel and flick-travel
-    const isFastTravel = state === 'grab-travel' || state === 'flick-travel';
+    // Fast travel for grab-travel, flick-travel, and egg-travel
+    const isFastTravel = state === 'grab-travel' || state === 'flick-travel' || state === 'egg-travel';
     const lerp    = isFastTravel ? GRAB_TRAVEL_LERP : LERP;
     const maxStep = state === 'grab-pull' ? GRAB_PULL_PX_PER_FRAME
                   : isFastTravel          ? GRAB_TRAVEL_MAX_PX
@@ -90,7 +117,7 @@
       // Fires when navigating (any non-idle state) OR crossing modes (wave↔point).
       // Skipped when idle and already in the right mode — e.g. gliding between
       // nav links stays as 👈 without flashing the travel hand.
-      el.textContent = '🫳';
+      setHand('travel');
       el.style.transformOrigin = '50% 50%';
       const flipX = dx >= 0 ? 1 : -1;
       el.style.transform = `translate(${currentX}px, ${currentY}px) scaleX(${flipX})`;
@@ -102,7 +129,7 @@
         const rotation = currentMode === 'wave'
           ? Math.sin(performance.now() / 550 * Math.PI) * 10
           : 0;
-        el.textContent = currentMode === 'wave' ? '✋' : '👈';
+        setHand(currentMode === 'wave' ? 'wave' : 'point');
         el.style.transformOrigin = '50% 100%';
         el.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotation}deg)`;
       }
@@ -190,7 +217,7 @@
         const dy = targetY - currentY;
         if (Math.sqrt(dx * dx + dy * dy) < ARRIVAL_THRESHOLD) {
           state = 'grab-pull';
-          el.textContent = '🤚'; // raised back of hand — braced to receive the panel
+          setHand('grab'); // raised back of hand — braced to receive the panel
           // Snapshot the content area — will fade out during the panel slide-in
           const contentArea = document.querySelector<HTMLElement>('.content-area');
           if (contentArea) {
@@ -230,13 +257,81 @@
     panelClone = null;
   }
 
-  // ─── Future tiers (scaffolding) ───────────────────────────────
+  // ─── Tier 2: bonus-level easter egg ───────────────────────────
+  // Choreography with GameCanvas's palm overlay, coordinated via bonus:*
+  // document events (see GameCanvas.astro for the host's side):
+  //   open   → fly to centre screen (egg-travel); on arrival, hide and
+  //            dispatch hand-ready — the overlay's giant palm takes over
+  //            and grows with the game window in its centre
+  //   close  → stand by (the host shrinks the palm back down)
+  //   closed → reappear at centre screen, hand-sized, and return to idle
+  //   (closed mid-travel: bonus:close aborts straight back to idle)
 
-  // Tier 2: Easter eggs — interrupt idle resting, yield to navigation
-  function triggerEasterEgg(_key: string) {
-    if (state !== 'idle') return; // nav takes priority
-    // state = `easter-egg-${_key}`; ...
+  let eggSectionId: string | null = null;
+
+  function resetEgg() {
+    eggSectionId = null;
   }
+
+  function waitEggArrival() {
+    function check() {
+      if (state !== 'egg-travel') return;
+      const dx = targetX - currentX;
+      const dy = targetY - currentY;
+      if (Math.sqrt(dx * dx + dy * dy) < ARRIVAL_THRESHOLD) {
+        // Hand off to the overlay's palm — same spot, same size.
+        state = 'in-game';
+        el.style.opacity = '0';
+        document.dispatchEvent(new CustomEvent('bonus:hand-ready', {
+          detail: { id: eggSectionId },
+        }));
+      } else {
+        requestAnimationFrame(check);
+      }
+    }
+    requestAnimationFrame(check);
+  }
+
+  document.addEventListener('bonus:open', (e: Event) => {
+    if (state !== 'idle') return; // nav takes priority; the host has timeouts
+    if (document.documentElement.getAttribute('data-reduced-motion') === 'true') return;
+    eggSectionId = (e as CustomEvent).detail?.id ?? null;
+    state = 'egg-travel';
+    clickLocked = null;
+    // Centre screen — where the palm will grow.
+    targetX = window.innerWidth / 2 - el.offsetWidth / 2;
+    targetY = window.innerHeight / 2 - el.offsetHeight / 2;
+    waitEggArrival();
+  });
+
+  document.addEventListener('bonus:close', (e: Event) => {
+    const id = (e as CustomEvent).detail?.id;
+    if (id !== eggSectionId) return;
+    if (state === 'egg-travel') {
+      // Closed before the hand even arrived — just go home.
+      resetEgg();
+      state = 'idle';
+      updateHand();
+    }
+    // in-game: stand by — bonus:closed brings the hand back.
+  });
+
+  document.addEventListener('bonus:closed', (e: Event) => {
+    const id = (e as CustomEvent).detail?.id;
+    if (id !== eggSectionId) return;
+    const wasInGame = state === 'in-game';
+    resetEgg();
+    if (!wasInGame) return;
+    // The palm shrank back to hand size at centre screen — pick up from there.
+    currentX = window.innerWidth / 2 - el.offsetWidth / 2;
+    currentY = window.innerHeight / 2 - el.offsetHeight / 2;
+    targetX = currentX;
+    targetY = currentY;
+    el.style.transform = `translate(${currentX}px, ${currentY}px)`;
+    el.style.opacity = '1';
+    state = 'idle';
+    updateHand();
+  });
 
   // Tier 4: Idle boredom — only fires when nothing else (tiers 1–3) is active
   const IDLE_BOREDOM_MS = 12000;
@@ -255,6 +350,13 @@
   document.addEventListener('astro:before-preparation', (e: Event) => {
     cleanupContentClone();
     cleanupPanelClone();
+
+    // Abort any bonus-level sequence — navigation outranks easter eggs.
+    if (state.startsWith('egg-') || state === 'in-game') {
+      resetEgg();
+      el.style.opacity = '1';
+      state = 'idle';
+    }
     const event = e as any;
     const originalLoader = event.loader.bind(event);
 
@@ -294,7 +396,7 @@
   // Hand has arrived and page is about to swap in — keep 🤚
   document.addEventListener('astro:before-swap', () => {
     if (state !== 'grab-pull') return;
-    el.textContent = '🤚';
+    setHand('grab');
   });
 
   // Re-query el after DOM swap; kick off panel animation and clone effects
@@ -334,7 +436,7 @@
     // Ensure re-queried el has the right emoji for the current state
     if (state === 'grab-pull') {
       el.style.opacity = '1';
-      el.textContent = '🤚';
+      setHand('grab');
     } else if (state === 'grab-travel') {
       el.style.opacity = '1';
     }
@@ -370,7 +472,7 @@
           const dyHand = targetY - currentY;
           if (Math.sqrt(dxHand * dxHand + dyHand * dyHand) < ARRIVAL_THRESHOLD * 4) {
             state = 'flick-push';
-            el.textContent = '🫸';
+            setHand('push');
           }
         }
 

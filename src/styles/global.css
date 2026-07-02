@@ -92,6 +92,15 @@ a {
   font-size: 1rem;
 }
 
+/* Bundled Fluent Emoji hands (see public/ui/) sized like the glyphs they replace */
+.sidebar-hand img,
+.motion-emoji img {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: -0.125em;
+}
+
 .sidebar-bio {
   font-size: 0.75rem;
   line-height: 1.5;
@@ -763,6 +772,12 @@ figcaption a:hover {
   user-select: none;
   will-change: transform;
   opacity: 0;
+}
+
+#hand-cursor img {
+  display: block;
+  width: 2.2rem;
+  height: 2.2rem;
   transition: opacity 0.3s;
   line-height: 1;
 }

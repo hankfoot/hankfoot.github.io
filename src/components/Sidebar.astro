@@ -16,6 +16,14 @@
     <a href="/#contact" data-section="contact">contact</a>
   </nav>
 
+  <div class="sidebar-badges" id="sidebar-badges" hidden>
+    <div class="sidebar-badges-head">
+      <p class="sidebar-badges-label">badges</p>
+      <button type="button" class="sidebar-badges-reset" id="sidebar-badges-reset" aria-label="Reset earned badges">reset</button>
+    </div>
+    <div class="sidebar-badges-rack" id="sidebar-badges-rack"></div>
+  </div>
+
   <footer class="sidebar-footer">
     <p class="sidebar-location">seattle, wa</p>
     <a href="mailto:hello.hank.d@gmail.com" class="sidebar-email">hello.hank.d@gmail.com</a>
@@ -43,6 +51,61 @@
 </button>
 
 <script>
+  import { getBadges, clearBadges, BADGE_EVENT, BADGE_RESET } from '../utils/badges.ts';
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  }
+
+  function renderBadges() {
+    const wrap = document.getElementById('sidebar-badges');
+    const rack = document.getElementById('sidebar-badges-rack');
+    if (!wrap || !rack) return;
+
+    const badges = getBadges();
+    wrap.hidden = badges.length === 0;
+
+    rack.innerHTML = badges
+      .map(b => {
+        const justEarned = b.id === rack.dataset.flash ? ' is-new' : '';
+        const aria = b.source ? `${b.label}, earned at ${b.source}` : b.label;
+        const src = b.source
+          ? `<span class="sidebar-badge-tip-src">from ${esc(b.source)}</span>`
+          : '';
+        const inner = `${b.icon}<span class="sidebar-badge-tip" aria-hidden="true"><span class="sidebar-badge-tip-label">${esc(b.label)}</span>${src}</span>`;
+        // Link back to the minigame when we know where it came from; else a static chip.
+        return b.href
+          ? `<a class="sidebar-badge${justEarned}" href="${esc(b.href)}" aria-label="${esc(aria)}, revisit">${inner}</a>`
+          : `<span class="sidebar-badge${justEarned}" tabindex="0" role="img" aria-label="${esc(aria)}">${inner}</span>`;
+      })
+      .join('');
+  }
+
+  function initReset() {
+    const btn = document.getElementById('sidebar-badges-reset');
+    if (!btn || btn.dataset.ready === 'true') return;
+    btn.dataset.ready = 'true';
+    btn.addEventListener('click', () => clearBadges());
+  }
+
+  // Briefly flag the freshly-earned badge so it can play an entrance animation.
+  window.addEventListener(BADGE_EVENT, (e) => {
+    const rack = document.getElementById('sidebar-badges-rack');
+    if (rack && e.detail?.id) rack.dataset.flash = e.detail.id;
+    renderBadges();
+  });
+
+  window.addEventListener(BADGE_RESET, () => {
+    const rack = document.getElementById('sidebar-badges-rack');
+    if (rack) rack.dataset.flash = '';
+    renderBadges();
+  });
+
+  document.addEventListener('astro:page-load', () => { renderBadges(); initReset(); });
+  renderBadges();
+  initReset();
+
   function initToggle() {
     const btn = document.getElementById('motion-toggle') as HTMLButtonElement | null;
     if (!btn) return;

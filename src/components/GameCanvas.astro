@@ -1,0 +1,290 @@
+---
+// Generic Canvas2D game island. Two shapes:
+//
+//   <GameCanvas game="treasure-hunt" />          → launch trigger + inline reveal
+//   <GameCanvas game="treasure-hunt" bare />     → inline canvas (test pages)
+//
+// The non-bare form renders a quiet "bonus level" easter-egg trigger. Clicking
+// it slides a block open vertically in the document flow (an accordion reveal),
+// mounting the game inside. Clicking again collapses it. The bare form just
+// mounts the canvas inline and boots at once.
+
+import { getGame } from '../games/manifest';
+
+interface Props {
+  game: string;
+  /** Invitation line on the launch button (and the in-game intro card). */
+  prompt?: string;
+  /** Per-instance option overrides merged over the manifest defaults. */
+  options?: Record<string, unknown>;
+  /** Skip the launch/reveal chrome — used on the standalone test pages. */
+  bare?: boolean;
+}
+
+const { game, prompt, options: overrides, bare = false } = Astro.props;
+const meta = getGame(game);
+if (!meta) throw new Error(`Unknown game: "${game}". Add it to src/games/manifest.ts`);
+
+const options = {
+  ...(meta.options ?? {}),
+  ...(overrides ?? {}),
+  title: meta.title,
+  instructions: prompt ?? meta.description,
+};
+const badge = meta.badge ?? null;
+const domId = `game-${badge?.id ?? meta.id}`;
+const icon = badge?.icon ?? String(options.target ?? '🏆');
+---
+
+<section
+  class:list={['game-embed', bare && 'is-bare']}
+  id={domId}
+  data-game={meta.id}
+  data-options={JSON.stringify(options)}
+  data-badge={badge ? JSON.stringify(badge) : undefined}
+  style={`--aspect:${meta.aspect}`}
+  aria-label={`${meta.title} minigame`}
+>
+  {bare ? (
+    <div class="game-embed-stage">
+      <canvas class="game-embed-canvas" aria-label={meta.description}></canvas>
+    </div>
+  ) : (
+    <>
+      <button
+        type="button"
+        class="game-launch"
+        aria-expanded="false"
+        aria-controls={`${domId}-reveal`}
+        aria-label={`Play the ${meta.title} bonus level`}
+      >
+        <span class="game-launch-label">bonus level</span>
+        <span class="game-launch-icon" aria-hidden="true">{icon}</span>
+      </button>
+
+      <div class="game-reveal" id={`${domId}-reveal`}>
+        <div class="game-reveal-inner">
+          <div class="game-embed-stage">
+            <canvas class="game-embed-canvas" aria-label={meta.description}></canvas>
+          </div>
+        </div>
+      </div>
+    </>
+  )}
+</section>
+
+<style>
+  .game-embed {
+    margin: 2.5rem auto 1rem;
+    max-width: 640px;
+    text-align: center;
+  }
+
+  /* ── the canvas stage ────────────────────────────────────────── */
+  .game-embed-stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: var(--aspect, 1);
+    border-radius: 14px;
+    overflow: hidden;
+    background: #e9e6df;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.14);
+  }
+  .game-embed-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none; /* let the game own drags/swipes */
+    cursor: none;       /* the game sets its own cursor per phase */
+  }
+
+  /* ── launch trigger (quiet easter egg) ───────────────────────── */
+  .game-launch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 auto;
+    padding: 0.5rem 0.35rem;
+    background: none;
+    border: none;
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: var(--label-tracking-loose);
+    text-transform: uppercase;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.3s ease, color 0.3s ease;
+  }
+  .game-launch:hover,
+  .game-launch:focus-visible {
+    opacity: 1;
+    color: var(--color-text);
+  }
+  .game-embed.is-open .game-launch {
+    opacity: 1;
+    color: var(--color-text);
+  }
+  .game-launch:focus-visible {
+    outline: 1px solid var(--color-border);
+    outline-offset: 4px;
+    border-radius: var(--radius-sm);
+  }
+  .game-launch-icon {
+    font-size: 1rem;
+    line-height: 1;
+    filter: grayscale(1);
+    opacity: 0.6;
+    transition: filter 0.3s ease, opacity 0.3s ease, transform 0.35s ease;
+  }
+  .game-launch:hover .game-launch-icon,
+  .game-launch:focus-visible .game-launch-icon,
+  .game-embed.is-open .game-launch-icon {
+    filter: none;
+    opacity: 1;
+    transform: translateY(-2px) rotate(-10deg);
+  }
+  :global([data-reduced-motion='true']) .game-launch-icon {
+    transition: filter 0.3s ease, opacity 0.3s ease;
+  }
+  :global([data-reduced-motion='true']) .game-launch:hover .game-launch-icon,
+  :global([data-reduced-motion='true']) .game-launch:focus-visible .game-launch-icon,
+  :global([data-reduced-motion='true']) .game-embed.is-open .game-launch-icon {
+    transform: none;
+  }
+
+  /* ── vertical accordion reveal ───────────────────────────────── */
+  /* 0fr → 1fr animates cleanly to the content's natural height. The stage
+     self-sizes via aspect-ratio, so it's fully painted behind the clip and
+     the row just uncovers it — like a curtain opening out of thin air. */
+  .game-reveal {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .game-embed.is-open .game-reveal {
+    grid-template-rows: 1fr;
+  }
+  .game-reveal-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+  .game-reveal .game-embed-stage {
+    margin-top: 1rem;
+  }
+</style>
+
+<script>
+  import { mountGame } from '../games/engine';
+  import { REGISTRY } from '../games/registry';
+  import { awardBadge } from '../utils/badges';
+
+  interface EmbedEl extends HTMLElement {
+    _ctrl?: { destroy(): void };
+  }
+
+  // Mount the canvas game (idempotent).
+  function mount(el: EmbedEl, canvas: HTMLCanvasElement | null) {
+    if (el.dataset.ready === 'true') return;
+    const id = el.dataset.game;
+    if (!id || !canvas) return;
+    const factory = REGISTRY[id];
+    if (!factory) {
+      console.warn(`No registered game "${id}"`);
+      return;
+    }
+    el.dataset.ready = 'true';
+
+    const options = JSON.parse(el.dataset.options || '{}');
+    const badge = el.dataset.badge ? JSON.parse(el.dataset.badge) : null;
+
+    const game = factory({
+      ...options,
+      onWin: () => {
+        if (badge) awardBadge({ ...badge, href: location.pathname + '#' + el.id });
+      },
+    });
+
+    el._ctrl = mountGame(canvas, game, { background: '#e9e6df' });
+  }
+
+  function unmount(el: EmbedEl) {
+    el._ctrl?.destroy();
+    el._ctrl = undefined;
+    el.dataset.ready = '';
+  }
+
+  function openReveal(section: EmbedEl) {
+    if (section.dataset.open === 'true') return;
+    section.dataset.open = 'true';
+    section.classList.add('is-open');
+    section.querySelector('.game-launch')?.setAttribute('aria-expanded', 'true');
+    // The stage self-sizes via aspect-ratio, so the canvas has layout while the
+    // reveal is still clipped. Mount on the next frame — otherwise the synchronous
+    // canvas boot blocks the main thread before the browser paints the transition's
+    // first frames, which reads as a stutter/delay at the start of the slide.
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        if (section.dataset.open === 'true') {
+          mount(section, section.querySelector<HTMLCanvasElement>('.game-embed-canvas'));
+        }
+      }),
+    );
+  }
+
+  function closeReveal(section: EmbedEl) {
+    if (section.dataset.open !== 'true') return;
+    section.dataset.open = '';
+    section.classList.remove('is-open');
+    section.querySelector('.game-launch')?.setAttribute('aria-expanded', 'false');
+
+    // Unmount after the collapse finishes so the canvas doesn't blank mid-slide.
+    const reveal = section.querySelector<HTMLElement>('.game-reveal');
+    const done = () => {
+      reveal?.removeEventListener('transitionend', done);
+      if (section.dataset.open !== 'true') unmount(section);
+    };
+    if (reveal) {
+      reveal.addEventListener('transitionend', done);
+      window.setTimeout(done, 650); // fallback (e.g. reduced motion — no transition)
+    } else {
+      unmount(section);
+    }
+  }
+
+  function toggle(section: EmbedEl) {
+    if (section.dataset.open === 'true') closeReveal(section);
+    else openReveal(section);
+  }
+
+  function wire(section: EmbedEl) {
+    if (section.dataset.wired === 'true') return;
+    section.dataset.wired = 'true';
+
+    if (section.classList.contains('is-bare')) {
+      mount(section, section.querySelector<HTMLCanvasElement>('.game-embed-canvas'));
+      return;
+    }
+
+    section
+      .querySelector<HTMLElement>('.game-launch')
+      ?.addEventListener('click', () => toggle(section));
+  }
+
+  function wireAll() {
+    document.querySelectorAll<EmbedEl>('.game-embed').forEach(wire);
+  }
+
+  function teardown() {
+    document.querySelectorAll<EmbedEl>('.game-embed').forEach(unmount);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    document.querySelectorAll<EmbedEl>('.game-embed').forEach(closeReveal);
+  });
+
+  document.addEventListener('astro:page-load', wireAll);
+  document.addEventListener('astro:before-swap', teardown);
+  wireAll();
+</script>

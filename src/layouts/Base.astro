@@ -2,6 +2,7 @@
 import { ClientRouter } from 'astro:transitions';
 import Sidebar from '../components/Sidebar.astro';
 import HandCursor from '../components/HandCursor.astro';
+import ReducedMotionInit from '../components/ReducedMotionInit.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -20,16 +21,7 @@ const { title = 'Hank Duhaime' } = Astro.props;
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <!-- Reduced motion: read before first paint to avoid FOUC -->
-  <script is:inline>
-    (function () {
-      var stored = localStorage.getItem('hank-reduced-motion');
-      var sys = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (stored === 'true' || (stored === null && sys)) {
-        document.documentElement.setAttribute('data-reduced-motion', 'true');
-      }
-    })();
-  </script>
+  <ReducedMotionInit />
   <ClientRouter />
 </head>
 <body>

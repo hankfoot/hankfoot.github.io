@@ -3,8 +3,9 @@
 // Deliberately minimal — no sidebar, hand cursor, or view transitions — so the
 // game renders in isolation and is trivial to screenshot / debug.
 
-import { GAMES, getGame } from '../../games/manifest';
+import { GAMES } from '../../games/manifest';
 import GameCanvas from '../../components/GameCanvas.astro';
+import ReducedMotionInit from '../../components/ReducedMotionInit.astro';
 
 export function getStaticPaths() {
   return GAMES.map((meta) => ({ params: { game: meta.id }, props: { meta } }));
@@ -19,15 +20,7 @@ const { meta } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{meta.title} — game test</title>
-    <script is:inline>
-      (function () {
-        var stored = localStorage.getItem('hank-reduced-motion');
-        var sys = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (stored === 'true' || (stored === null && sys)) {
-          document.documentElement.setAttribute('data-reduced-motion', 'true');
-        }
-      })();
-    </script>
+    <ReducedMotionInit />
     <style>
       :root { color-scheme: light; }
       body {

@@ -1060,6 +1060,135 @@ a.block-credits-name:hover,
   color: var(--color-inverse-muted);
 }
 
+/* ─── Sidebar Badges ─────────────────────────────────────────── */
+.sidebar-badges {
+  margin-top: 2rem;
+}
+
+.sidebar-badges-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.sidebar-badges-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--label-tracking-tight);
+  color: var(--color-muted);
+}
+
+.sidebar-badges-reset {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: var(--label-tracking-tight);
+  color: var(--color-muted);
+  background: none;
+  border: none;
+  padding: 0;
+  opacity: 0;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+/* Reset stays hidden until you hover the badge tray — quiet by default. */
+.sidebar-badges:hover .sidebar-badges-reset,
+.sidebar-badges-reset:focus-visible {
+  opacity: 1;
+}
+
+.sidebar-badges-reset:hover,
+.sidebar-badges-reset:focus-visible {
+  color: var(--color-text);
+}
+
+.sidebar-badges-rack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.sidebar-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  font-size: 0.95rem;
+  line-height: 1;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-surface);
+  transition: transform 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28), border-color 0.2s ease;
+}
+
+.sidebar-badge:hover,
+.sidebar-badge:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--color-text);
+  outline: none;
+}
+
+/* ── Earned-at tooltip ── */
+.sidebar-badge-tip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.4rem 0.55rem;
+  white-space: nowrap;
+  background: var(--color-text);
+  color: var(--color-bg);
+  border-radius: 6px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  transform: translateY(4px);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.sidebar-badge-tip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 12px;
+  border: 5px solid transparent;
+  border-top-color: var(--color-text);
+}
+
+.sidebar-badge:hover .sidebar-badge-tip,
+.sidebar-badge:focus-visible .sidebar-badge-tip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sidebar-badge-tip-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--label-tracking-tight);
+}
+
+.sidebar-badge-tip-src {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: var(--label-tracking-tight);
+  opacity: 0.6;
+}
+
+.sidebar-badge.is-new {
+  animation: badge-drop 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+@keyframes badge-drop {
+  0% { transform: scale(0) rotate(-90deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
 /* ─── Reduced Motion ─────────────────────────────────────────── */
 [data-reduced-motion="true"] #hand-cursor {
   display: none;

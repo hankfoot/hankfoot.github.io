@@ -559,6 +559,11 @@
     });
   });
 
+  // Sidebar badge (persisted, re-rendered) asks for the grab-pull entrance —
+  // same choreography as clicking a project card, dispatched synchronously
+  // before Astro's router starts the navigation.
+  document.addEventListener('hand:grab', moveToGrabPosition);
+
   window.addEventListener('scroll', () => { clickLocked = null; updateHand(); resetIdleTimer(); }, { passive: true });
   window.addEventListener('resize', () => { clickLocked = null; updateHand(); }, { passive: true });
 

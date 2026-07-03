@@ -95,6 +95,40 @@
     btn.addEventListener('click', () => clearBadges());
   }
 
+  // Delegated on the rack (survives re-renders — only its children change).
+  // A badge links back to the project page that awarded it. Clicking it while
+  // already on that page shouldn't re-navigate (which would push the panel out
+  // and back); just scroll the panel to the top. From the home page or a
+  // different project page, let Astro navigate — the panel slides in from the
+  // right via the HandCursor choreography.
+  function initBadgeNav() {
+    const rack = document.getElementById('sidebar-badges-rack');
+    if (!rack || rack.dataset.navReady === 'true') return;
+    rack.dataset.navReady = 'true';
+    rack.addEventListener('click', (e) => {
+      const link = (e.target as Element)?.closest?.('a.sidebar-badge') as HTMLAnchorElement | null;
+      if (!link) return;
+      const href = link.getAttribute('href');
+      if (!href) return;
+      if (new URL(href, location.href).pathname !== location.pathname) {
+        // Different page (home or another project): let Astro navigate, but first
+        // kick off the hand's grab-pull choreography — same as clicking a project
+        // card — so the panel is pulled in from the right (rather than a fast
+        // fade, or the current project being shoved out of the way).
+        document.dispatchEvent(new CustomEvent('hand:grab'));
+        return;
+      }
+
+      e.preventDefault();
+      // On a project page the scroll container is the fixed .project-panel, not the window.
+      const scroller = document.querySelector<HTMLElement>('.project-panel')
+        ?? document.scrollingElement
+        ?? document.documentElement;
+      const reduced = document.documentElement.getAttribute('data-reduced-motion') === 'true';
+      scroller.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+    });
+  }
+
   // Briefly flag the freshly-earned badge so it can play an entrance animation.
   window.addEventListener(BADGE_EVENT, (e) => {
     const rack = document.getElementById('sidebar-badges-rack');
@@ -108,9 +142,10 @@
     renderBadges();
   });
 
-  document.addEventListener('astro:page-load', () => { renderBadges(); initReset(); });
+  document.addEventListener('astro:page-load', () => { renderBadges(); initReset(); initBadgeNav(); });
   renderBadges();
   initReset();
+  initBadgeNav();
 
   function initToggle() {
     const btn = document.getElementById('motion-toggle') as HTMLButtonElement | null;

@@ -5,4 +5,7 @@ export default defineConfig({
   integrations: [mdx()],
   output: 'static',
   site: 'https://hankfoot.github.io',
+  devToolbar: {
+    enabled: false,
+  },
 });

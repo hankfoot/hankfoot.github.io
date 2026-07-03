@@ -114,8 +114,10 @@ const iconSvg = emojiSvgUrl(icon); // bundled SVG when we have one, else the gly
 <style>
   .game-embed {
     /* the body sections are flex children with a --space-section (5rem) gap;
-       pull the quiet bonus trigger up close under the credits block */
-    margin: calc(1.5rem - var(--space-section)) auto 1rem;
+       pull the quiet bonus trigger up close under the credits block, and pull
+       the bottom in too so it sits 1.5rem clear of the page's 2rem padding,
+       matching the gap above it */
+    margin: calc(1.5rem - var(--space-section)) auto calc(1.5rem - 2rem);
     max-width: 640px;
     text-align: center;
   }

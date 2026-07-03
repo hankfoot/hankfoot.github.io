@@ -685,7 +685,7 @@ export function createMatchGame(opts: MatchGameOptions = {}): Game {
     const pop = easeOutBack(clamp(wonEnter / 0.4, 0, 1));
     const br = S * 0.068;
     g.save();
-    g.translate(W / 2, p.y + p.h * 0.22);
+    g.translate(W / 2, p.y + p.h * 0.27);
     g.scale(pop, pop);
     g.beginPath();
     g.arc(0, 0, br, 0, Math.PI * 2);

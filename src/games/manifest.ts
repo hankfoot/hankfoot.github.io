@@ -24,16 +24,18 @@ export interface GameMeta {
 export const GAMES: GameMeta[] = [
   {
     id: 'treasure-hunt',
-    title: 'Treasure Hunt',
+    title: 'Myth Match',
     description:
-      'Sweep the phone lens over the AR marker to reveal the sunken chest, then click the impostor fish hiding in the gold.',
+      'Reveal the AR icons with your phone, then click to make matching pairs.',
     aspect: 1,
-    options: { target: '🐡', decoyCount: 120 },
+    options: {
+      emojis: ['🧙', '🦄', '🧜‍♀️', '🐦‍🔥', '🐉', '🎠', '🔮', '📯', '🏹', '🛡️', '🗡️'],
+    },
     badge: {
-      id: 'impostor',
-      label: 'Impostor Catcher',
+      id: 'myth-match',
+      label: 'myth matcher',
       source: 'Quick Distract',
-      icon: '🐡',
+      icon: '🏰',
     },
   },
 ];

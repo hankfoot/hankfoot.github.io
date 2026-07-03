@@ -18,11 +18,25 @@ const KEY = 'hank-badges';
 export const BADGE_EVENT = 'hank-badge-earned';
 export const BADGE_RESET = 'hank-badge-reset';
 
+// Renamed badge ids → their current id, so a legacy entry doesn't show twice.
+const LEGACY_IDS: Record<string, string> = { 'reef-match': 'myth-match' };
+
 export function getBadges(): Badge[] {
   if (typeof localStorage === 'undefined') return [];
   try {
     const raw = localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as Badge[]) : [];
+    const list = raw ? (JSON.parse(raw) as Badge[]) : [];
+    const seen = new Set<string>();
+    return list
+      // rename-migrate old ids, and drop any legacy deep #game-… anchor so the
+      // link goes to the top of the project page
+      .map(b => ({
+        ...b,
+        id: LEGACY_IDS[b.id] ?? b.id,
+        href: b.href ? b.href.split('#')[0] : b.href,
+      }))
+      // dedupe by id (keep first) — one badge per game, however it was earned
+      .filter(b => (seen.has(b.id) ? false : (seen.add(b.id), true)));
   } catch {
     return [];
   }

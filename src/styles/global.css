@@ -1025,8 +1025,9 @@ figcaption a:hover {
   color: var(--color-inverse-text);
   border-radius: var(--radius-lg); /* match the bento photos it sits beneath */
   padding: 1.25rem 1.75rem;
-  /* Pull credits closer to the features section above it */
-  margin-top: calc(var(--space-block) * 2 - var(--space-section));
+  /* Credits sits as a flex child of .project-panel-body (gap: --space-section),
+     not inside a <Section> — this offsets that gap down to a clean --space-block. */
+  margin-top: calc(var(--space-block) - var(--space-section));
 }
 
 .block-credits .block-credits-label {
@@ -1144,6 +1145,13 @@ a.block-credits-name:hover,
   transform: translateY(-2px);
   border-color: var(--color-text);
   outline: none;
+}
+
+.sidebar-badge-svg {
+  width: 64%;
+  height: 64%;
+  object-fit: contain;
+  pointer-events: none;
 }
 
 /* ── Earned-at tooltip ── */

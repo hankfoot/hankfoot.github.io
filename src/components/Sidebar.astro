@@ -52,6 +52,7 @@
 
 <script>
   import { getBadges, clearBadges, BADGE_EVENT, BADGE_RESET } from '../utils/badges.ts';
+  import { emojiSvgUrl } from '../games/emoji';
 
   function esc(s) {
     return String(s).replace(/[&<>"]/g, c =>
@@ -73,7 +74,12 @@
         const src = b.source
           ? `<span class="sidebar-badge-tip-src">from ${esc(b.source)}</span>`
           : '';
-        const inner = `${b.icon}<span class="sidebar-badge-tip" aria-hidden="true"><span class="sidebar-badge-tip-label">${esc(b.label)}</span>${src}</span>`;
+        // prefer the bundled SVG sprite over the platform emoji glyph
+        const svg = emojiSvgUrl(b.icon);
+        const iconHtml = svg
+          ? `<img class="sidebar-badge-svg" src="${esc(svg)}" alt="" />`
+          : b.icon;
+        const inner = `${iconHtml}<span class="sidebar-badge-tip" aria-hidden="true"><span class="sidebar-badge-tip-label">${esc(b.label.toLowerCase())}</span>${src}</span>`;
         // Link back to the minigame when we know where it came from; else a static chip.
         return b.href
           ? `<a class="sidebar-badge${justEarned}" href="${esc(b.href)}" aria-label="${esc(aria)}, revisit">${inner}</a>`

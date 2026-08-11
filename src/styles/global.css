@@ -939,7 +939,9 @@ figcaption a:hover {
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--color-placeholder); /* FIX: was hardcoded #e0e0e0 */
-  aspect-ratio: 4 / 3;
+  /* 4:3 by default; a BentoGrid item may pass ratio="16 / 9" (etc.) to opt out
+     when cover-cropping would cut content — diagrams, screenshots, wide art. */
+  aspect-ratio: var(--bento-ratio, 4 / 3);
 }
 
 .block-bento-cell img,
@@ -1038,6 +1040,14 @@ figcaption a:hover {
   text-transform: lowercase;
   color: var(--color-inverse-muted);
   margin-bottom: 0.75rem;
+}
+
+/* Two columns when a `thanks` group is passed: makers on the left,
+   acknowledgements on the right. Single-group credits are unaffected. */
+.block-credits--split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--grid-gap);
 }
 
 .block-credits-list {

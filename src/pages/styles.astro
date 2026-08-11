@@ -147,6 +147,20 @@ import Section from '../components/blocks/Section.astro';
       </div>
 
       <div class="styles-block-group">
+        <p class="styles-token-label">Credits (with special thanks — adds a second column)</p>
+        <Credits
+          people={[
+            { name: 'Hank Duhaime', role: 'Interaction Design, Prototyping' },
+            { name: '[Mara Fontaine](https://example.com/)', role: 'Visual Design' },
+          ]}
+          thanks={[
+            { name: '[Dr. Amara Osei](https://example.com/)', role: 'Advisor' },
+            { name: 'Tomas Lindqvist', role: 'Project Sponsor' },
+          ]}
+        />
+      </div>
+
+      <div class="styles-block-group">
         <p class="styles-token-label">Feature (image left)</p>
         <Feature
           image="https://placehold.co/800x540/e0e0e0/888888?text=feature+image"
@@ -173,6 +187,15 @@ import Section from '../components/blocks/Section.astro';
           { src: 'https://placehold.co/800x600/d8d8d8/888888?text=01', alt: 'Grid image 01', wide: true },
           { src: 'https://placehold.co/800x600/e0e0e0/888888?text=02', alt: 'Grid image 02' },
           { src: 'https://placehold.co/800x600/cccccc/888888?text=03', alt: 'Grid image 03' },
+        ]} />
+      </div>
+
+      <div class="styles-block-group">
+        <p class="styles-token-label">BentoGrid (ratio override — opts out of the default 4:3 crop)</p>
+        <BentoGrid images={[
+          { src: 'https://placehold.co/1600x900/d8d8d8/888888?text=16+/+9', alt: 'Wide diagram', wide: true, ratio: '16 / 9' },
+          { src: 'https://placehold.co/1200x750/e0e0e0/888888?text=8+/+5', alt: 'Screenshot 01', ratio: '8 / 5' },
+          { src: 'https://placehold.co/1200x750/cccccc/888888?text=8+/+5', alt: 'Screenshot 02', ratio: '8 / 5' },
         ]} />
       </div>
 

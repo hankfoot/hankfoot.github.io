@@ -99,13 +99,13 @@ outcomes:                        # optional; strings or { text, url }
 | Block | Renders |
 |---|---|
 | `Section` | Labeled container providing section rhythm (`--space-section`) |
-| `BentoGrid` | 2-col media grid; `wide: true` items span both columns; auto video detection |
+| `BentoGrid` | 2-col media grid; `wide: true` items span both columns; auto video detection. Cells are 4:3 cover-cropped by default — pass `ratio: "16 / 9"` (any CSS ratio) on an item to opt out when cropping would cut content (diagrams, screenshots, wide art) |
 | `Feature` | Text + media pair (3fr/2fr); `flip` swaps sides; auto video detection |
 | `Quote` | Left-border blockquote with cite/source |
 | `Callout` | Left-border note (`type: note`) |
 | `Specs` | 2-col monospace definition list |
 | `Outcomes` | Em-dash bullet list (parseInline-enabled) |
-| `Credits` | Dark inverse block, name + role pairs |
+| `Credits` | Dark inverse block, name + role pairs. Optional `thanks` array adds a second "special thanks" column for advisors/sponsors (makers stay in `people`) |
 | `ImageGrid` | Auto-fill image grid |
 | `VideoEmbed` | Single `<figure>` video with caption |
 | `PrototypeEmbed` | 16:9 iframe |

@@ -1,0 +1,154 @@
+---
+title: Safecracker
+timeline: "2019-2021"
+tags:
+  - Game Design
+  - Fabrication
+  - Electronics
+  - R&D
+  - Prototyping
+thumb: /projects/safecracker/safe-hero-7x5.jpeg
+featured: true
+summary: A high-stakes race to break into a safe equipped with nothing but a stethoscope.
+context: "[Interactive Product Design Lab](https://ipdl.gatech.edu/)"
+contextLabel: Lab
+role:
+  - Interaction Design
+  - Software Development
+  - CAD & Fabrication
+tools:
+  - Processing
+  - Arduino
+  - SolidWorks
+outcomes:
+  - 1st Place, CHI 2020 Student Games
+  - Playtested with 15+ players
+  - Functioning locks, no Wizard of Oz
+---
+
+<Section>
+<BentoGrid images={[
+  { src: "/projects/safecracker/safe-hero-7x5.jpeg", alt: "The finished Safecracker cabinet with its stethoscope and brass dial", wide: true, ratio: "7 / 5", width: 2000, height: 1420 }
+]} />
+</Section>
+
+<Section label="summary">
+Pressing a button never feels as good as the thing it stands for. Safecracker is an argument for custom sensors — a heist game you play by ear, holding a real stethoscope against a real safe and listening for the tumblers to fall.
+
+Three of us built it at Georgia Tech's Interactive Product Design Lab over two years. It took first place in the CHI 2020 Student Game Competition, out of more than 50 entries in the Innovative Interfaces category.
+</Section>
+
+<Section>
+<BentoGrid images={[
+  { src: "/projects/safecracker/stethoscope-touch-4x3.jpeg", alt: "A stethoscope resting on the safe's copper touch pads beside a hand-drawn schematic", wide: true, width: 2000, height: 1500, caption: "Copper touch points on the safe's face — the only place the stethoscope hears anything." }
+]} />
+</Section>
+
+<Section label="my role">
+I designed and prototyped the physical gameplay — where the stethoscope listens, what the dial and handle do, and how the safe answers when you land on a number.
+
+I also wrote the main game loop in Processing and modeled the final iteration in CAD, routing the exterior on a CNC and printing mounts for every board and motor inside it.
+</Section>
+
+<Section label="process">
+<BentoGrid images={[
+  { src: "/projects/safecracker/concept-sketches.png", alt: "A strip of concept sketches with rejected ideas crossed out", wide: true, ratio: "15 / 4", width: 1334, height: 356, caption: "Bodystorming narrowed a wall of concepts down to one Hollywood trope: cracking a safe by ear." }
+]} />
+
+<Feature
+  image="/projects/safecracker/mechanism-sketches.jpeg"
+  alt="Hand-drawn sketches working out the stethoscope touch points and the handle and door locks"
+  label="technical spikes"
+  description="We drew and spiked the safe's mechanisms — touch points, door lock, handle lock — to de-risk them before committing to fabrication."
+/>
+
+<Feature
+  image="/projects/safecracker/first-prototype.jpeg"
+  alt="The first fully integrated prototype, a simplified boxy safe on legs"
+  label="prototype build"
+  description="A boxy first build integrated every system. Not pretty, but perfect for testing whether the interactions actually held up."
+  flip={true}
+/>
+
+<BentoGrid images={[
+  { src: "/projects/safecracker/playtest-takeaways.jpeg", alt: "Playtesters using the prototype, annotated with key takeaways about slipping headphones, a broken handle, and unrealistic form", wide: true, ratio: "20 / 11", width: 2000, height: 1100, caption: "Fifteen-plus players at the Georgia Tech design showcase. The mechanics landed; the shell didn't." }
+]} />
+</Section>
+
+<Section>
+<BentoGrid images={[
+  { src: "/projects/safecracker/cnc-housing-4x3.jpeg", alt: "The CNC-routed plywood housing being assembled in the shop", width: 2000, height: 1500, caption: "A CNC'd exterior replaced the plywood box." },
+  { src: "/projects/safecracker/hidden-display-4x3.jpeg", alt: "The frame built to house a screen hidden inside the safe", width: 2000, height: 1500, caption: "A screen hidden inside plays the payoff." },
+  { src: "/projects/safecracker/printed-mounts-4x3.jpeg", alt: "A solenoid seated in white 3D-printed mounts", width: 2000, height: 1500, caption: "3D-printed mounts for every board and motor." },
+  { src: "/projects/safecracker/flat-pack-panels-4x3.jpeg", alt: "The safe disassembled into flat-laying panels on a table", width: 2000, height: 1500, caption: "Removable panels so the safe flat-packs for travel." }
+]} />
+</Section>
+
+<Section label="how to play">
+<Feature
+  image="/projects/safecracker/touch-points.webm"
+  alt="A player holding the stethoscope to a marked point on the safe"
+  label="find the sweet spots"
+  description="Hold the stethoscope to the marked points on the safe and listen through the embedded Bluetooth headphones."
+/>
+
+<Feature
+  image="/projects/safecracker/listening.webm"
+  alt="A player rotating the safe's dial while listening through headphones"
+  label="listen closely"
+  description="Rotate the dial through the clicks. A solid THUNK marks the next number in the combination."
+  flip={true}
+/>
+
+<Feature
+  image="/projects/safecracker/open-safe.webm"
+  alt="The safe swinging open to reveal treasure on a hidden inner display"
+  label="crack the code"
+  description="Solve the three-digit combination and the safe opens onto a hidden screen full of treasure."
+/>
+</Section>
+
+<Section>
+<BentoGrid images={[
+  { src: "/projects/safecracker/system-diagram-5x3.png", alt: "System diagram showing the PC, Arduino, sensors, locks, and both displays", wide: true, ratio: "5 / 3", width: 1693, height: 1005, caption: "A Processing game drives both displays and talks to an Arduino running the sensors and locks." },
+  { src: "/projects/safecracker/difficulties.webm", alt: "Pixel-art heist environments for different difficulty levels", ratio: "16 / 9", caption: "Each difficulty brings its own heist, graphics, and audio distractions." },
+  { src: "/projects/safecracker/main-menu.webm", alt: "The Safecracker main menu listing three heists", ratio: "16 / 9", caption: "Menus are navigated with the hardware — dial to scroll, handle to select." },
+  { src: "/projects/safecracker/door-lock.webm", alt: "The door locking mechanism engaging", ratio: "16 / 9", caption: "The door and handle really lock. No Wizard of Oz." },
+  { src: "/projects/safecracker/tutorial.webm", alt: "The interactive tutorial teaching the game's audio cues", ratio: "16 / 9", caption: "A playable tutorial teaches the audio cues before the heist starts." }
+]} />
+</Section>
+
+<Section label="outcomes">
+<Outcomes items={[
+  "1st Place in the [CHI 2020 Student Game Competition](https://dl.acm.org/doi/fullHtml/10.1145/3334480.3381656), Innovative Interfaces category, from 50+ submissions",
+  "Published as an extended abstract in the ACM CHI 2020 proceedings",
+  "Playtested with 15+ players at the Georgia Tech Industrial Design Student Showcase",
+  "Built at Georgia Tech's [Interactive Product Design Lab](https://ipdl.gatech.edu/) with functioning locks and no simulated hardware",
+]} />
+</Section>
+
+<Section>
+<Quote
+  text={`I am impressed by [Safecracker's] rich juiciness as an audio-based game with environmental and disturbing sound design`}
+  cite="CHI 2020 reviewer"
+/>
+</Section>
+
+<Section>
+<BentoGrid images={[
+  { src: "/projects/safecracker/lock-detail-3x2.jpeg", alt: "Close detail of the door and handle locking mechanism", width: 1554, height: 1036 },
+  { src: "/projects/safecracker/safe-internals-4x3.jpeg", alt: "The safe open, showing its internals and the lit inner display", width: 1942, height: 1487 }
+]} />
+</Section>
+
+<Credits people={[
+  { name: "Hank Duhaime", role: "Interaction Design & Development" },
+  { name: "Mary Jo Dubina", role: "role TK" },
+  { name: "Kelsie Thomas", role: "role TK" }
+]} />
+
+<Section>
+<BentoGrid images={[
+  { src: "/projects/safecracker/trailer.webm", alt: "A clip from the Safecracker trailer, a masked player briefing a heist at a whiteboard", wide: true, ratio: "16 / 9", caption: "We also shot a trailer. The [full cut](https://www.youtube.com/watch?v=07zZ3BgV-cc) has sound and is considerably sillier than this loop; there's a [complete gameplay demo](https://www.youtube.com/watch?v=BYZKwOU36k8) too." }
+]} />
+</Section>

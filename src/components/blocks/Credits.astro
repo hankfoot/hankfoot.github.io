@@ -3,20 +3,39 @@ import { parseInline } from '../../utils/text';
 
 interface Props {
   people: Array<{ name: string; role: string }>;
+  thanks?: Array<{ name: string; role: string }>;
 }
 
-const { people } = Astro.props;
+const { people, thanks } = Astro.props;
+const hasThanks = Array.isArray(thanks) && thanks.length > 0;
 ---
 
-<div class="block-credits">
-  <p class="block-credits-label">Credits</p>
-  <ul class="block-credits-list">
-    {people.map((person) => (
-      <li class="block-credits-person">
-        <span class="block-credits-name" set:html={parseInline(person.name)} />
-        <span class="block-credits-sep"> - </span>
-        <span class="block-credits-role">{person.role}</span>
-      </li>
-    ))}
-  </ul>
+<div class:list={['block-credits', { 'block-credits--split': hasThanks }]}>
+  <div class="block-credits-group">
+    <p class="block-credits-label">Credits</p>
+    <ul class="block-credits-list">
+      {people.map((person) => (
+        <li class="block-credits-person">
+          <span class="block-credits-name" set:html={parseInline(person.name)} />
+          <span class="block-credits-sep"> - </span>
+          <span class="block-credits-role">{person.role}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  {hasThanks && (
+    <div class="block-credits-group">
+      <p class="block-credits-label">Special thanks</p>
+      <ul class="block-credits-list">
+        {thanks.map((person) => (
+          <li class="block-credits-person">
+            <span class="block-credits-name" set:html={parseInline(person.name)} />
+            <span class="block-credits-sep"> - </span>
+            <span class="block-credits-role">{person.role}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
 </div>

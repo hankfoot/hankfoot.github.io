@@ -1,0 +1,140 @@
+---
+title: Use Your Melon
+timeline: "2019-2021"
+tags:
+  - Installation
+  - Academic
+  - Prototyping
+  - UX Design
+thumb: /projects/use-your-melon/kid-playing-16x9.jpeg
+featured: true
+summary: Gesture-controlled installation challenging Georgia Aquarium guests to a game of echolocation charades.
+context: "[Georgia Aquarium](https://www.georgiaaquarium.org/)"
+contextLabel: Partner
+role:
+  - UX Design
+  - Software Development
+tools:
+  - Unity
+  - Kinect
+outcomes:
+  - Georgia Tech MS-HCI thesis
+  - Six-pose gesture model
+  - Built with the Georgia Aquarium
+---
+
+<Section>
+<BentoGrid images={[
+  { src: "/projects/use-your-melon/kid-playing-16x9.jpeg", alt: "A child mid-transformation into a lemon shark in front of the installation screen", wide: true, ratio: "16 / 9", width: 2000, height: 1124 }
+]} />
+</Section>
+
+<Section label="summary">
+The Georgia Aquarium's Dolphin Coast opens onto a pre-show atrium where guests wait — often the better part of an hour — in front of blank walls. For our Georgia Tech master's thesis, we asked what that room could teach people about the animals they were about to meet.
+
+Use Your Melon turns the wait into a game of charades. Guests strike a pose to mimic a sea creature, and a digital dolphin echolocates to work out what they are, then explains how the two of them meet in the wild.
+</Section>
+
+<Section>
+<BentoGrid images={[
+  { src: "/projects/use-your-melon/atrium-crowd-3x2.jpeg", alt: "Guests crowded into the Dolphin Coast pre-show atrium", wide: true, ratio: "3 / 2", width: 2000, height: 1334, caption: "“On days where we only have 4 shows, guests might have to arrive an hour early to get a seat.” — Georgia Aquarium staff member" }
+]} />
+</Section>
+
+<Section label="my role">
+I led the guest research — five days of observation in the atrium, 14 interviews with guests, floor staff, and managers, and the affinity mapping that turned all of it into a design brief.
+
+From there I designed the gesture interaction and built the demo. A Microsoft Kinect feeds depth data to a pose model, and Unity renders a responsive undersea scene around whoever is standing in front of it.
+</Section>
+
+<Section label="process">
+<Feature
+  image="/projects/use-your-melon/affinity-map-16x9.jpeg"
+  alt="Affinity map covering a wall, with sorted research cards laid out on tables"
+  label="guest research"
+  description="Five days of observation and 14 interviews with guests, floor staff, and managers, mapped down to four opportunities."
+/>
+
+<Feature
+  image="/projects/use-your-melon/participatory-design-16x9.jpeg"
+  alt="Aquarium stakeholders sketching concepts during a participatory design workshop"
+  label="participatory design"
+  description="A workshop with five aquarium stakeholders turned those opportunities into concepts we could prototype on paper."
+  flip={true}
+/>
+
+<BentoGrid images={[
+  { src: "/projects/use-your-melon/gesture-study.webm", alt: "Testers mimicking sea creatures for the gesture study", ratio: "16 / 9", caption: "Testers mimicked sea creatures on camera. Six read consistently enough to build a game on." },
+  { src: "/projects/use-your-melon/kinect-spike.webm", alt: "Kinect pose recognition prototype showing per-creature confidence bars", ratio: "16 / 9", caption: "A recognition spike: skeleton tracking on the left, live confidence per creature on the right." }
+]} />
+</Section>
+
+<Section label="how to play">
+<Feature
+  image="/projects/use-your-melon/step-one-approach.webm"
+  alt="A player approaching the installation and meeting their bubblized avatar"
+  label="step right up"
+  description="A dolphin companion greets you beside a bubblized version of yourself."
+/>
+
+<Feature
+  image="/projects/use-your-melon/step-two-pose.webm"
+  alt="A player discovering a hidden creature pose"
+  label="strike a pose"
+  description="Find the hidden gesture for one of six creatures and the dolphin starts echolocating to identify you."
+  flip={true}
+/>
+
+<Feature
+  image="/projects/use-your-melon/step-three-transform.webm"
+  alt="A player transforming into a sea creature in a burst of bubbles"
+  label="transform"
+  description="Hold the pose, burst into bubbles, and learn how that creature lives alongside dolphins in the wild."
+/>
+</Section>
+
+<Section>
+<BentoGrid images={[
+  { src: "/projects/use-your-melon/gesture-reference-16x9.png", alt: "On-screen gesture key showing creature poses and the motions to copy", wide: true, ratio: "16 / 9", width: 1920, height: 1080, caption: "The on-screen key: strike the pose, hold the motion." },
+  { src: "/projects/use-your-melon/creature-stat-card-16x9.png", alt: "Common octopus stat card with a bilingual fact about dolphins", ratio: "16 / 9", width: 1190, height: 683, caption: "Every creature carries an aquarium-approved stat card and fact." },
+  { src: "/projects/use-your-melon/play-boundary.webm", alt: "The installation warning a player who has stepped out of the play area", ratio: "16 / 9", caption: "Step outside the camera's view and the game nudges you back in." },
+  { src: "/projects/use-your-melon/system-diagram-16x9.png", alt: "System diagram showing the Kinect detection area, play area, and digital display", wide: true, ratio: "16 / 9", width: 1444, height: 804, caption: "Kinect depth data feeds the pose model; Unity renders the reef in real time." }
+]} />
+</Section>
+
+<Section label="outcomes">
+<Outcomes items={[
+  "Completed as a Georgia Tech [MS-HCI master's thesis](https://drive.google.com/file/d/1Y8vGPAWyPnEuvJTKSSEJ3aYsmn0ntQHb/view?usp=sharing) advised by Dr. Carrie Bruce",
+  "Designed in partnership with the [Georgia Aquarium](https://www.georgiaaquarium.org/) for the Dolphin Coast pre-show atrium",
+  "Shipped a feature-complete Unity and Kinect demo recognizing six creature poses",
+  "Captioned in English and Spanish, the two most common languages spoken on the aquarium floor",
+  "Evaluated with four aquarium stakeholders and five physical-interaction experts after COVID-19 closed the floor to testing",
+]} />
+</Section>
+
+<Section>
+<Quote
+  text={`The walls were pretty blank...it would've been nice to have a little more to do`}
+  cite="Aquarium guest"
+/>
+</Section>
+
+<Section>
+<BentoGrid images={[
+  { src: "/projects/use-your-melon/octopus-transform.webm", alt: "A player transformed into a common octopus", ratio: "16 / 9" },
+  { src: "/projects/use-your-melon/crab-pose.webm", alt: "A player transformed into a blue crab", ratio: "16 / 9" }
+]} />
+</Section>
+
+<Credits
+  people={[
+    { name: "Hank Duhaime", role: "UX Design & Software" },
+    { name: "[Rex McKay](https://www.rexmckay.com/)", role: "Visual & UX Design" },
+    { name: "[Courtney Sutter](https://www.linkedin.com/in/courtneystorm/)", role: "UX Research" }
+  ]}
+  thanks={[
+    { name: "[Hunter Spence](https://www.linkedin.com/in/hunter-spence-tech-executive/)", role: "Advisor" },
+    { name: "[Dr. Carrie Bruce](https://www.linkedin.com/in/carrie-bruce/)", role: "Advisor" },
+    { name: "[Jahmar Hannans](https://www.linkedin.com/in/jahmar-kelsey-hannans-62a6b23/)", role: "Georgia Aquarium Project Sponsor" }
+  ]}
+/>

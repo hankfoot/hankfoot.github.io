@@ -784,6 +784,17 @@ a {
   transition: color 0.15s, letter-spacing 0.15s;
 }
 
+/* The arrow and the word are separate elements so the flex gap and centring
+   above actually apply — as one text node they were inert, and the space
+   between them was just a literal space character.
+   Source Code Pro draws ← centred on the math axis, which measures ~0.15em
+   below the optical centre of "back", so flex centring alone still reads low.
+   The nudge corrects that; it's in em so it holds if the size changes. */
+.project-panel-back-arrow {
+  line-height: 1;
+  transform: translateY(-0.15em);
+}
+
 .project-panel-back:hover {
   color: var(--color-text);
   letter-spacing: 0.01em;
@@ -1676,7 +1687,8 @@ a.block-credits-name:hover,
   }
 
   .project-panel-back {
-    display: inline-block;
+    /* inline-flex, not inline-block — the arrow's gap and centring depend on it */
+    display: inline-flex;
     padding: 0.75rem 0.75rem 0.75rem 0;
     margin: -0.5rem 0;
   }

@@ -15,7 +15,7 @@ import {
   resumeUrl,
 } from '../data/about';
 
-const projects = await getCollection('projects');
+const projects = await getCollection('projects', ({ data }) => !data.draft);
 const sorted = projects.sort((a, b) => b.data.timeline.localeCompare(a.data.timeline));
 ---
 <Base title="Hank Duhaime — Design Technologist">

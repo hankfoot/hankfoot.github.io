@@ -8,6 +8,10 @@ const projects = defineCollection({
     tags: z.array(z.string()),
     thumb: z.string(),
     featured: z.boolean(),
+    // Keeps a project out of the build entirely — off the homepage grid AND
+    // no page generated. For work that isn't ready to be seen yet. Distinct
+    // from `featured`, which is about front-page prominence for published work.
+    draft: z.boolean().optional().default(false),
     summary: z.string(),
     context: z.string().optional(),
     contextLabel: z.string().optional(),

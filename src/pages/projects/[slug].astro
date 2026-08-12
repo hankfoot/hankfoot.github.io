@@ -16,7 +16,9 @@ import GameCanvas from '../../components/GameCanvas.astro';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
-  const projects = await getCollection('projects');
+  // Drafts generate no route at all — an unlinked page would still be live,
+  // indexable, and reachable by URL.
+  const projects = await getCollection('projects', ({ data }) => !data.draft);
   return projects.map(project => ({
     params: { slug: project.id.replace(/\.[^.]+$/, '') },
     props: { project },

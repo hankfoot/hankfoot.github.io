@@ -75,9 +75,12 @@ title: Quick Distract            # required
 timeline: "2023-2025"            # required, string (replaced old `year`)
 tags: [XR, App, Product]         # required
 thumb: /projects/quick-distract/lionheart-context-3x2.jpeg  # required — a missing thumb breaks the Image pipeline
-featured: true                   # reserved: the homepage currently shows every project;
-                                 # set false to keep a project off the front page once a
+featured: true                   # reserved: the homepage currently shows every published
+                                 # project; set false to keep one off the front page once a
                                  # separate full project index exists. Wire the filter then.
+draft: true                      # optional, defaults false. Removes the project from the
+                                 # build entirely — off the homepage AND no page generated.
+                                 # For work that isn't ready to be seen.
 summary: "One-liner."            # required — SINGLE source for card teaser AND project-page hook
 context: SpellBound AR           # optional; label defaults to "Client"
 contextLabel: Company            # optional override

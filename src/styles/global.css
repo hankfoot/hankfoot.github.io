@@ -1276,6 +1276,27 @@ figcaption a:hover {
 }
 
 /* ─── Block: BentoGrid ───────────────────────────────────────── */
+/* TITLE role, item step — same treatment as .block-feature-label, so a
+   labelled grid and a Feature read as peers within a section. */
+.block-bento-label {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+  color: var(--color-text);
+  margin: 0 0 0.75rem;
+}
+
+/* A label marks the grid as its own beat, so it opens at the wider
+   feature-to-feature rhythm rather than the standard block gap. The grid
+   itself carries no margin, so it stays tucked under its label. */
+.pp-body-section
+  > :is(.block-bento, .block-feature, .block-quote, .block-outcomes, .block-specs)
+  + .block-bento-label {
+  margin-top: 3.5rem;
+}
+
 .block-bento {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -5,10 +5,15 @@ import { isVideo, videoBase } from '../../utils/media';
 
 interface Props {
   images: Array<{ src: string; alt: string; wide?: boolean; ratio?: string; width?: number; height?: number; caption?: string }>;
+  /** Optional heading above the grid, styled like a Feature's label — for when
+      a group of images is its own beat rather than a continuation. */
+  label?: string;
 }
 
-const { images } = Astro.props;
+const { images, label } = Astro.props;
 ---
+
+{label && <h3 class="block-bento-label">{label}</h3>}
 
 <div class="block-bento">
   {images.map((image) => (

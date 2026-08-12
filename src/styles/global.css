@@ -1300,7 +1300,9 @@ figcaption a:hover {
 .block-bento {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  /* --grid-gap, matching the homepage project grid — the old 1rem left the
+     cells reading as one dense slab rather than separate images. */
+  gap: var(--grid-gap);
 }
 
 .block-bento-item {
@@ -1424,9 +1426,10 @@ figcaption a:hover {
   color: var(--color-inverse-text);
   border-radius: var(--radius-lg); /* match the bento photos it sits beneath */
   padding: 1.25rem 1.75rem;
-  /* Credits sits as a flex child of .project-panel-body (gap: --space-section),
-     not inside a <Section> — this offsets that gap down to a clean --space-block. */
-  margin-top: calc(var(--space-block) - var(--space-section));
+  /* Credits is a flex child of .project-panel-body, so it takes the same
+     --space-section gap as a <Section>. It used to be pulled back to
+     --space-block, which left the final section crowded against it and sitting
+     off-centre between the last block and the credits. */
 }
 
 .block-credits .block-credits-label {

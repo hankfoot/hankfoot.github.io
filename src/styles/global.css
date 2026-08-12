@@ -8,7 +8,10 @@
 /* ─── Custom Properties ──────────────────────────────────────── */
 :root {
   --layout-max: 100%;
-  --sidebar-w: 20vw; /* viewport-relative — keeps grid column and fixed panel left in sync */
+  /* Drives both the body grid column and .project-panel's left offset, so the
+     two can never drift. Floor is 200px: the footer email is the widest thing
+     in there at 145px, plus 40px of padding. */
+  --sidebar-w: clamp(200px, 15vw, 240px);
   --sidebar-border: 1px solid #e0e0e0;
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'Source Code Pro', 'Courier New', monospace;
@@ -27,13 +30,33 @@
   /* FIX: standardized label tracking — all mono labels now use one of two scales */
   --label-tracking-tight: 0.04em;  /* section-level labels (section-label, ph-meta-label, h2) */
   --label-tracking-loose: 0.08em;  /* feature/credits caps labels */
+
+  /* ── Type roles ──────────────────────────────────────────────
+     Every text style on the site resolves to one of four roles. Project pages
+     define the reference values; the homepage matches them. Size steps within
+     a role are allowed (the hero is a bigger TITLE than a card); font, weight,
+     tracking, case and colour are not.
+
+     TITLE       Inter 700 · lowercase · -0.04em (-0.02em at item step)
+                 hero .intro-title · hero-2 .intro-subtitle · page .ph-title
+                 item .project-card-title / .cv-role-title / .block-feature-label
+     SUBTITLE    Inter 400 · muted · lh 1.45 · normal tracking
+                 .ph-hook (project pages)
+     CAPTION     Source Code Pro 400 · muted · --label-tracking-tight
+                 0.6875rem field labels · 0.75rem section labels
+                 .section-label · .tag · .project-card-meta · .cv-block-label
+     DESCRIPTION Inter 400 · 0.9375rem · lh 1.6
+                 .project-panel-body p · .about-prose p · .cv-role-desc
+     ─────────────────────────────────────────────────────────── */
   --radius-sm: 4px;    /* tags, CTAs, small UI — replaces 2px, 3px, 4px, 5px */
   --radius-md: 12px;   /* block components: bento, feature, credits */
   --radius-lg: 24px;   /* hero images */
   --space-section: 5rem; /* gap between major sections (header, body sections) */
   --space-block: 2rem;   /* gap between related blocks within a section (meta→hero, feature→feature) */
   --grid-gap: 1.5rem;
-  --stagger-offset: 80px;
+  /* Homepage section rhythm — applied symmetrically either side of a divider,
+     so content→rule and rule→content are always equal. */
+  --space-divider: 3rem;
 }
 
 /* ─── Base ───────────────────────────────────────────────────── */
@@ -81,19 +104,13 @@ a {
 /* ─── Sidebar Sections ───────────────────────────────────────── */
 .sidebar-name {
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: 1.125rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   margin-bottom: 0.125rem;
 }
 
-.sidebar-hand {
-  display: inline-block;
-  font-size: 1rem;
-}
-
-/* Bundled Fluent Emoji hands (see public/ui/) sized like the glyphs they replace */
-.sidebar-hand img,
+/* Bundled Fluent Emoji hand in the motion toggle, sized like the glyph it replaces */
 .motion-emoji img {
   width: 1em;
   height: 1em;
@@ -113,58 +130,101 @@ a {
 }
 
 /* ─── Page Intro ─────────────────────────────────────────────── */
+/* Equal space above and below the rule that closes the hero */
 .page-intro {
-  padding-bottom: 2.5rem;
-  margin-bottom: 2.5rem;
+  padding-bottom: var(--space-divider);
+  margin-bottom: var(--space-divider);
   border-bottom: 1px solid var(--color-border);
 }
 
-.intro-greeting {
-  font-size: 4rem;
+/* TITLE role — matches .ph-title on project pages. Only the size step differs;
+   the hero is the largest instance of the same treatment. */
+.intro-title {
+  font-size: clamp(2.25rem, 4.8vw, 3.25rem);
   font-weight: 700;
   letter-spacing: -0.04em;
-  line-height: 1;
+  line-height: 1.08;
+  text-transform: lowercase;
   margin-bottom: 0.75rem;
 }
 
-.intro-tagline {
-  font-size: 2.25rem;
+/* TITLE role, secondary step — same treatment as .intro-title above, one size
+   down. Unconstrained in width so it runs the full column. */
+.intro-subtitle {
+  font-size: clamp(1.5rem, 3.2vw, 2.5rem);
   font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.15;
-  margin-bottom: 0.5rem;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+  color: var(--color-text);
+  text-transform: lowercase;
+  margin-bottom: 2rem;
 }
 
-.intro-tagline em {
-  font-style: italic;
-  color: var(--color-muted);
+/* Inline hook — HandCursor aims its idle wave just past this box, so the
+   waving hand is nested inside it rather than after it. No type of its own. */
+.intro-greeting {
+  display: inline;
 }
 
-.intro-code {
-  font-family: var(--font-mono);
-  font-size: 0.85em;
-  background: var(--color-surface-mid); /* FIX: was hardcoded #f0f0f0 */
-  border-radius: var(--radius-sm); /* PASS: normalized to --radius-sm/md/lg */
-  padding: 0.05em 0.35em;
+
+/* Punctuating emoji, sized down so they accent the line instead of
+   out-weighing the words. */
+.intro-emoji {
+  display: inline-block;
+  font-size: 0.78em;
+  line-height: 1;
+  /* Cap-band centred — (capHeight − boxHeight)/2 in em, so all three emoji sit
+     on one optical line and hold their alignment as the clamps scale. */
+  vertical-align: 0.115em;
 }
 
-.intro-sub {
-  font-size: 0.9375rem;
-  color: var(--color-muted);
-  margin-bottom: 1.5rem;
-}
-
+/* Mono like every other caption, but at the DESCRIPTION size (0.9375rem) —
+   this is hero-level metadata sitting under a 40px title, so the field-label
+   step reads as an afterthought there. Baseline-aligned so the label and the
+   names sit on one line. */
 .intro-formerly {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem 1.5rem;
+  align-items: baseline;
+  gap: 0.4rem 1.5rem;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.9375rem;
+  letter-spacing: var(--label-tracking-tight);
   color: var(--color-muted);
 }
 
 .intro-formerly-label {
-  opacity: 0.5;
+  opacity: 0.65;
+}
+
+/* Hairline underline signals these are links without shouting; both it and
+   the text firm up on hover. Same idiom as .cv-pub a. */
+.intro-formerly a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--color-border);
+  text-underline-offset: 3px;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.intro-formerly a:hover {
+  color: var(--color-text);
+  text-decoration-color: var(--color-text);
+}
+
+/* Shared with the sidebar bio and the /styles reference. Inherits weight and
+   size from whichever line it sits in rather than fixing its own. */
+.intro-code {
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  background: var(--color-surface-mid);
+  border-radius: var(--radius-sm);
+  /* Vertical padding is cancelled by an equal negative margin so the chip
+     can have a balanced box without growing the line it sits in. */
+  padding: 0.18em 0.36em;
+  margin-block: -0.18em;
+  /* Mono sits low against Inter at the same optical size — lift to match. */
+  vertical-align: 0.08em;
 }
 
 /* ─── Sidebar Nav ────────────────────────────────────────────── */
@@ -286,25 +346,30 @@ a {
 }
 
 /* ─── Page Sections ──────────────────────────────────────────── */
+/* One rule governs every section break (projects→about→cv), so the
+   gap above and below each divider stays identical everywhere. */
+/* margin-top carries previous content → this rule; padding-top carries the
+   rule → this section's label. Both are --space-divider, so every section
+   break measures the same on both sides. Bottom spacing belongs to the next
+   section's margin, so it is never double-counted. */
 .page-section {
-  margin-top: 4rem;
-  padding-top: 2.5rem;
-  padding-bottom: 4rem;
-  min-height: 50vh;
+  margin-top: var(--space-divider);
+  padding-top: var(--space-divider);
+  padding-bottom: 0;
   border-top: 1px solid var(--color-border);
 }
 
-#cv {
-  min-height: 80vh;
+/* Nothing follows the last section, so it owns its own bottom space */
+.page-section:last-of-type {
+  padding-bottom: var(--space-divider);
 }
 
-#contact {
-  min-height: unset;
-}
-
+/* CAPTION role, section step — 0.75rem like .cv-block-label and
+   .pp-body-section-label. It was 0.6875rem, the *field* step, which made the
+   page-level label smaller than the sub-headings beneath it. */
 .section-label {
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   color: var(--color-muted);
   letter-spacing: var(--label-tracking-tight); /* FIX: was 0.06em, normalized to --label-tracking-tight */
   text-transform: lowercase;
@@ -325,6 +390,7 @@ a {
 .section-cta {
   font-family: var(--font-mono);
   font-size: 0.75rem;
+  letter-spacing: var(--label-tracking-tight);
   color: var(--color-text);
   border: 1px solid var(--color-text);
   border-radius: var(--radius-sm); /* PASS: normalized to --radius-sm/md/lg */
@@ -339,21 +405,220 @@ a {
   color: var(--color-bg);
 }
 
-.contact-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
+/* ─── About ──────────────────────────────────────────────────── */
+/* Prose / portrait pair — same 3fr:2fr ratio as .block-feature so the
+   homepage and project pages share one column rhythm. */
+.about-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 3rem;
+  align-items: start;
 }
 
-.contact-item {
+.about-prose {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-width: 62ch;
+}
+
+/* DESCRIPTION role — matches .project-panel-body p exactly */
+.about-prose p {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+/* Lead keeps its emphasis through colour alone; the rest recede to muted,
+   the same device .ph-hook uses rather than a second size. */
+
+.about-prose p:not(:first-child) {
+  color: var(--color-muted);
+}
+
+.about-photo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.about-photo img {
+  width: 100%;
+  /* height:auto releases the intrinsic height attribute Astro's <Image> emits,
+     so aspect-ratio governs the box */
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  /* --radius-sm to match .project-card-thumb, so homepage imagery is uniform */
+  border-radius: var(--radius-sm);
+  display: block;
+  background: var(--color-placeholder);
+}
+
+/* CAPTION role — 0.75rem, matching figcaption on project pages */
+.about-photo figcaption {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--color-muted);
-  transition: color 0.15s;
+  letter-spacing: var(--label-tracking-tight);
 }
 
-.contact-item:hover {
+/* ─── CV ─────────────────────────────────────────────────────── */
+/* Single stacked column — each block spends the full width horizontally
+   rather than squeezing prose into a narrow measure. */
+.cv-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  max-width: 1100px;
+}
+
+/* Education and publications ride side by side, on the SAME two tracks as
+   .cv-role above — so education sits under the company rail and publications
+   starts exactly where the experience descriptions start. */
+.cv-pair {
+  display: grid;
+  grid-template-columns: clamp(9rem, 22%, 15rem) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+/* At half width the rail is too narrow for a school name, so the education
+   rows stack instead of splitting into two tracks. */
+.cv-pair .cv-education-item {
+  grid-template-columns: 1fr;
+  gap: 0.2rem;
+}
+
+
+/* Sub-heading inside a page section — one step down from .section-label.
+   No rule: the block gap in .cv-stack does the separating, matching how
+   .section-label sits unruled above its own content. */
+.cv-block-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 400;
+  text-transform: lowercase;
+  letter-spacing: var(--label-tracking-tight);
+  color: var(--color-muted);
+  margin-bottom: 1.25rem;
+}
+
+/* No rules between entries — the left rail's mono name is a strong enough
+   left edge that whitespace alone separates them. */
+.cv-roles,
+.cv-education {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* Two-track row shared by experience and education: who/when on the left
+   rail, what on the right. The rail scales with the container but caps at
+   15rem, so it never starves the right track or balloons at full width. */
+.cv-role,
+.cv-education-item {
+  display: grid;
+  grid-template-columns: clamp(9rem, 22%, 15rem) minmax(0, 1fr);
+  gap: 2rem;
+  /* Baseline, not start: the rail is 0.75rem mono and the title is 1rem sans,
+     so aligning their boxes leaves the two sitting on different lines.
+     Aligning first baselines puts the company and the job title on one line. */
+  align-items: baseline;
+}
+
+.cv-role-when {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+/* Company reads lowercase mono, echoing the "formerly @" row in the intro */
+.cv-role-company {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  text-transform: lowercase;
+  letter-spacing: var(--label-tracking-tight);
   color: var(--color-text);
+}
+
+/* CAPTION role, field step */
+.cv-role-dates {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--label-tracking-tight);
+  color: var(--color-muted);
+}
+
+/* TITLE role, item step — same as .project-card-title */
+.cv-role-title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  text-transform: lowercase;
+  margin-bottom: 0.55rem;
+}
+
+/* TITLE role, item step. No trailing margin — nothing follows it in the row. */
+.cv-education-degree {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  text-transform: lowercase;
+}
+
+/* DESCRIPTION role */
+.cv-role-desc {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-muted);
+  max-width: 68ch;
+}
+
+/* School sits in the rail exactly like .cv-role-company */
+.cv-education-school {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  text-transform: lowercase;
+  letter-spacing: var(--label-tracking-tight);
+  color: var(--color-text);
+}
+
+/* 400px floor keeps the four entries as a 2×2 block rather than 3-plus-orphan */
+.cv-pubs {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.25rem 3rem;
+  align-items: start;
+}
+
+/* DESCRIPTION role */
+.cv-pub a {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: var(--color-border);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.cv-pub a:hover {
+  text-decoration-color: var(--color-text);
+}
+
+/* CAPTION role */
+.cv-pub-meta {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--label-tracking-tight);
+  color: var(--color-muted);
+  margin-top: 0.25rem;
 }
 
 /* ─── Project Grid ───────────────────────────────────────────── */
@@ -364,10 +629,6 @@ a {
   align-items: start;
 }
 
-/* Stagger: right-column cards (even index) get a top offset */
-.project-grid > *:nth-child(even) {
-  margin-top: var(--stagger-offset);
-}
 
 /* ─── Project Card ───────────────────────────────────────────── */
 .project-card {
@@ -382,8 +643,11 @@ a {
 
 .project-card-thumb {
   width: 100%;
-  aspect-ratio: 4 / 3;
-  max-height: clamp(180px, 22vh, 480px);
+  /* Wide editorial crop rather than a squarer 4:3 */
+  aspect-ratio: 3 / 2;
+  /* Ceiling only for short windows — on a normal screen the ratio wins, so the
+     cover fills the card's width instead of being cropped to a band. */
+  max-height: clamp(220px, 52vh, 620px);
   background: var(--color-placeholder); /* FIX: was hardcoded #d8d8d8 */
   border-radius: var(--radius-sm);
   overflow: hidden;
@@ -397,27 +661,34 @@ a {
   display: block;
 }
 
+/* TITLE role, item step — same treatment as .block-feature-label on project
+   pages, and lowercase so a card matches its own detail-page heading. */
 .project-card-title {
-  font-size: 0.8125rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   line-height: 1.3;
-  margin-bottom: 0.2rem;
+  text-transform: lowercase;
+  margin-bottom: 0.25rem;
 }
 
+/* DESCRIPTION role, clamped to two lines so cards stay even */
 .project-card-summary {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
   color: var(--color-muted);
-  line-height: 1.5;
+  margin-top: 0.25rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
+/* CAPTION role */
 .project-card-meta {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
+  letter-spacing: var(--label-tracking-tight);
   color: var(--color-muted);
   margin-top: 0.375rem;
 }
@@ -431,9 +702,11 @@ a {
   margin-top: 0.5rem;
 }
 
+/* CAPTION role */
 .tag {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
+  letter-spacing: var(--label-tracking-tight);
   padding: 0.15rem 0.4rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm); /* PASS: normalized to --radius-sm/md/lg */
@@ -882,7 +1155,9 @@ figcaption a:hover {
   transform: translateX(-50%) translateY(4px);
   z-index: 20;
   width: max-content;
-  max-width: 18rem;
+  /* Never wider than the viewport it has to fit inside — an 18rem tooltip
+     centred on an anchor near the right edge otherwise forces a scrollbar. */
+  max-width: min(18rem, calc(100vw - 2rem));
   padding: 0.5rem 0.7rem;
   background: var(--color-inverse-bg);
   color: var(--color-inverse-text);
@@ -1266,4 +1541,233 @@ a.block-credits-name:hover,
 [data-reduced-motion="true"] * {
   transition: none !important;
   animation: none !important;
+}
+
+/* ─── Responsive ─────────────────────────────────────────────── */
+/* The desktop shell is a 20vw sticky sidebar beside a scrolling main column.
+   Below 900px that inverts: the sidebar becomes a sticky top bar and every
+   multi-column grid collapses. Keep new multi-column layouts in step by
+   adding their override to the matching breakpoint below. */
+
+/* The hand cursor is a pointer-driven flourish with no touch equivalent. */
+@media (hover: none), (pointer: coarse) {
+  #hand-cursor {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  body {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  /* ── Shell: sidebar becomes a top bar ── */
+  .sidebar {
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    padding: 0.875rem 1.25rem;
+    border-right: none;
+    border-bottom: var(--sidebar-border);
+    overflow: visible;
+  }
+
+  /* Both duplicate content that lives in the about and contact sections */
+  .sidebar-bio,
+  .sidebar-footer {
+    display: none;
+  }
+
+  .sidebar-name {
+    margin-bottom: 0;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    margin: 0 0 0 auto;
+  }
+
+  .sidebar-nav a {
+    font-size: 1.0625rem;
+  }
+
+  .sidebar-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0;
+  }
+
+  .sidebar-badges-label {
+    display: none;
+  }
+
+  .content-area {
+    padding: 1.5rem;
+  }
+
+  /* The fixed drawer is desktop choreography: it assumes a sidebar beside it
+     and a viewport-height scroll container. With the sidebar now a sticky bar
+     above, a fixed panel would slide underneath it and hide its own title, so
+     the panel becomes an ordinary in-flow document that scrolls with the page. */
+  .project-panel {
+    position: static;
+    height: auto;
+    overflow: visible;
+    border-left: none;
+    padding: 1.5rem;
+  }
+
+
+  /* ── Homepage ── */
+  /* Headline sizes are fluid (clamp) — no per-breakpoint override needed */
+  .project-grid {
+    gap: 1.25rem;
+  }
+
+  .about-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .about-photo {
+    max-width: 460px;
+  }
+
+  /* Rail stacks above its content instead of beside it */
+  .cv-role,
+  .cv-education-item {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+
+  .cv-roles,
+  .cv-education {
+    gap: 2rem;
+  }
+
+  .cv-pubs {
+    grid-template-columns: 1fr;
+  }
+
+  /* Education and publications stack once there is no room beside each other */
+  .cv-pair {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .cv-stack {
+    gap: 3rem;
+  }
+
+  /* ── Project pages ── */
+  .ph-title {
+    font-size: 2rem;
+  }
+
+  .ph-meta {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ph-meta-field:last-child {
+    grid-column: auto;
+  }
+
+  .block-feature,
+  .block-feature--flip {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  /* Media leads on every feature once stacked, flipped or not */
+  .block-feature--flip .block-feature-image {
+    order: 0;
+  }
+
+  .block-feature--flip .block-feature-text {
+    order: 0;
+  }
+
+  .block-bento {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .content-area {
+    padding: 1.25rem;
+  }
+
+  .project-panel {
+    padding: 1.25rem;
+  }
+
+  .sidebar {
+    padding: 0.75rem 1rem;
+  }
+
+  .pp-sections {
+    gap: 3rem;
+  }
+
+  .sidebar-nav a {
+    font-size: 1rem;
+  }
+
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .ph-title {
+    font-size: 1.75rem;
+  }
+
+  .ph-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .block-specs {
+    grid-template-columns: 1fr;
+    gap: 0.15rem 0;
+  }
+
+  .block-image-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  /* A tooltip centred on its inline anchor cannot be kept inside a narrow
+     viewport with CSS alone, so it becomes a pinned bottom sheet instead —
+     no overflow possible, and a larger tap-friendly target. */
+  .tip-pop {
+    position: fixed;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    top: auto;
+    width: auto;
+    max-width: none;
+    transform: translateY(4px);
+  }
+
+  /* The arrow only reads when the popup is attached to its anchor */
+  .tip-pop::after {
+    display: none;
+  }
+
+  .tip:hover .tip-pop,
+  .tip:focus .tip-pop,
+  .tip:focus-visible .tip-pop {
+    transform: none;
+  }
+
+  .motion-toggle {
+    bottom: 0.75rem;
+    right: 0.75rem;
+  }
 }

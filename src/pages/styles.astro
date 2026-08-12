@@ -18,33 +18,46 @@ import Section from '../components/blocks/Section.astro';
 
     <!-- ─── Section: Typography ─────────────────────────── -->
     <section class="styles-section">
-      <p class="styles-section-label">typography</p>
+      <p class="styles-section-label">typography · four roles</p>
 
       <div class="styles-row">
-        <p class="styles-token-label">display title · .ph-title</p>
+        <p class="styles-token-label">
+          Every text style resolves to one of four roles. Project pages define the reference
+          values; the homepage matches them. Size steps within a role are allowed — font,
+          weight, tracking, case and colour are not.
+        </p>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">1 · TITLE — Inter 700 · lowercase · page step · .ph-title</p>
         <h1 class="ph-title">arise: spatial ar for retail</h1>
       </div>
 
       <div class="styles-row">
-        <p class="styles-token-label">hook / subtitle · .ph-hook</p>
+        <p class="styles-token-label">1 · TITLE — item step · .project-card-title / .cv-role-title / .block-feature-label</p>
+        <h2 class="project-card-title">senior product design prototyper</h2>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">2 · SUBTITLE — Inter 400 · muted · .ph-hook / .intro-subtitle</p>
         <p class="ph-hook">Redesigning the fitting room for a world without mirrors.</p>
       </div>
 
       <div class="styles-row">
-        <p class="styles-token-label">section label · .section-label</p>
+        <p class="styles-token-label">3 · CAPTION — Source Code Pro · tracked · .section-label / .tag / .cv-block-label</p>
         <p class="section-label">projects</p>
       </div>
 
       <div class="styles-row">
-        <p class="styles-token-label">body section label · .pp-body-section-label</p>
-        <p class="pp-body-section-label">cool features</p>
-      </div>
-
-      <div class="styles-row">
-        <p class="styles-token-label">body text · p (0.9375rem / lh 1.6)</p>
+        <p class="styles-token-label">4 · DESCRIPTION — Inter 400 · 0.9375rem · lh 1.6 · .project-panel-body p / .about-prose p / .cv-role-desc</p>
         <p style="font-size: 0.9375rem; line-height: 1.6; color: var(--color-text);">
           Interaction design sits at the boundary between the physical and digital. Good work here demands both systems thinking and a sensitivity to how people actually hold, touch, and move through the world.
         </p>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">3 · CAPTION — section step · .pp-body-section-label</p>
+        <p class="pp-body-section-label">cool features</p>
       </div>
 
       <div class="styles-row">
@@ -269,6 +282,75 @@ import Section from '../components/blocks/Section.astro';
       <div class="styles-row">
         <p class="styles-token-label">figcaption</p>
         <figcaption>Fig. 1 — Gesture vocabulary exploration, iteration 3 of 7</figcaption>
+      </div>
+
+    </section>
+
+    <!-- ─── Section: Homepage Sections ───────────────────── -->
+    <section class="styles-section">
+      <p class="styles-section-label">homepage sections · about / cv</p>
+
+      <div class="styles-row">
+        <p class="styles-token-label">sub-heading · .cv-block-label</p>
+        <h2 class="cv-block-label">experience</h2>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">about prose · .about-prose (lead + body)</p>
+        <div class="about-prose">
+          <p>I'm Hank — a design technologist who builds playful interactive experiences.</p>
+          <p>I thrive where code, hardware, and imagination meet: turning early ideas into prototypes that can be felt, heard, and seen.</p>
+        </div>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">role entry · .cv-role</p>
+        <div class="cv-roles">
+          <article class="cv-role">
+            <div class="cv-role-when">
+              <p class="cv-role-company">meta reality labs research</p>
+              <p class="cv-role-dates">2022 — present</p>
+            </div>
+            <div class="cv-role-what">
+              <p class="cv-role-title">Senior Product Design Prototyper</p>
+              <p class="cv-role-desc">AR/VR research prototypes across haptics, AI, wearables, and robotics.</p>
+            </div>
+          </article>
+          <article class="cv-role">
+            <div class="cv-role-when">
+              <p class="cv-role-company">publicis sapient</p>
+              <p class="cv-role-dates">2020 — 2022</p>
+            </div>
+            <div class="cv-role-what">
+              <p class="cv-role-title">Experience Designer L1</p>
+              <p class="cv-role-desc">Digital products for Mercedes-Benz USA: sketches, wireframes, and interaction flows.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">education entry · .cv-education (shares the .cv-role grid; stacks inside .cv-pair)</p>
+        <dl class="cv-education">
+          <div class="cv-education-item">
+            <dt class="cv-education-school">georgia institute of technology</dt>
+            <dd class="cv-education-degree">MS Human-Computer Interaction</dd>
+          </div>
+          <div class="cv-education-item">
+            <dt class="cv-education-school">university of michigan</dt>
+            <dd class="cv-education-degree">BSE Computer Science</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">publication entry · .cv-pub</p>
+        <ul class="cv-pubs">
+          <li class="cv-pub">
+            <a href="#" onclick="return false;">Explorations of Wrist Haptic Feedback for AR/VR Interactions with Tasbi</a>
+            <p class="cv-pub-meta">UIST Demo, 2022</p>
+          </li>
+        </ul>
       </div>
 
     </section>

@@ -189,6 +189,7 @@
     { key: 'projects', selector: '#projects',   action: () => pointAtNavLink('projects') },
     { key: 'about',    selector: '#about',      action: () => pointAtNavLink('about') },
     { key: 'cv',       selector: '#cv',         action: () => pointAtNavLink('cv') },
+    { key: 'contact',  selector: '#contact',    action: () => pointAtNavLink('contact') },
   ];
 
   function updateHand() {
@@ -199,7 +200,7 @@
     if (window.location.pathname.startsWith('/projects/')) { pointAtNavLink('projects'); return; }
 
     const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80;
-    if (atBottom) { pointAtNavLink('cv'); return; }
+    if (atBottom) { pointAtNavLink('contact'); return; }
 
     const scrollMid = window.scrollY + window.innerHeight * 0.5;
     let best: typeof SECTIONS[number] | null = null;

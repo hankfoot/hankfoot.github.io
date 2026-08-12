@@ -405,6 +405,50 @@ a {
   color: var(--color-bg);
 }
 
+/* ─── Contact ────────────────────────────────────────────────── */
+/* Data lives in about.ts (contactMessage + contactLinks). On desktop this
+   duplicates the sidebar footer by design; below 900px the footer is hidden
+   and this section is the ONLY contact surface on the site. */
+.contact-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 34rem;
+}
+
+/* DESCRIPTION role */
+.contact-message {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.contact-links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: var(--label-tracking-tight);
+}
+
+/* Hairline-underline idiom shared with .cv-pub a / .intro-formerly a */
+.contact-links a {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: var(--color-border);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.15s ease;
+  /* Comfortable touch target without disturbing the text baseline */
+  display: inline-block;
+  padding: 0.5rem 0;
+  margin: -0.5rem 0;
+}
+
+.contact-links a:hover {
+  text-decoration-color: var(--color-text);
+}
+
 /* ─── About ──────────────────────────────────────────────────── */
 /* Prose / portrait pair — same 3fr:2fr ratio as .block-feature so the
    homepage and project pages share one column rhythm. */
@@ -1562,6 +1606,33 @@ a.block-credits-name:hover,
     grid-template-rows: auto 1fr;
   }
 
+  /* Without an offset, nav anchors scroll their section label underneath the
+     sticky bar. The bar is ~50px in one row, ~81px when the name and nav wrap
+     to two (narrow phones) — 6.5rem clears both with a breath to spare. */
+  #projects, #about, #cv, #contact {
+    scroll-margin-top: 6.5rem;
+  }
+
+  /* ── Touch targets ──
+     Nav links measured 19px tall on phones. Padding (not font-size) grows the
+     hit area to ~44px; negative margin keeps the visual rhythm of the bar. */
+  .sidebar-nav a {
+    display: inline-block;
+    padding: 0.75rem 0.375rem;
+    margin: -0.5rem -0.125rem;
+  }
+
+  .project-panel-back {
+    display: inline-block;
+    padding: 0.75rem 0.75rem 0.75rem 0;
+    margin: -0.5rem 0;
+  }
+
+  .sidebar-badges-reset {
+    padding: 0.5rem;
+    margin: -0.35rem;
+  }
+
   /* ── Shell: sidebar becomes a top bar ── */
   .sidebar {
     height: auto;
@@ -1769,5 +1840,7 @@ a.block-credits-name:hover,
   .motion-toggle {
     bottom: 0.75rem;
     right: 0.75rem;
+    /* 28px tall on phones — pad the pill up toward a comfortable tap size */
+    padding: 0.6rem 0.85rem;
   }
 }

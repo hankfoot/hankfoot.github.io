@@ -940,6 +940,22 @@ a {
   margin-bottom: 0.75rem;
 }
 
+/* Block rhythm inside a section.
+   Blocks disagree about their own margins — callout and quote carry 1.5rem,
+   bento/feature/outcomes carry none — so two zero-margin blocks in a row sat
+   flush against each other (a Feature followed by a BentoGrid measured 0px).
+   One rule sets the gap between any two adjacent blocks; individual blocks
+   keep their own margins for the prose case. */
+.pp-body-section
+  > :is(.block-bento, .block-feature, .block-quote, .block-callout, .block-specs,
+        .block-outcomes, .block-credits, .block-image-grid, .block-video,
+        .block-prototype, .game-embed)
+  + :is(.block-bento, .block-feature, .block-quote, .block-callout, .block-specs,
+        .block-outcomes, .block-credits, .block-image-grid, .block-video,
+        .block-prototype, .game-embed, p) {
+  margin-top: var(--space-block);
+}
+
 .project-panel-body p {
   font-size: 0.9375rem;
   margin-bottom: 1rem;
@@ -1302,8 +1318,10 @@ figcaption a:hover {
 }
 
 
-/* Gap between consecutive features within the same section */
-.block-feature + .block-feature {
+/* Consecutive features sit further apart than the general block rhythm above.
+   Selector is scoped to match that rule's specificity; being later in the file
+   is what makes it win. */
+.pp-body-section > .block-feature + .block-feature {
   margin-top: 3.5rem;
 }
 

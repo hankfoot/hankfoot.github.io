@@ -15,6 +15,23 @@ interface Props {
 }
 
 const { image, alt = '', label, description, flip = false, ratio, caption } = Astro.props;
+
+// Images in public/ need explicit dimensions, and hardcoding 960x640 gave every
+// image a 3:2 box — so a 16:9 source lost ~16% off the sides to object-fit:cover
+// whatever `ratio` said. Derive the height from `ratio` instead; without one the
+// old 3:2 default stands, so existing usages are unaffected.
+const IMG_WIDTH = 960;
+const DEFAULT_RATIO = 3 / 2;
+
+function parseRatio(value?: string): number | null {
+  if (!value) return null;
+  const parts = value.split('/').map(part => parseFloat(part.trim()));
+  if (parts.length === 2 && parts[0] > 0 && parts[1] > 0) return parts[0] / parts[1];
+  const single = parseFloat(value);
+  return Number.isFinite(single) && single > 0 ? single : null;
+}
+
+const imgHeight = Math.round(IMG_WIDTH / (parseRatio(ratio) ?? DEFAULT_RATIO));
 ---
 
 <div class:list={['block-feature', { 'block-feature--flip': flip }]}>
@@ -31,7 +48,7 @@ const { image, alt = '', label, description, flip = false, ratio, caption } = As
           <source src={`${videoBase(image)}.mp4`} type="video/mp4" />
         </video>
       ) : (
-        <Image src={image} alt={alt} width={960} height={640} />
+        <Image src={image} alt={alt} width={IMG_WIDTH} height={imgHeight} />
       )}
     </div>
     {caption && <figcaption set:html={parseInline(caption)} />}

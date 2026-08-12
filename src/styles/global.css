@@ -954,6 +954,13 @@ a {
   background: var(--color-surface); /* FIX: was hardcoded #f7f7f7 */
 }
 
+/* A callout opening a section already has the section gap above it — its own
+   top margin just doubles the space. Bottom margin stays, so a callout used as
+   a lead-in sits close to whatever follows. */
+.pp-body-section > .block-callout:first-child {
+  margin-top: 0;
+}
+
 .block-callout--warning {
   border-color: #e07000;
   background: #fff8f0;

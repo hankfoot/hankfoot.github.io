@@ -1,0 +1,21 @@
+---
+// Overrides <a> for markdown links written in MDX prose. Those are rendered by
+// the markdown pipeline, so they never pass through parseInline — which is
+// where every other link on a project page picks up its new-tab behaviour
+// (captions, outcomes, meta fields). Without this they were the only links
+// that navigated away from the page.
+//
+// Internal links, anchors and mailto: are left alone.
+interface Props {
+  href?: string;
+}
+
+const { href = '', ...rest } = Astro.props;
+const isExternal = /^https?:\/\//i.test(href);
+---
+
+{isExternal ? (
+  <a href={href} target="_blank" rel="noopener noreferrer" {...rest}><slot /></a>
+) : (
+  <a href={href} {...rest}><slot /></a>
+)}

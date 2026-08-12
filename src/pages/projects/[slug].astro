@@ -13,6 +13,7 @@ import Credits from '../../components/blocks/Credits.astro';
 import Section from '../../components/blocks/Section.astro';
 import Quote from '../../components/blocks/Quote.astro';
 import GameCanvas from '../../components/GameCanvas.astro';
+import MdxLink from '../../components/MdxLink.astro';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -28,8 +29,10 @@ export async function getStaticPaths() {
 const { project } = Astro.props;
 const { Content } = await render(project);
 
-// Auto-injected into MDX scope — authors don't need to import these
-const components = { VideoEmbed, ImageGrid, Callout, PrototypeEmbed, Specs, Outcomes, BentoGrid, Feature, Credits, Section, Quote, GameCanvas };
+// Auto-injected into MDX scope — authors don't need to import these.
+// `a` overrides markdown links in prose so external ones open in a new tab,
+// matching what parseInline already does for captions and outcomes.
+const components = { VideoEmbed, ImageGrid, Callout, PrototypeEmbed, Specs, Outcomes, BentoGrid, Feature, Credits, Section, Quote, GameCanvas, a: MdxLink };
 ---
 <Base title={`${project.data.title} — Hank Duhaime`}>
   <ProjectPanel

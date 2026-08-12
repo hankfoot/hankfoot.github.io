@@ -49,8 +49,8 @@
                  .project-panel-body p · .about-prose p · .cv-role-desc
      ─────────────────────────────────────────────────────────── */
   --radius-sm: 4px;    /* tags, CTAs, small UI — replaces 2px, 3px, 4px, 5px */
-  --radius-md: 12px;   /* block components: bento, feature, credits */
-  --radius-lg: 24px;   /* hero images */
+  --radius-md: 12px;   /* unused — imagery standardised on --radius-lg */
+  --radius-lg: 24px;   /* all imagery (bento cells, feature media) + credits */
   --space-section: 5rem; /* gap between major sections (header, body sections) */
   --space-block: 2rem;   /* gap between related blocks within a section (meta→hero, feature→feature) */
   --grid-gap: 1.5rem;
@@ -1344,7 +1344,10 @@ figcaption a:hover {
 }
 
 .block-feature-image {
-  border-radius: var(--radius-md); /* PASS: normalized to --radius-sm/md/lg */
+  /* --radius-lg, matching .block-bento-cell — imagery carries one corner
+     radius everywhere, so features and bento cells on the same page don't
+     read as two different treatments. */
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 

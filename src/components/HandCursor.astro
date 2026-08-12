@@ -2,6 +2,25 @@
 <div id="hand-cursor" aria-hidden="true"><img src="/ui/hand-raised.svg" alt="" /></div>
 
 <script>
+  // ─── Touch gate ───────────────────────────────────────────────
+  // On touch devices the hand is display:none (CSS), but until this gate the
+  // script still ran: taps on project cards set grab-travel state, and
+  // astro:before-preparation DELAYED every navigation waiting for an invisible
+  // hand to "arrive". Bail before any state or listeners exist — navigation
+  // falls back to Astro's default transitions, and the choreography costs
+  // touch users nothing. Mirrors the CSS hide query exactly.
+  const COARSE_POINTER = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+
+  // Reduced motion is a live toggle (Sidebar), so it can't be an init-time
+  // early return — navigation-delaying paths check it at call time instead.
+  const reducedMotion = () =>
+    document.documentElement.getAttribute('data-reduced-motion') === 'true';
+
+  // Top-level return is illegal in a module script, so the entire body sits
+  // inside this guard. Existing indentation left untouched to keep the diff
+  // reviewable — this file is deliberately complex.
+  if (!COARSE_POINTER) {
+
   // ─── Hand artwork ─────────────────────────────────────────────
   // Bundled Fluent Emoji SVGs (MIT, microsoft/fluentui-emoji) instead of
   // native glyphs — one hand family on every platform, matching the giant
@@ -198,6 +217,9 @@
   // Kick off grab: fly to the right edge to meet the incoming panel
   function moveToGrabPosition() {
     if (state !== 'idle') return; // don't interrupt an active nav
+    // Reduced motion: the hand is CSS-hidden, so grab-travel would silently
+    // delay navigation (the loader awaits arrival). Skip the choreography.
+    if (reducedMotion()) return;
     state = 'grab-travel';
     clickLocked = null;
     el.style.opacity = '1';
@@ -363,7 +385,8 @@
       // Outgoing grab: wait for hand to reach the right edge before swapping
       event.loader = () => Promise.all([originalLoader(), waitForGrabArrival()]);
 
-    } else if (window.location.pathname.startsWith('/projects/') && state !== 'grab-pull') {
+    } else if (window.location.pathname.startsWith('/projects/') && state !== 'grab-pull'
+               && !reducedMotion()) {
       // Leaving a project page: snapshot the panel now (before DOM swap),
       // then fly the hand to its left edge. Navigation is NOT delayed.
       const panel = document.querySelector<HTMLElement>('.project-panel');
@@ -413,9 +436,10 @@
       });
     }
 
-    // WAAPI panel slide-in
+    // WAAPI panel slide-in — WAAPI ignores the CSS animation:none kill switch,
+    // so reduced motion has to be gated here in script.
     const panel = document.querySelector<HTMLElement>('.project-panel');
-    if (panel) {
+    if (panel && !reducedMotion()) {
       const duration = state === 'grab-pull' ? 950 : 220;
       let initialTransform: string;
       if (state === 'grab-pull') {
@@ -572,4 +596,6 @@
     tickGen++;
     requestAnimationFrame(() => tick(tickGen));
   }
+
+  } // end !COARSE_POINTER gate
 </script>

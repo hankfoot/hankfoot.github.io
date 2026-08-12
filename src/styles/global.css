@@ -954,9 +954,17 @@ a {
   background: var(--color-surface); /* FIX: was hardcoded #f7f7f7 */
 }
 
-/* A callout opening a section already has the section gap above it — its own
-   top margin just doubles the space. Bottom margin stays, so a callout used as
-   a lead-in sits close to whatever follows. */
+/* A callout opening the first section is a page-level note, not a section of
+   content. The 80px .pp-sections gap above it against its own 24px below read
+   badly lopsided, and that gap can't be overridden per-child — so pull the
+   callout up into it and match the two sides at 40px. */
+.project-panel-body > .pp-body-section:first-child > .block-callout:first-child {
+  margin-top: -40px;
+  margin-bottom: 40px;
+}
+
+/* Elsewhere, a callout opening a section still shouldn't add its own top
+   margin on top of the section gap. */
 .pp-body-section > .block-callout:first-child {
   margin-top: 0;
 }

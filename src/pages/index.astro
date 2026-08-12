@@ -15,8 +15,26 @@ import {
   resumeUrl,
 } from '../data/about';
 
+// Homepage running order — curated, not chronological. Anything not listed
+// falls in after these, newest first, so adding a project never drops it.
+const ORDER = [
+  'reality-labs-prototypes',
+  'quick-distract',
+  'use-your-melon',
+  'safecracker',
+];
+
+const slugOf = (p: { id: string }) => p.id.replace(/\.[^.]+$/, '');
+
 const projects = await getCollection('projects', ({ data }) => !data.draft);
-const sorted = projects.sort((a, b) => b.data.timeline.localeCompare(a.data.timeline));
+const sorted = projects.sort((a, b) => {
+  const ia = ORDER.indexOf(slugOf(a));
+  const ib = ORDER.indexOf(slugOf(b));
+  if (ia !== -1 && ib !== -1) return ia - ib;   // both curated — use ORDER
+  if (ia !== -1) return -1;                     // curated beats uncurated
+  if (ib !== -1) return 1;
+  return b.data.timeline.localeCompare(a.data.timeline); // rest: newest first
+});
 ---
 <Base title="Hank Duhaime — Design Technologist">
   <section class="page-intro">

@@ -1083,27 +1083,6 @@ figcaption a:hover {
   text-decoration-color: var(--color-text);
 }
 
-/* Attribution line for third-party media in blocks that have no caption
-   slot of their own (e.g. Feature). Matches figcaption's treatment. */
-.block-source-note {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--color-muted);
-  margin-top: var(--space-block);
-}
-
-.block-source-note a {
-  color: var(--color-text);
-  text-decoration: underline;
-  text-decoration-color: var(--color-muted);
-  text-underline-offset: 2px;
-  transition: text-decoration-color 0.15s ease;
-}
-
-.block-source-note a:hover {
-  text-decoration-color: var(--color-text);
-}
-
 /* ─── Hand Cursor ────────────────────────────────────────────── */
 #hand-cursor {
   position: fixed;
@@ -1317,7 +1296,13 @@ figcaption a:hover {
   grid-template-columns: 2fr 3fr;
 }
 
-.block-feature--flip .block-feature-image {
+/* The <figure> is the grid child; .block-feature-image is the media box inside
+   it, so its radius/overflow can't clip the caption. */
+.block-feature-figure {
+  margin: 0;
+}
+
+.block-feature--flip .block-feature-figure {
   order: 2;
 }
 
@@ -1770,7 +1755,7 @@ a.block-credits-name:hover,
   }
 
   /* Media leads on every feature once stacked, flipped or not */
-  .block-feature--flip .block-feature-image {
+  .block-feature--flip .block-feature-figure {
     order: 0;
   }
 

@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import { parseInline } from '../../utils/text';
 import { isVideo, videoBase } from '../../utils/media';
 
 interface Props {
@@ -9,25 +10,32 @@ interface Props {
   description: string;
   flip?: boolean;
   ratio?: string;
+  /** Source credit / caption rendered under the media. Supports inline markdown. */
+  caption?: string;
 }
 
-const { image, alt = '', label, description, flip = false, ratio } = Astro.props;
+const { image, alt = '', label, description, flip = false, ratio, caption } = Astro.props;
 ---
 
 <div class:list={['block-feature', { 'block-feature--flip': flip }]}>
-  <div
-    class:list={['block-feature-image', { 'block-feature-image--ratio': ratio }]}
-    style={ratio ? `--feature-ratio: ${ratio}` : undefined}
-  >
-    {isVideo(image) ? (
-      <video autoplay loop muted playsinline aria-label={alt}>
-        <source src={`${videoBase(image)}.webm`} type="video/webm" />
-        <source src={`${videoBase(image)}.mp4`} type="video/mp4" />
-      </video>
-    ) : (
-      <Image src={image} alt={alt} width={960} height={640} />
-    )}
-  </div>
+  {/* <figure> is the grid child so a caption can sit beneath the media without
+      being clipped by .block-feature-image's radius/overflow. */}
+  <figure class="block-feature-figure">
+    <div
+      class:list={['block-feature-image', { 'block-feature-image--ratio': ratio }]}
+      style={ratio ? `--feature-ratio: ${ratio}` : undefined}
+    >
+      {isVideo(image) ? (
+        <video autoplay loop muted playsinline aria-label={alt}>
+          <source src={`${videoBase(image)}.webm`} type="video/webm" />
+          <source src={`${videoBase(image)}.mp4`} type="video/mp4" />
+        </video>
+      ) : (
+        <Image src={image} alt={alt} width={960} height={640} />
+      )}
+    </div>
+    {caption && <figcaption set:html={parseInline(caption)} />}
+  </figure>
   <div class="block-feature-text">
     <h3 class="block-feature-label">{label}</h3>
     <p class="block-feature-desc">{description}</p>

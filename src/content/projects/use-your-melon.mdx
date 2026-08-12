@@ -33,6 +33,11 @@ outcomes:
 The Georgia Aquarium's Dolphin Coast opens onto a pre-show atrium where guests wait — often the better part of an hour — in front of blank walls. For our Georgia Tech master's thesis, we asked what that room could teach people about the animals they were about to meet.
 
 Use Your Melon turns the wait into a game of charades. Guests strike a pose to mimic a sea creature, and a digital dolphin echolocates to work out what they are, then explains how the two of them meet in the wild.
+
+<Quote
+  text={`The walls were pretty blank...it would've been nice to have a little more to do`}
+  cite="Aquarium guest"
+/>
 </Section>
 
 <Section>
@@ -65,7 +70,7 @@ From there I designed the gesture interaction and built the demo. A Microsoft Ki
   flip={true}
 />
 
-<BentoGrid label="defining recognizable characters" images={[
+<BentoGrid images={[
   { src: "/projects/use-your-melon/gesture-study.webm", alt: "Testers mimicking sea creatures for the gesture study", ratio: "16 / 9", caption: "Testers mimicked sea creatures on camera. Six read consistently enough to build a game on." },
   { src: "/projects/use-your-melon/kinect-spike.webm", alt: "Kinect pose recognition prototype showing per-creature confidence bars", ratio: "16 / 9", caption: "A recognition spike: skeleton tracking on the left, live confidence per creature on the right." }
 ]} />
@@ -117,13 +122,6 @@ From there I designed the gesture interaction and built the demo. A Microsoft Ki
   "Captioned in English and Spanish, the two most common languages spoken on the aquarium floor",
   "Evaluated with four aquarium stakeholders and five physical-interaction experts after COVID-19 closed the floor to testing",
 ]} />
-
-{/* Sits inside the outcomes section rather than its own, so the gap is
-    --space-block rather than the full section rhythm. */}
-<Quote
-  text={`The walls were pretty blank...it would've been nice to have a little more to do`}
-  cite="Aquarium guest"
-/>
 </Section>
 
 <Credits

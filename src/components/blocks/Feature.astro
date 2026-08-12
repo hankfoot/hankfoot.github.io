@@ -8,13 +8,17 @@ interface Props {
   label: string;
   description: string;
   flip?: boolean;
+  ratio?: string;
 }
 
-const { image, alt = '', label, description, flip = false } = Astro.props;
+const { image, alt = '', label, description, flip = false, ratio } = Astro.props;
 ---
 
 <div class:list={['block-feature', { 'block-feature--flip': flip }]}>
-  <div class="block-feature-image">
+  <div
+    class:list={['block-feature-image', { 'block-feature-image--ratio': ratio }]}
+    style={ratio ? `--feature-ratio: ${ratio}` : undefined}
+  >
     {isVideo(image) ? (
       <video autoplay loop muted playsinline aria-label={alt}>
         <source src={`${videoBase(image)}.webm`} type="video/webm" />

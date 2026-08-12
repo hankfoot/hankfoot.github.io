@@ -670,6 +670,12 @@ a {
   margin: 0 !important;
 }
 
+/* Slotted multi-paragraph quotes: separate distinct remarks so they don't
+   read as one continuous passage. Needs !important to clear the reset above. */
+.block-quote-text p + p {
+  margin-top: 1rem !important;
+}
+
 .block-quote-cite {
   margin-top: 0.75rem;
   font-family: var(--font-mono);
@@ -757,6 +763,27 @@ figcaption a {
 }
 
 figcaption a:hover {
+  text-decoration-color: var(--color-text);
+}
+
+/* Attribution line for third-party media in blocks that have no caption
+   slot of their own (e.g. Feature). Matches figcaption's treatment. */
+.block-source-note {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  margin-top: var(--space-block);
+}
+
+.block-source-note a {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: var(--color-muted);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.block-source-note a:hover {
   text-decoration-color: var(--color-text);
 }
 
@@ -993,9 +1020,18 @@ figcaption a:hover {
 }
 
 /* Crop video features to a consistent 4:3 so 16:9 clips match the
-   still-image cards beside them instead of rendering short and wide. */
+   still-image cards beside them instead of rendering short and wide.
+   Pass `ratio` on the Feature to opt out when the crop would cut
+   content — same escape hatch as BentoGrid's `ratio`. */
 .block-feature-image video {
-  aspect-ratio: 4 / 3;
+  aspect-ratio: var(--feature-ratio, 4 / 3);
+}
+
+/* Images keep their natural ratio unless `ratio` is passed — scoped to the
+   modifier so the default never overrides the browser's width/height-derived
+   ratio, which is what reserves layout space before the image loads. */
+.block-feature-image--ratio img {
+  aspect-ratio: var(--feature-ratio);
 }
 
 .block-feature-text {

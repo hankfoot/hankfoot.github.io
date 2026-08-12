@@ -104,8 +104,8 @@ From there I designed the gesture interaction and built the demo. A Microsoft Ki
   { src: "/projects/use-your-melon/creature-stat-card-16x9.png", alt: "Common octopus stat card with a bilingual fact about dolphins", ratio: "16 / 9", width: 1190, height: 683, caption: "Every creature carries an aquarium-approved stat card and fact." },
   { src: "/projects/use-your-melon/play-boundary.webm", alt: "The installation warning a player who has stepped out of the play area", ratio: "16 / 9", caption: "Step outside the camera's view and the game nudges you back in." },
   { src: "/projects/use-your-melon/system-diagram-16x9.png", alt: "System diagram showing the Kinect detection area, play area, and digital display", wide: true, ratio: "16 / 9", width: 1400, height: 788, caption: "Kinect depth data feeds the pose model; Unity renders the reef in real time." },
-  { src: "/projects/use-your-melon/octopus-transform.webm", alt: "A player transformed into a common octopus", ratio: "16 / 9" },
-  { src: "/projects/use-your-melon/crab-pose.webm", alt: "A player transformed into a blue crab", ratio: "16 / 9" }
+  { src: "/projects/use-your-melon/octopus-transform.webm", alt: "A player transformed into a common octopus", ratio: "16 / 9", caption: "Hold the pose and the bubbles burst into a common octopus." },
+  { src: "/projects/use-your-melon/crab-pose.webm", alt: "A player transformed into a blue crab", ratio: "16 / 9", caption: "The blue crab, with its stat card and a fact captioned in both languages." }
 ]} />
 </Section>
 
@@ -117,9 +117,9 @@ From there I designed the gesture interaction and built the demo. A Microsoft Ki
   "Captioned in English and Spanish, the two most common languages spoken on the aquarium floor",
   "Evaluated with four aquarium stakeholders and five physical-interaction experts after COVID-19 closed the floor to testing",
 ]} />
-</Section>
 
-<Section>
+{/* Sits inside the outcomes section rather than its own, so the gap is
+    --space-block rather than the full section rhythm. */}
 <Quote
   text={`The walls were pretty blank...it would've been nice to have a little more to do`}
   cite="Aquarium guest"

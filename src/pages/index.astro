@@ -1,23 +1,38 @@
 ---
 import Base from '../layouts/Base.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
+import {
+  aboutParagraphs,
+  aboutPhoto,
+  formerly,
+  experience,
+  education,
+  publications,
+  resumeUrl,
+} from '../data/about';
 
 const projects = await getCollection('projects');
 const sorted = projects.sort((a, b) => b.data.timeline.localeCompare(a.data.timeline));
 ---
 <Base title="Hank Duhaime — Design Technologist">
   <section class="page-intro">
-    <h1 class="intro-greeting">hi, I'm Hank</h1>
-    <p class="intro-tagline">a <code class="intro-code">programmer</code> turned<br /><em>interaction designer</em></p>
-    <p class="intro-sub">specializing in playful, hands-on experiences</p>
+    <h1 class="intro-title">
+      <span class="intro-greeting">hi, I'm Hank <span class="intro-emoji">👋</span></span>
+    </h1>
+    <p class="intro-subtitle">
+      a programmer <span class="intro-emoji">💻</span> turned interaction designer,<br />
+      specializing in playful, hands-on experiences <span class="intro-emoji">🕹️</span>
+    </p>
     <div class="intro-formerly">
       <span class="intro-formerly-label">formerly @</span>
-      <span>meta reality labs research</span>
-      <span>publicis sapient</span>
-      <span>spellbound ar</span>
+      {formerly.map(co => (
+        <a href={co.url} target="_blank" rel="noopener">{co.name}</a>
+      ))}
     </div>
   </section>
+
   <div class="project-grid" id="projects">
     {sorted.map(project => (
       <ProjectCard
@@ -33,33 +48,68 @@ const sorted = projects.sort((a, b) => b.data.timeline.localeCompare(a.data.time
 
   <section class="page-section" id="about">
     <p class="section-label">about</p>
-    <div class="section-body">
-      <p class="section-placeholder">Background and story coming soon.</p>
+    <div class="about-layout">
+      <div class="about-prose">
+        {aboutParagraphs.map(para => <p>{para}</p>)}
+      </div>
+      <figure class="about-photo">
+        <Image src={aboutPhoto.src} alt={aboutPhoto.alt} width={1400} height={928} />
+        <figcaption>{aboutPhoto.caption}</figcaption>
+      </figure>
     </div>
   </section>
 
   <section class="page-section" id="cv">
     <p class="section-label">cv</p>
-    <div class="section-body">
-      <p class="section-placeholder">Experience and credentials coming soon.</p>
-      <a
-        href="https://hankduhaime.com/s/DuhaimeResume2023-V-Nov.pdf"
-        target="_blank"
-        rel="noopener"
-        class="section-cta"
-      >download pdf ↗</a>
+    <div class="cv-stack">
+
+      <div class="cv-block">
+        <h2 class="cv-block-label">experience</h2>
+        <div class="cv-roles">
+          {experience.map(role => (
+            <article class="cv-role">
+              <div class="cv-role-when">
+                <p class="cv-role-company">{role.company}</p>
+                <p class="cv-role-dates">{role.dates}</p>
+              </div>
+              <div class="cv-role-what">
+                <p class="cv-role-title">{role.title}</p>
+                <p class="cv-role-desc">{role.description}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <div class="cv-pair">
+        <div class="cv-block">
+          <h2 class="cv-block-label">education</h2>
+          <dl class="cv-education">
+            {education.map(ed => (
+              <div class="cv-education-item">
+                <dt class="cv-education-school">{ed.institution}</dt>
+                <dd class="cv-education-degree">{ed.degree}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+
+        <div class="cv-block">
+          <h2 class="cv-block-label">publications &amp; patents</h2>
+          <ul class="cv-pubs">
+            {publications.map(pub => (
+              <li class="cv-pub">
+                <a href={pub.link} target="_blank" rel="noopener">{pub.title}</a>
+                <p class="cv-pub-meta">{pub.venue}, {pub.year}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <a href={resumeUrl} target="_blank" rel="noopener" class="section-cta">download resume ↗</a>
+
     </div>
   </section>
 
-  <section class="page-section" id="contact">
-    <p class="section-label">contact</p>
-    <div class="section-body">
-      <p class="section-placeholder">Let's work together.</p>
-      <div class="contact-list">
-        <a href="mailto:hello.hank.d@gmail.com" class="contact-item">hello.hank.d@gmail.com</a>
-        <a href="https://www.linkedin.com/in/henryduhaime/" target="_blank" rel="noopener" class="contact-item">linkedin</a>
-        <a href="https://www.instagram.com/schmardware/" target="_blank" rel="noopener" class="contact-item">instagram</a>
-      </div>
-    </div>
-  </section>
 </Base>

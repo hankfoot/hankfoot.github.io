@@ -1598,6 +1598,14 @@ a.block-credits-name:hover,
   #hand-cursor {
     display: none;
   }
+
+  /* Bonus levels are desktop-only: the whole entrance is choreographed around
+     the hand cursor (gated off above/in-script on touch), and the games are
+     tuned for mouse and keyboard. Hide the launch trigger; the bare test
+     harnesses at /games are internal and unaffected. */
+  .game-embed:not(.is-bare) {
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {

@@ -118,6 +118,5 @@ export const resumeUrl = 'https://hankduhaime.com/s/DuhaimeResume2023-V-Nov.pdf'
 export const contactLinks = [
   { label: 'hello.hank.d@gmail.com', href: 'mailto:hello.hank.d@gmail.com' },
   { label: 'linkedin', href: 'https://www.linkedin.com/in/henryduhaime/' },
-  { label: 'instagram', href: 'https://www.instagram.com/schmardware/' },
-  { label: 'bluesky', href: 'https://bsky.app/profile/schmardware.bsky.social' },
+  { label: 'instagram', href: 'https://www.instagram.com/hankware.d/' },
 ];

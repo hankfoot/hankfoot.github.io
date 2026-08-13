@@ -1375,9 +1375,32 @@ figcaption a:hover {
 .block-feature {
   display: grid;
   grid-template-columns: 3fr 2fr;
-  gap: 3rem;
+  column-gap: 3rem;
   align-items: center;
   margin: 0;
+}
+
+/* The figure dissolves into the parent grid so its caption can take a row of
+   its own. While the figure was a single grid child, the caption counted
+   toward its height and the text column centred against media + caption —
+   landing half a caption low against the image it belongs to. Media is
+   bottom-aligned in its row so it can never drift away from its caption if a
+   text column ever outgrows it. */
+.block-feature-figure {
+  display: contents;
+}
+
+.block-feature .block-feature-image {
+  grid-area: 1 / 1;
+  align-self: end;
+}
+
+.block-feature figcaption {
+  grid-area: 2 / 1;
+}
+
+.block-feature .block-feature-text {
+  grid-area: 1 / 2;
 }
 
 
@@ -1388,22 +1411,22 @@ figcaption a:hover {
   margin-top: var(--space-block-lg);
 }
 
+/* Flipped features place their columns explicitly rather than reordering, so
+   the media and its caption stay in the same column as each other. */
 .block-feature--flip {
   grid-template-columns: 2fr 3fr;
 }
 
-/* The <figure> is the grid child; .block-feature-image is the media box inside
-   it, so its radius/overflow can't clip the caption. */
-.block-feature-figure {
-  margin: 0;
+.block-feature--flip .block-feature-image {
+  grid-area: 1 / 2;
 }
 
-.block-feature--flip .block-feature-figure {
-  order: 2;
+.block-feature--flip figcaption {
+  grid-area: 2 / 2;
 }
 
 .block-feature--flip .block-feature-text {
-  order: 1;
+  grid-area: 1 / 1;
 }
 
 .block-feature-image {
@@ -1451,6 +1474,12 @@ figcaption a:hover {
   text-transform: lowercase;
   color: var(--color-text);
   margin: 0; /* reset: .project-panel-body p adds margin-bottom */
+}
+
+/* A split description needs to break more than the label breaks from the text
+   it titles — at the bare 0.5rem flex gap the two read as equally separated. */
+.block-feature .block-feature-desc + .block-feature-desc {
+  margin-top: 0.25rem;
 }
 
 .block-feature .block-feature-desc {
@@ -1859,19 +1888,29 @@ a.block-credits-name:hover,
     grid-column: auto;
   }
 
+  /* Media leads on every feature once stacked, flipped or not: image, its
+     caption, then the text. Row gap stays 0 so the caption keeps sitting
+     tight under its image; the text buys its own space below. */
   .block-feature,
   .block-feature--flip {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 0;
   }
 
-  /* Media leads on every feature once stacked, flipped or not */
-  .block-feature--flip .block-feature-figure {
-    order: 0;
+  .block-feature .block-feature-image,
+  .block-feature--flip .block-feature-image {
+    grid-area: 1 / 1;
   }
 
+  .block-feature figcaption,
+  .block-feature--flip figcaption {
+    grid-area: 2 / 1;
+  }
+
+  .block-feature .block-feature-text,
   .block-feature--flip .block-feature-text {
-    order: 0;
+    grid-area: 3 / 1;
+    margin-top: 1.5rem;
   }
 
   .block-bento {

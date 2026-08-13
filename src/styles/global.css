@@ -52,7 +52,8 @@
   --radius-md: 12px;   /* unused — imagery standardised on --radius-lg */
   --radius-lg: 24px;   /* all imagery (bento cells, feature media) + credits */
   --space-section: 5rem; /* gap between major sections (header, body sections) */
-  --space-block: 2rem;   /* gap between related blocks within a section (meta→hero, feature→feature) */
+  --space-block: 2rem;   /* gap between related blocks within a section (meta→hero, block→prose) */
+  --space-block-lg: 3.5rem; /* wider gap where imagery needs separating (feature→feature, prose→media) */
   --grid-gap: 1.5rem;
   /* Homepage section rhythm — applied symmetrically either side of a divider,
      so content→rule and rule→content are always equal. */
@@ -967,6 +968,26 @@ a {
   margin-top: var(--space-block);
 }
 
+/* The mirror case: prose introducing a block. A paragraph only carries its own
+   1rem bottom margin, so intro copy sat half as far from the block below it as
+   the block sat from the prose after it. Same token, both directions. */
+.pp-body-section
+  > p
+  + :is(.block-quote, .block-callout, .block-specs, .block-outcomes,
+        .block-credits, .game-embed) {
+  margin-top: var(--space-block);
+}
+
+/* Media wants more air than a quote does. A quote is prose continuing by other
+   means; imagery is a change of register, so lead-in copy gets the wider gap
+   already used between stacked Features. */
+.pp-body-section
+  > p
+  + :is(.block-bento, .block-feature, .block-image-grid, .block-video,
+        .block-prototype) {
+  margin-top: var(--space-block-lg);
+}
+
 .project-panel-body p {
   font-size: 0.9375rem;
   margin-bottom: 1rem;
@@ -1305,7 +1326,7 @@ figcaption a:hover {
 .pp-body-section
   > :is(.block-bento, .block-feature, .block-quote, .block-outcomes, .block-specs)
   + .block-bento-label {
-  margin-top: 3.5rem;
+  margin-top: var(--space-block-lg);
 }
 
 .block-bento {
@@ -1356,7 +1377,7 @@ figcaption a:hover {
    Selector is scoped to match that rule's specificity; being later in the file
    is what makes it win. */
 .pp-body-section > .block-feature + .block-feature {
-  margin-top: 3.5rem;
+  margin-top: var(--space-block-lg);
 }
 
 .block-feature--flip {

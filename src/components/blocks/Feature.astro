@@ -6,6 +6,8 @@ import { isVideo, videoBase } from '../../utils/media';
 interface Props {
   image: string;
   alt?: string;
+  /** Heading above the description. Supports inline markdown, so a Feature can
+      title itself with a linked paper or project name. */
   label: string;
   description: string;
   flip?: boolean;
@@ -54,7 +56,7 @@ const imgHeight = Math.round(IMG_WIDTH / (parseRatio(ratio) ?? DEFAULT_RATIO));
     {caption && <figcaption set:html={parseInline(caption)} />}
   </figure>
   <div class="block-feature-text">
-    <h3 class="block-feature-label">{label}</h3>
+    <h3 class="block-feature-label" set:html={parseInline(label)} />
     <p class="block-feature-desc">{description}</p>
   </div>
 </div>

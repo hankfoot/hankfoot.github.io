@@ -167,7 +167,6 @@ a {
   display: inline;
 }
 
-
 /* Punctuating emoji, sized down so they accent the line instead of
    out-weighing the words. */
 .intro-emoji {
@@ -177,6 +176,15 @@ a {
   /* Cap-band centred — (capHeight − boxHeight)/2 in em, so all three emoji sit
      on one optical line and hold their alignment as the clamps scale. */
   vertical-align: 0.115em;
+}
+
+/* The 👋 after the name is the live hand cursor, which parks and waves just
+   past .intro-greeting. This static glyph is only its stand-in where that
+   cursor doesn't exist — touch (hidden by the coarse-pointer query below) and
+   reduced motion. Shown by the two overrides further down the file. Must stay
+   after .intro-emoji: same specificity, so source order decides. */
+.intro-wave {
+  display: none;
 }
 
 /* Mono like every other caption, but at the DESCRIPTION size (0.9375rem) —
@@ -1659,6 +1667,11 @@ a.block-credits-name:hover,
   display: none;
 }
 
+/* No live hand to wave next to the name — fall back to the static glyph. */
+[data-reduced-motion="true"] .intro-wave {
+  display: inline-block;
+}
+
 [data-reduced-motion="true"] * {
   transition: none !important;
   animation: none !important;
@@ -1674,6 +1687,11 @@ a.block-credits-name:hover,
 @media (hover: none), (pointer: coarse) {
   #hand-cursor {
     display: none;
+  }
+
+  /* Same trade as reduced motion: the static glyph stands in for the hand. */
+  .intro-wave {
+    display: inline-block;
   }
 
   /* Bonus levels are desktop-only: the whole entrance is choreographed around

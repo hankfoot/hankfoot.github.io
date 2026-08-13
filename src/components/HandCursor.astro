@@ -202,6 +202,17 @@
     const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80;
     if (atBottom) { pointAtNavLink('contact'); return; }
 
+    // The hero owns the hand while it's meaningfully on screen — the wave next
+    // to the name is the page's opening beat and has to survive load. The
+    // midpoint scan below can't do that job: the hero is shorter than half a
+    // viewport, so at scroll 0 the project grid's top is already above the
+    // midpoint and the scan hands straight off to 'projects'.
+    const intro = document.querySelector('.page-intro');
+    if (intro) {
+      const introRect = intro.getBoundingClientRect();
+      if (introRect.bottom > window.innerHeight * 0.25) { waveAtTagline(); return; }
+    }
+
     const scrollMid = window.scrollY + window.innerHeight * 0.5;
     let best: typeof SECTIONS[number] | null = null;
     for (const s of SECTIONS) {

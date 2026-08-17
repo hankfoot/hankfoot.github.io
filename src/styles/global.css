@@ -15,10 +15,11 @@
   --sidebar-border: 1px solid #e0e0e0;
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'Source Code Pro', 'Courier New', monospace;
-  /* Display serif, used once — "interaction designer" in the hero tagline.
-     Fraunces at 500 with SOFT=100 / WONK=1: the two custom axes are what carry
-     the warm, slightly off-kilter character, and only weight 500 is fetched, so
-     don't ask for a weight the link doesn't load. */
+  /* Display serif, reserved for the role phrase "interaction designer" — the
+     hero tagline and the sidebar bio, the two places it names the job.
+     Fraunces with SOFT=100 / WONK=1: the two custom axes are what carry the
+     warm, slightly off-kilter character. Weights 200–500 are fetched — 500 at
+     hero size, 300 in the sidebar — so don't ask for one outside that range. */
   --font-display: 'Fraunces', Georgia, serif;
   --color-bg: #ffffff;
   --color-text: #111111;
@@ -113,7 +114,11 @@ a {
   font-size: 1.125rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  margin-bottom: 0.125rem;
+  /* Holds the name→bio gap at 6.5px. .sidebar-bio runs a tight line-height, and
+     half of that leading sits above its first line — so this margin carries the
+     rest. Retune it alongside that line-height: every 0.1 removed there lifts
+     the first line by 0.6px and has to come back in here. */
+  margin-bottom: 0.38rem;
 }
 
 /* Bundled Fluent Emoji hand in the motion toggle, sized like the glyph it replaces */
@@ -126,14 +131,22 @@ a {
 
 .sidebar-bio {
   font-size: 0.75rem;
-  line-height: 1.5;
+  /* Tight, so the two role lines read as one stacked unit under the name. This
+     also governs the half-leading above the first line, which is why
+     .sidebar-name's margin-bottom is tuned against it rather than set round. */
+  line-height: 1.4;
   color: var(--color-muted);
   margin-bottom: 1.75rem;
 }
 
-.sidebar-bio em {
-  font-style: italic;
+/* Same display face as the hero, several weights lighter. Stroke contrast is a
+   constant fraction of the em, so at 12px the 500 that reads as warm at hero
+   size closes up the counters and turns muddy. 300 keeps the serif character
+   while letting the phrase sit back behind the name above it. */
+.sidebar-bio .intro-role {
+  font-weight: 300;
 }
+
 
 /* ─── Page Intro ─────────────────────────────────────────────── */
 /* The intro owns no bottom divider of its own. The projects section that
@@ -178,11 +191,12 @@ a {
   padding: 0.05em 0.35em;
 }
 
-/* The one display-serif moment on the page — the role itself. Still an <em>:
-   it is genuinely the emphasised phrase, but the emphasis comes from the face,
-   so font-style is reset to normal rather than leaning on an italic. Only the
-   500 instance is fetched; naming it here keeps the browser off a synthesised
-   bold if the surrounding weight ever changes. */
+/* The display-serif moment — the role phrase, in the hero tagline and again in
+   the sidebar bio. Still an <em>: it is genuinely the emphasised phrase, but
+   the emphasis comes from the face, so font-style is reset to normal rather
+   than leaning on an italic. The weight is named rather than inherited so the
+   phrase keeps its own value wherever it sits, and the browser never
+   synthesises one from a surrounding weight. */
 .intro-role {
   font-family: var(--font-display);
   font-style: normal;

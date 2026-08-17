@@ -14,7 +14,7 @@ const { title, timeline, tags, thumb, summary, href } = Astro.props;
 ---
 <a href={href} class="project-card">
   <div class="project-card-thumb">
-    {thumb && thumb !== '/placeholder.png' && (
+    {thumb && (
       <Image src={thumb} alt={title} width={800} height={600} />
     )}
   </div>

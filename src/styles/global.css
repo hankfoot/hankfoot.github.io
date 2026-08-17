@@ -131,12 +131,9 @@ a {
 }
 
 /* ─── Page Intro ─────────────────────────────────────────────── */
-/* Equal space above and below the rule that closes the hero */
-.page-intro {
-  padding-bottom: var(--space-divider);
-  margin-bottom: var(--space-divider);
-  border-bottom: 1px solid var(--color-border);
-}
+/* The intro owns no bottom divider of its own. The projects section that
+   follows is a .page-section, so it brings the rule and the space on both
+   sides of it — the same single rule that governs every other section break. */
 
 /* TITLE role — matches .ph-title on project pages. Only the size step differs;
    the hero is the largest instance of the same treatment. */

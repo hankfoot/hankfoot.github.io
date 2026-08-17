@@ -4,7 +4,7 @@ import { parseInline } from '../../utils/text';
 import { isVideo, videoBase } from '../../utils/media';
 
 interface Props {
-  images: Array<{ src: string; alt: string; wide?: boolean; ratio?: string; width?: number; height?: number; caption?: string }>;
+  images: Array<{ src: string; alt: string; wide?: boolean; ratio?: string; width?: number; height?: number; caption?: string; pixelated?: boolean }>;
   /** Optional heading above the grid, styled like a Feature's label — for when
       a group of images is its own beat rather than a continuation. */
   label?: string;
@@ -18,7 +18,10 @@ const { images, label } = Astro.props;
 <div class="block-bento">
   {images.map((image) => (
     <figure class:list={['block-bento-item', { 'block-bento-item--wide': image.wide }]}>
-      <div class="block-bento-cell" style={image.ratio ? `--bento-ratio: ${image.ratio}` : undefined}>
+      <div
+        class:list={['block-bento-cell', { 'block-bento-cell--pixelated': image.pixelated }]}
+        style={image.ratio ? `--bento-ratio: ${image.ratio}` : undefined}
+      >
         {isVideo(image.src) ? (
           <video autoplay loop muted playsinline aria-label={image.alt}>
             <source src={`${videoBase(image.src)}.webm`} type="video/webm" />

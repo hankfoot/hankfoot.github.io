@@ -1424,10 +1424,16 @@ figcaption a:hover {
 
 /* Pixel art enlarged past its native size: browsers smooth-interpolate by
    default, which turns hard-edged sprite work to mush. `pixelated` switches the
-   upscale to nearest-neighbour so the pixel grid stays crisp — the same result
-   as shipping a pre-upscaled file, at no extra bytes. Opt in per item via
-   BentoGrid's `pixelated: true`; never apply it to camera footage, which needs
-   the smoothing. */
+   upscale to nearest-neighbour so the pixel grid stays crisp. Opt in per item
+   via BentoGrid's `pixelated: true`; never apply it to camera footage, which
+   needs the smoothing.
+
+   Only works on <img>. Browsers composite <video> on a separate path that
+   ignores image-rendering, so there is no CSS fix for pixel-art video. Shipping
+   a pre-upscaled file is the only lever there, and it only pays off if the
+   source has a clean pixel grid to start with — a capture that was already
+   scaled up with smoothing (safecracker's difficulties.webm) just reproduces
+   its own blur at a larger size. Reducing the display size beats any re-encode. */
 .block-bento-cell--pixelated img,
 .block-bento-cell--pixelated video {
   image-rendering: pixelated;

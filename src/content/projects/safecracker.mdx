@@ -56,23 +56,31 @@ I designed and prototyped the physical gameplay — where the stethoscope listen
 I also wrote the main game loop in Processing and modeled the final iteration in CAD, routing the exterior on a CNC and printing mounts for every board and motor inside it.
 </Section>
 
-<Section label="process">
+<Section label="prototyping">
 <BentoGrid images={[
-  { src: "/projects/safecracker/concept-sketches.png", alt: "A strip of concept sketches with rejected ideas crossed out", wide: true, ratio: "15 / 4", width: 1334, height: 356, caption: "Bodystorming narrowed a wall of concepts down to one Hollywood trope: cracking a safe by ear." }
+  { src: "/projects/safecracker/mechanism-sketches.jpeg", alt: "Hand-drawn sketches working out the stethoscope touch points and the handle and door locks", wide: true, ratio: "1240 / 834", width: 1240, height: 834, caption: "Four mechanisms worked out on paper — touch points, handle and lock, solenoid feedback, dial — to de-risk them before committing to fabrication." },
+  { src: "/projects/safecracker/proto-touch-points-16x9.jpeg", alt: "Copper pads taped to a cardboard board with a stethoscope resting on one, wired to a breadboard beside a hand-drawn circuit", ratio: "16 / 9", width: 2000, height: 1125, caption: "Copper tape on scrap board, wired to a breadboard — proving the safe could tell which point the stethoscope was resting on." },
+  { src: "/projects/safecracker/door-lock.webm", alt: "A cardboard mock-up of the door lock mechanism engaging by hand", ratio: "16 / 9", caption: "The door latch mocked up in cardboard and wired to test — geometry first, fabrication later." }
 ]} />
+</Section>
 
-<Feature
-  image="/projects/safecracker/mechanism-sketches.jpeg"
-  alt="Hand-drawn sketches working out the stethoscope touch points and the handle and door locks"
-  label="technical spikes"
-  description="We drew and spiked the safe's mechanisms — touch points, door lock, handle lock — to de-risk them before committing to fabrication."
-/>
-
+<Section label="build & test">
 <Feature
   image="/projects/safecracker/first-prototype.jpeg"
   alt="The first fully integrated prototype, a simplified boxy safe on legs"
   label="prototype build"
   description="A boxy first build integrated every system. Not pretty, but perfect for testing whether the interactions actually held up."
+/>
+
+<Feature
+  image="/projects/safecracker/playtest-4x3.jpeg"
+  alt="A player listening through the stethoscope at a touch point on the boxy prototype while a group watches"
+  ratio="4 / 3"
+  label="playtesting"
+  description="Once the prototype was complete, we brought it to Georgia Tech's Industrial Design Student Showcase and captured feedback from 15+ players.
+
+Players found the mechanics highly engaging and challenging — but we learned the next iteration would need a fabrication overhaul to feel truly immersive."
+  caption="Photo: [Interactive Product Design Lab](https://ipdl.gatech.edu/)"
   flip={true}
 />
 </Section>

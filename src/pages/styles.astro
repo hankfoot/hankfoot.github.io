@@ -44,8 +44,13 @@ import Section from '../components/blocks/Section.astro';
       </div>
 
       <div class="styles-row">
-        <p class="styles-token-label">2 · SUBTITLE — inline accents · .intro-code / em</p>
-        <p class="intro-subtitle">a <code class="intro-code">mono chip</code> and an <em>italic</em> emphasise by shape, not by colour</p>
+        <p class="styles-token-label">2 · SUBTITLE — inline accents · .intro-code / .intro-role</p>
+        <p class="intro-subtitle">a <code class="intro-code">mono chip</code> and a <em class="intro-role">display serif</em> emphasise by shape, not by colour</p>
+      </div>
+
+      <div class="styles-row">
+        <p class="styles-token-label">display · Fraunces 500 · SOFT 100 · WONK 1 · lowercase · 1.12em optical match · .intro-role — used once, in the hero</p>
+        <p class="intro-subtitle"><em class="intro-role">interaction designer</em></p>
       </div>
 
       <div class="styles-row">
@@ -231,6 +236,14 @@ import Section from '../components/blocks/Section.astro';
           { src: 'https://placehold.co/1600x900/d8d8d8/888888?text=16+/+9', alt: 'Wide diagram', wide: true, ratio: '16 / 9' },
           { src: 'https://placehold.co/1200x750/e0e0e0/888888?text=8+/+5', alt: 'Screenshot 01', ratio: '8 / 5' },
           { src: 'https://placehold.co/1200x750/cccccc/888888?text=8+/+5', alt: 'Screenshot 02', ratio: '8 / 5' },
+        ]} />
+      </div>
+
+      <div class="styles-block-group">
+        <p class="styles-token-label">BentoGrid (pixelated — nearest-neighbour upscaling for pixel art)</p>
+        <BentoGrid images={[
+          { src: 'https://placehold.co/32x18/d8d8d8/555555?text=px', alt: 'Low-resolution source, smoothed by default', ratio: '16 / 9', width: 32, height: 18, caption: 'Default: the browser smooths on upscale.' },
+          { src: 'https://placehold.co/32x18/d8d8d8/555555?text=px', alt: 'Low-resolution source, nearest-neighbour upscaled', ratio: '16 / 9', width: 32, height: 18, pixelated: true, caption: 'pixelated: true — hard pixel edges survive.' },
         ]} />
       </div>
 

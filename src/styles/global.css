@@ -15,6 +15,11 @@
   --sidebar-border: 1px solid #e0e0e0;
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'Source Code Pro', 'Courier New', monospace;
+  /* Display serif, used once — "interaction designer" in the hero tagline.
+     Fraunces at 500 with SOFT=100 / WONK=1: the two custom axes are what carry
+     the warm, slightly off-kilter character, and only weight 500 is fetched, so
+     don't ask for a weight the link doesn't load. */
+  --font-display: 'Fraunces', Georgia, serif;
   --color-bg: #ffffff;
   --color-text: #111111;
   --color-muted: #666666;
@@ -173,8 +178,22 @@ a {
   padding: 0.05em 0.35em;
 }
 
-.intro-subtitle em {
-  font-style: italic;
+/* The one display-serif moment on the page — the role itself. Still an <em>:
+   it is genuinely the emphasised phrase, but the emphasis comes from the face,
+   so font-style is reset to normal rather than leaning on an italic. Only the
+   500 instance is fetched; naming it here keeps the browser off a synthesised
+   bold if the surrounding weight ever changes. */
+.intro-role {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 500;
+  /* Optical match, not a nominal one. Fraunces' cap height sits within 4% of
+     Inter's, but its x-height is ~15% smaller, and this phrase is all
+     lowercase — so at a shared em it reads a size down from the words around
+     it. A true x-height match would be 1.178em; that overshoots on the
+     ascenders, so this closes about two thirds of the gap. */
+  font-size: 1.12em;
+  text-transform: lowercase;
 }
 
 /* Inline hook — HandCursor aims its idle wave just past this box, so the
@@ -1387,6 +1406,17 @@ figcaption a:hover {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* Pixel art enlarged past its native size: browsers smooth-interpolate by
+   default, which turns hard-edged sprite work to mush. `pixelated` switches the
+   upscale to nearest-neighbour so the pixel grid stays crisp — the same result
+   as shipping a pre-upscaled file, at no extra bytes. Opt in per item via
+   BentoGrid's `pixelated: true`; never apply it to camera footage, which needs
+   the smoothing. */
+.block-bento-cell--pixelated img,
+.block-bento-cell--pixelated video {
+  image-rendering: pixelated;
 }
 
 /* ─── Block: Feature ─────────────────────────────────────────── */

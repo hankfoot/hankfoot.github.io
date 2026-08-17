@@ -238,19 +238,47 @@ a {
   display: none;
 }
 
-/* Mono like every other caption, but at the DESCRIPTION size (0.9375rem) —
-   this is hero-level metadata sitting under a 40px title, so the field-label
-   step reads as an afterthought there. Baseline-aligned so the label and the
-   names sit on one line. */
+/* Capabilities row, sitting under .intro-formerly and sharing its mono
+   register, so the two read as one small spec sheet under the sentence: where
+   he has been, then what he does. Baseline-aligned so each label and its items
+   sit on one line. Both labels are ten monospace characters, which is what puts
+   the items of both rows on a shared left edge — reword one to a different
+   length and that column breaks. */
+.intro-focus {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  /* Matches .intro-formerly's gap so the two rows share a rhythm. Separation is
+     carried by the gap alone: a ::before middot rides along with the item it
+     belongs to, so once the row wraps it lands at the head of the new line and
+     reads as a stray bullet. */
+  gap: 0.35rem 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: var(--label-tracking-tight);
+  color: var(--color-muted);
+}
+
+.intro-focus-label {
+  opacity: 0.65;
+}
+
+/* First of the pair, with .intro-focus beneath it. This ran at 0.9375rem when it
+   was the only metadata under the title and could afford the presence; with a
+   second row the block carries twice the mass, so both step down to the CAPTION
+   section-label size and the hero reads 52 / 24 / 12 rather than 52 / 24 / 15
+   twice over. The bottom margin is what groups the two — it belongs to whichever
+   row sits on top, so it moves if they are ever reordered again. */
 .intro-formerly {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.4rem 1.5rem;
+  gap: 0.35rem 1.25rem;
   font-family: var(--font-mono);
-  font-size: 0.9375rem;
+  font-size: 0.75rem;
   letter-spacing: var(--label-tracking-tight);
   color: var(--color-muted);
+  margin-bottom: 0.4rem;
 }
 
 .intro-formerly-label {

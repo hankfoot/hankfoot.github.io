@@ -21,6 +21,15 @@ export const formerly = [
   { name: 'spellbound ar', url: 'https://www.spellboundar.com/' },
 ];
 
+// Capabilities, not history — rendered as the row under `formerly` in the hero.
+// Kept short: these sit on one line beside their label, so a fourth entry or a
+// longer phrase will wrap the row before the column runs out.
+export const focus = [
+  'rapid prototyping',
+  'game design',
+  'hardware × software',
+];
+
 export const aboutPhoto = {
   src: '/about/hank-duck.jpg',
   alt: 'Hank sitting on a giant LEGO duck outside the LEGO House in Billund',

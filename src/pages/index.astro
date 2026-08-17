@@ -9,6 +9,7 @@ import {
   bio,
   contactLinks,
   formerly,
+  focus,
   experience,
   education,
   publications,
@@ -50,6 +51,12 @@ const sorted = projects.sort((a, b) => {
       <span class="intro-formerly-label">formerly @</span>
       {formerly.map(co => (
         <a href={co.url} target="_blank" rel="noopener">{co.name}</a>
+      ))}
+    </div>
+    <div class="intro-focus">
+      <span class="intro-focus-label">focused on</span>
+      {focus.map(item => (
+        <span class="intro-focus-item">{item}</span>
       ))}
     </div>
   </section>

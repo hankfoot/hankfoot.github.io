@@ -103,7 +103,7 @@ export const publications = [
     title: 'Safecracker: Exploring Immersion Through Audio and Object-Based Controllers',
     venue: 'CHI Student Games Competition',
     year: '2020',
-    link: 'https://dl.acm.org/doi/fullHtml/10.1145/3334480.3381656',
+    link: 'https://dl.acm.org/doi/10.1145/3334480.3381656',
   },
   {
     title: 'System and Method for Delivering Augmented Reality Using Scalable Frames to Pre-Existing Media',

@@ -166,6 +166,12 @@
     const range = document.createRange();
     range.selectNodeContents(heading);
     const rect = range.getBoundingClientRect();
+    // Don't aim at a tagline that isn't on screen. Clicking the masthead from
+    // down the page eases back to the top, and following the hero the whole way
+    // would fling the hand hundreds of pixels above the viewport and back. Hold
+    // position instead; the scroll re-aims every frame, so the hand picks the
+    // tagline up as it arrives and travels only the last short hop.
+    if (rect.bottom < 0 || rect.top > window.innerHeight) return;
     const emojiH = el.offsetHeight; // offsetHeight ignores CSS transforms (e.g. rotate from grab-pull)
     targetX = rect.right + 12;
     targetY = rect.top + rect.height / 2 - emojiH * 0.5;
@@ -606,7 +612,31 @@
   // before Astro's router starts the navigation.
   document.addEventListener('hand:grab', moveToGrabPosition);
 
-  window.addEventListener('scroll', () => { clickLocked = null; updateHand(); resetIdleTimer(); }, { passive: true });
+  // A nav click locks the hand to that link, and the lock is meant to survive
+  // until the *user* scrolls. Smooth anchor scrolling made that unreliable: the
+  // eased scroll fires dozens of events, the first of which released the lock
+  // and handed control to the midpoint scan mid-flight, so the hand twitched
+  // after each section as it went past. Hold the lock while the scroll is still
+  // moving and release it once it settles — the next real scroll drives the
+  // hand exactly as before.
+  let scrollSettle: number | undefined;
+  window.addEventListener('scroll', () => {
+    resetIdleTimer();
+    if (clickLocked) {
+      // Re-aim at the locked section rather than running the midpoint scan. The
+      // scan is what caused the chasing; the section's own action is safe to
+      // repeat. It also has to repeat: pointAtNavLink targets the sticky
+      // sidebar, so recomputing is a no-op, but waveAtTagline targets the hero,
+      // which is still travelling into view during an eased scroll. Aiming once
+      // at click time would send the hand to wherever the tagline was then —
+      // far above the viewport when the click came from further down the page.
+      if (state === 'idle') SECTIONS.find(sec => sec.key === clickLocked)?.action();
+      clearTimeout(scrollSettle);
+      scrollSettle = window.setTimeout(() => { clickLocked = null; }, 140);
+      return;
+    }
+    updateHand();
+  }, { passive: true });
   window.addEventListener('resize', () => { clickLocked = null; updateHand(); }, { passive: true });
 
   // Initial tick on first load (before astro:page-load fires)

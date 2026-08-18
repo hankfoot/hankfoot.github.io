@@ -142,10 +142,31 @@
     renderBadges();
   });
 
-  document.addEventListener('astro:page-load', () => { renderBadges(); initReset(); initBadgeNav(); });
+  // The masthead links home. From the home page that is a same-path navigation:
+  // Astro swaps the page and resets scroll, which reads as a hard jump next to
+  // the nav anchors' easing. Scroll instead, and drop any lingering #section so
+  // the URL matches where the page actually is. From a project page there is
+  // nothing to ease to, so let the router navigate as usual.
+  function initHomeLink() {
+    const link = document.querySelector('a.sidebar-top');
+    if (!link || link.dataset.homeReady === 'true') return;
+    link.dataset.homeReady = 'true';
+    link.addEventListener('click', (e) => {
+      const href = link.getAttribute('href');
+      if (!href) return;
+      if (new URL(href, location.href).pathname !== location.pathname) return;
+      e.preventDefault();
+      const reduced = document.documentElement.getAttribute('data-reduced-motion') === 'true';
+      window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+      if (location.hash) history.replaceState(null, '', location.pathname);
+    });
+  }
+
+  document.addEventListener('astro:page-load', () => { renderBadges(); initReset(); initBadgeNav(); initHomeLink(); });
   renderBadges();
   initReset();
   initBadgeNav();
+  initHomeLink();
 
   function initToggle() {
     const btn = document.getElementById('motion-toggle') as HTMLButtonElement | null;

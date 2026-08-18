@@ -71,6 +71,9 @@ html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* The sidebar nav items are in-page anchors, so ease to the section instead
+     of cutting to it. Opted out under reduced motion — see that section. */
+  scroll-behavior: smooth;
 }
 
 body {
@@ -1827,6 +1830,14 @@ a.block-credits-name:hover,
 [data-reduced-motion="true"] * {
   transition: none !important;
   animation: none !important;
+}
+
+/* scroll-behavior is neither a transition nor an animation, so the blanket rule
+   above does not reach it — the anchor scroll has to be opted out by name. The
+   attribute already folds in the OS prefers-reduced-motion setting, so this one
+   selector covers both that and the sidebar toggle. */
+[data-reduced-motion="true"] {
+  scroll-behavior: auto;
 }
 
 /* ─── Responsive ─────────────────────────────────────────────── */

@@ -452,6 +452,18 @@ a {
   padding-bottom: var(--space-divider);
 }
 
+/* The one exception to the rule above, and deliberately not a change to
+   --space-divider: the masthead is not a section, so the hero → first section
+   transition is not a section break. It also ends in 12px mono metadata rather
+   than a body of content, so the full divider space leaves that rule stranded
+   below it. Tightened on both sides, because equal air above and below the rule
+   is the invariant --space-divider actually protects — section breaks elsewhere
+   are untouched. */
+.page-intro + .page-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+}
+
 /* CAPTION role, section step — 0.75rem like .cv-block-label and
    .pp-body-section-label. It was 0.6875rem, the *field* step, which made the
    page-level label smaller than the sub-headings beneath it. */

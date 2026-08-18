@@ -15,12 +15,6 @@
   --sidebar-border: 1px solid #e0e0e0;
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'Source Code Pro', 'Courier New', monospace;
-  /* Display serif, reserved for the role phrase "interaction designer" — the
-     hero tagline and the sidebar bio, the two places it names the job.
-     Fraunces with SOFT=100 / WONK=1: the two custom axes are what carry the
-     warm, slightly off-kilter character. Weights 200–500 are fetched — 500 at
-     hero size, 300 in the sidebar — so don't ask for one outside that range. */
-  --font-display: 'Fraunces', Georgia, serif;
   --color-bg: #ffffff;
   --color-text: #111111;
   --color-muted: #666666;
@@ -157,14 +151,6 @@ a {
   margin-bottom: 1.75rem;
 }
 
-/* Same display face as the hero, several weights lighter. Stroke contrast is a
-   constant fraction of the em, so at 12px the 500 that reads as warm at hero
-   size closes up the counters and turns muddy. 300 keeps the serif character
-   while letting the phrase sit back behind the name above it. */
-.sidebar-bio .intro-role {
-  font-weight: 300;
-}
-
 
 /* ─── Page Intro ─────────────────────────────────────────────── */
 /* The intro owns no bottom divider of its own. The projects section that
@@ -195,37 +181,6 @@ a {
   line-height: 1.45;
   color: var(--color-muted);
   margin-bottom: 2rem;
-}
-
-/* Two inline accents inside the tagline, carried over from the earlier hero.
-   The line is muted throughout, so the emphasis comes from shape — a mono
-   chip and an italic — not from a darker colour, which would put a heavy
-   patch back in the middle of a deliberately light line. */
-.intro-code {
-  font-family: var(--font-mono);
-  font-size: 0.85em;
-  background: var(--color-surface-mid);
-  border-radius: var(--radius-sm);
-  padding: 0.05em 0.35em;
-}
-
-/* The display-serif moment — the role phrase, in the hero tagline and again in
-   the sidebar bio. Still an <em>: it is genuinely the emphasised phrase, but
-   the emphasis comes from the face, so font-style is reset to normal rather
-   than leaning on an italic. The weight is named rather than inherited so the
-   phrase keeps its own value wherever it sits, and the browser never
-   synthesises one from a surrounding weight. */
-.intro-role {
-  font-family: var(--font-display);
-  font-style: normal;
-  font-weight: 500;
-  /* Optical match, not a nominal one. Fraunces' cap height sits within 4% of
-     Inter's, but its x-height is ~15% smaller, and this phrase is all
-     lowercase — so at a shared em it reads a size down from the words around
-     it. A true x-height match would be 1.178em; that overshoots on the
-     ascenders, so this closes about two thirds of the gap. */
-  font-size: 1.12em;
-  text-transform: lowercase;
 }
 
 /* Inline hook — HandCursor aims its idle wave just past this box, so the

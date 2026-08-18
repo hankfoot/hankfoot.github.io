@@ -64,14 +64,14 @@ My favorite part: the entire game is playable _without_ having to look at the sc
   image="/projects/safecracker/touch-points.webm"
   alt="A player holding the stethoscope to a marked point on the safe"
   label="find the sweet spots"
-  description="Hold the stethoscope to the marked points on the safe and listen through the embedded Bluetooth headphones."
+  description="Hold the stethoscope to the marked points and listen for the lock's inner mechanisms."
 />
 
 <Feature
   image="/projects/safecracker/listening.webm"
   alt="A player rotating the safe's dial while listening through headphones"
   label="listen closely"
-  description="Rotate the dial through the clicks. A solid THUNK marks the next number in the combination."
+  description="Rotate the dial until a “<em>THUNK</em>” signals the next number in the combination."
   flip={true}
 />
 
@@ -79,15 +79,15 @@ My favorite part: the entire game is playable _without_ having to look at the sc
   image="/projects/safecracker/open-safe.webm"
   alt="The safe swinging open to reveal treasure on a hidden inner display"
   label="crack the code"
-  description="Solve the three-digit combination and the safe opens onto a hidden screen full of treasure."
+  description="Solve the three-digit combination and the safe unlocks, revealing treasure on a hidden inner display."
 />
 </Section>
 
 <Section label="prototyping">
 <BentoGrid images={[
-  { src: "/projects/safecracker/mechanism-sketches.jpeg", alt: "Hand-drawn sketches working out the stethoscope touch points and the handle and door locks", wide: true, ratio: "1240 / 834", width: 1240, height: 834, caption: "Four mechanisms worked out on paper — touch points, handle and lock, solenoid feedback, dial — to de-risk them before committing to fabrication." },
-  { src: "/projects/safecracker/proto-touch-points-16x9.jpeg", alt: "Copper pads taped to a cardboard board with a stethoscope resting on one, wired to a breadboard beside a hand-drawn circuit", ratio: "16 / 9", width: 2000, height: 1125, caption: "Copper tape on scrap board, wired to a breadboard — proving the safe could tell which point the stethoscope was resting on." },
-  { src: "/projects/safecracker/door-lock.webm", alt: "A cardboard mock-up of the door lock mechanism engaging by hand", ratio: "16 / 9", caption: "The door latch mocked up in cardboard and wired to test — geometry first, fabrication later." }
+  { src: "/projects/safecracker/mechanism-sketches.jpeg", alt: "Hand-drawn sketches of the safe's internal electronics: stethoscope touch points, handle and door locks, solenoid feedback, and the dial", wide: true, ratio: "1240 / 834", width: 1240, height: 834, caption: "Sketched iterations of the safe's internal electronics (courtesy of [Kelsie Thomas](https://www.linkedin.com/in/kelsiedesign/))" },
+  { src: "/projects/safecracker/proto-touch-points-16x9.jpeg", alt: "Copper pads taped to a board with a stethoscope resting on one, wired to a breadboard beside a hand-drawn circuit", ratio: "16 / 9", width: 2000, height: 1125, caption: "Copper tape touch pads to detect the stethoscope" },
+  { src: "/projects/safecracker/door-lock.webm", alt: "A chipboard mockup of the door lock mechanism engaging by hand", ratio: "16 / 9", caption: "A chipboard mockup of the safe door's locking mechanism" }
 ]} />
 </Section>
 
@@ -114,20 +114,20 @@ Players found the mechanics highly engaging and challenging — but we learned t
 
 <Section label="digital design">
 <BentoGrid images={[
-  { src: "/projects/safecracker/system-diagram-5x3.png", alt: "System diagram showing the PC, Arduino, sensors, locks, and both displays", wide: true, ratio: "5 / 3", width: 1693, height: 1005, caption: "A Processing game drives both displays and talks to an Arduino running the sensors and locks." },
-  { src: "/projects/safecracker/main-menu.webm", alt: "The Safecracker main menu listing three heists", ratio: "16 / 9", caption: "Menus are navigated with the hardware — dial to scroll, handle to select." },
-  { src: "/projects/safecracker/tutorial.webm", alt: "The interactive tutorial teaching the game's audio cues", ratio: "16 / 9", caption: "A playable tutorial teaches the audio cues before the heist starts." },
-  { src: "/projects/safecracker/levels.webm", alt: "The three heist environments in turn — a corner store, a jewellery store, and the National Archives", wide: true, ratio: "1920 / 856", caption: "Each difficulty brings its own heist, graphics, and audio distractions." }
+  { src: "/projects/safecracker/system-diagram-5x3.png", alt: "System diagram showing the PC, Arduino, sensors, locks, and both displays", wide: true, ratio: "5 / 3", width: 1693, height: 1005, caption: "A Processing game drives both displays and talks to an Arduino running the sensors and locks" },
+  { src: "/projects/safecracker/main-menu.webm", alt: "The Safecracker main menu listing three heists", ratio: "16 / 9", caption: "Menus are navigated with the hardware — dial to scroll, handle to select" },
+  { src: "/projects/safecracker/tutorial.webm", alt: "The interactive tutorial teaching the game's audio cues", ratio: "16 / 9", caption: "A playable tutorial teaches the audio cues before the heist starts" },
+  { src: "/projects/safecracker/levels.webm", alt: "The three heist environments in turn — a corner store, a jewellery store, and the National Archives", wide: true, ratio: "1920 / 856", caption: "Each difficulty brings its own heist, graphics, and audio distractions" }
 ]} />
 </Section>
 
 <Section label="fabrication">
 <BentoGrid images={[
-  { src: "/projects/safecracker/cnc-housing-4x3.jpeg", alt: "The CNC-routed plywood housing being assembled in the shop", width: 2000, height: 1500, caption: "A CNC'd exterior replaced the plywood box." },
-  { src: "/projects/safecracker/hidden-display-4x3.jpeg", alt: "The frame built to house a screen hidden inside the safe", width: 2000, height: 1500, caption: "A screen hidden inside plays the payoff." },
-  { src: "/projects/safecracker/printed-mounts-4x3.jpeg", alt: "A solenoid seated in white 3D-printed mounts", width: 2000, height: 1500, caption: "3D-printed mounts for every board and motor." },
-  { src: "/projects/safecracker/lock-detail-3x2.jpeg", alt: "A printed gear on the dial shaft ringed by microswitches, beside a solenoid on a second acrylic panel", width: 1554, height: 1036, caption: "A printed gear and microswitches read the dial; a solenoid throws the lock." },
-  { src: "/projects/safecracker/safe-internals-4x3.jpeg", alt: "The safe open, showing its internals and the lit inner display", wide: true, width: 1942, height: 1487, caption: "Everything assembled — the inner screen lit behind the door, the dial mechanism riding on it." }
+  { src: "/projects/safecracker/cnc-housing-4x3.jpeg", alt: "The CNC-routed plywood housing being assembled in the shop", width: 2000, height: 1500, caption: "A CNC'd exterior replaced the plywood box" },
+  { src: "/projects/safecracker/hidden-display-4x3.jpeg", alt: "The frame built to house a screen hidden inside the safe", width: 2000, height: 1500, caption: "A screen hidden inside plays the payoff" },
+  { src: "/projects/safecracker/printed-mounts-4x3.jpeg", alt: "A solenoid seated in white 3D-printed mounts", width: 2000, height: 1500, caption: "3D-printed mounts for every board and motor" },
+  { src: "/projects/safecracker/lock-detail-3x2.jpeg", alt: "A printed gear on the dial shaft ringed by microswitches, beside a solenoid on a second acrylic panel", width: 1554, height: 1036, caption: "A printed gear and microswitches read the dial; a solenoid throws the lock" },
+  { src: "/projects/safecracker/safe-internals-4x3.jpeg", alt: "The safe open, showing its internals and the lit inner display", wide: true, width: 1942, height: 1487, caption: "Everything assembled — the inner screen lit behind the door, the dial mechanism riding on it" }
 ]} />
 </Section>
 

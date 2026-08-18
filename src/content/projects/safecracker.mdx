@@ -56,6 +56,30 @@ I designed and prototyped the physical gameplay — where the stethoscope listen
 I also wrote the main game loop in Processing and modeled the final iteration in CAD, routing the exterior on a CNC and printing mounts for every board and motor inside it.
 </Section>
 
+<Section label="how to play">
+<Feature
+  image="/projects/safecracker/touch-points.webm"
+  alt="A player holding the stethoscope to a marked point on the safe"
+  label="find the sweet spots"
+  description="Hold the stethoscope to the marked points on the safe and listen through the embedded Bluetooth headphones."
+/>
+
+<Feature
+  image="/projects/safecracker/listening.webm"
+  alt="A player rotating the safe's dial while listening through headphones"
+  label="listen closely"
+  description="Rotate the dial through the clicks. A solid THUNK marks the next number in the combination."
+  flip={true}
+/>
+
+<Feature
+  image="/projects/safecracker/open-safe.webm"
+  alt="The safe swinging open to reveal treasure on a hidden inner display"
+  label="crack the code"
+  description="Solve the three-digit combination and the safe opens onto a hidden screen full of treasure."
+/>
+</Section>
+
 <Section label="prototyping">
 <BentoGrid images={[
   { src: "/projects/safecracker/mechanism-sketches.jpeg", alt: "Hand-drawn sketches working out the stethoscope touch points and the handle and door locks", wide: true, ratio: "1240 / 834", width: 1240, height: 834, caption: "Four mechanisms worked out on paper — touch points, handle and lock, solenoid feedback, dial — to de-risk them before committing to fabrication." },
@@ -92,30 +116,6 @@ Players found the mechanics highly engaging and challenging — but we learned t
   { src: "/projects/safecracker/printed-mounts-4x3.jpeg", alt: "A solenoid seated in white 3D-printed mounts", width: 2000, height: 1500, caption: "3D-printed mounts for every board and motor." },
   { src: "/projects/safecracker/flat-pack-panels-4x3.jpeg", alt: "The safe disassembled into flat-laying panels on a table", width: 2000, height: 1500, caption: "Removable panels so the safe flat-packs for travel." }
 ]} />
-</Section>
-
-<Section label="how to play">
-<Feature
-  image="/projects/safecracker/touch-points.webm"
-  alt="A player holding the stethoscope to a marked point on the safe"
-  label="find the sweet spots"
-  description="Hold the stethoscope to the marked points on the safe and listen through the embedded Bluetooth headphones."
-/>
-
-<Feature
-  image="/projects/safecracker/listening.webm"
-  alt="A player rotating the safe's dial while listening through headphones"
-  label="listen closely"
-  description="Rotate the dial through the clicks. A solid THUNK marks the next number in the combination."
-  flip={true}
-/>
-
-<Feature
-  image="/projects/safecracker/open-safe.webm"
-  alt="The safe swinging open to reveal treasure on a hidden inner display"
-  label="crack the code"
-  description="Solve the three-digit combination and the safe opens onto a hidden screen full of treasure."
-/>
 </Section>
 
 <Section label="digital design">

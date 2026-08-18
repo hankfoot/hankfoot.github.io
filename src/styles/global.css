@@ -1450,8 +1450,8 @@ figcaption a:hover {
    ignores image-rendering, so there is no CSS fix for pixel-art video. Shipping
    a pre-upscaled file is the only lever there, and it only pays off if the
    source has a clean pixel grid to start with — a capture that was already
-   scaled up with smoothing (safecracker's difficulties.webm) just reproduces
-   its own blur at a larger size. Reducing the display size beats any re-encode. */
+   scaled up with smoothing just reproduces its own blur at a larger size.
+   Reducing the display size beats any re-encode. */
 .block-bento-cell--pixelated img,
 .block-bento-cell--pixelated video {
   image-rendering: pixelated;

@@ -478,6 +478,33 @@ a {
   color: var(--color-bg);
 }
 
+/* Section label and its actions on one line. The label sat alone with the whole
+   right side of the column empty, so the CTAs ride up beside it and the section
+   opens with what you can do rather than burying it at the foot. Baseline
+   alignment puts the label's baseline on the buttons' text baseline, not on
+   their boxes. The label's own bottom margin is moved onto this row so the two
+   can't both contribute space. */
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-head .section-label {
+  margin-bottom: 0;
+}
+
+/* Pairs the CV's two endpoints. Wraps to its own line under the label once the
+   column is too narrow to hold both alongside it. */
+.cv-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 /* ─── Contact ────────────────────────────────────────────────── */
 /* Data lives in about.ts (contactMessage + contactLinks). On desktop this
    duplicates the sidebar footer by design; below 900px the footer is hidden
@@ -608,12 +635,15 @@ a {
 }
 
 
-/* Sub-heading inside a page section — one step down from .section-label.
-   No rule: the block gap in .cv-stack does the separating, matching how
-   .section-label sits unruled above its own content. */
+/* Sub-heading inside a page section, a real step below .section-label — both
+   sat at 0.75rem, so "cv" and the block label under it rendered identically and
+   read as one doubled header. This is the CAPTION field step; the section step
+   above it now has something to be a step above. No rule: the block gap in
+   .cv-stack does the separating, matching how .section-label sits unruled above
+   its own content. */
 .cv-block-label {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 400;
   text-transform: lowercase;
   letter-spacing: var(--label-tracking-tight);

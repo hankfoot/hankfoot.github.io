@@ -10,6 +10,7 @@ import {
   contactLinks,
   formerly,
   focus,
+  linkedinUrl,
   experience,
   education,
   publications,
@@ -90,11 +91,16 @@ const sorted = projects.sort((a, b) => {
   </section>
 
   <section class="page-section" id="cv">
-    <p class="section-label">cv</p>
+    <div class="section-head">
+      <p class="section-label">cv</p>
+      <div class="cv-actions">
+        <a href={resumeUrl} target="_blank" rel="noopener" class="section-cta">download resume ↗</a>
+        <a href={linkedinUrl} target="_blank" rel="noopener" class="section-cta">full history on linkedin ↗</a>
+      </div>
+    </div>
     <div class="cv-stack">
 
       <div class="cv-block">
-        <h2 class="cv-block-label">experience</h2>
         <div class="cv-roles">
           {experience.map(role => (
             <article class="cv-role">
@@ -136,8 +142,6 @@ const sorted = projects.sort((a, b) => {
           </ul>
         </div>
       </div>
-
-      <a href={resumeUrl} target="_blank" rel="noopener" class="section-cta">download resume ↗</a>
 
     </div>
   </section>

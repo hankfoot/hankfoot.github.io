@@ -124,8 +124,12 @@ export const publications = [
 
 export const resumeUrl = 'https://hankduhaime.com/s/DuhaimeResume2023-V-Nov.pdf';
 
+// Shared by the CV section's "full history" pointer and the contact list below
+// it, so the two can never drift apart.
+export const linkedinUrl = 'https://www.linkedin.com/in/henryduhaime/';
+
 export const contactLinks = [
   { label: 'hello.hank.d@gmail.com', href: 'mailto:hello.hank.d@gmail.com' },
-  { label: 'linkedin', href: 'https://www.linkedin.com/in/henryduhaime/' },
+  { label: 'linkedin', href: linkedinUrl },
   { label: 'instagram', href: 'https://www.instagram.com/hankware.d/' },
 ];

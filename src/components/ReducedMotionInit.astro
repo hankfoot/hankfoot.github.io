@@ -2,13 +2,32 @@
 // Sets data-reduced-motion on <html> before first paint (avoids a motion FOUC).
 // Reads the user's saved preference, falling back to the system setting.
 // MUST stay is:inline and live in <head> so it runs synchronously pre-paint.
+//
+// Also re-applies after every router navigation: the attribute only ever exists
+// client-side, so Astro's swap of <html> drops it and the preference lapses
+// mid-session.
 ---
 <script is:inline>
   (function () {
-    var stored = localStorage.getItem('hank-reduced-motion');
-    var sys = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (stored === 'true' || (stored === null && sys)) {
-      document.documentElement.setAttribute('data-reduced-motion', 'true');
+    function apply() {
+      var stored = localStorage.getItem('hank-reduced-motion');
+      var sys = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (stored === 'true' || (stored === null && sys)) {
+        document.documentElement.setAttribute('data-reduced-motion', 'true');
+      } else {
+        document.documentElement.removeAttribute('data-reduced-motion');
+      }
+    }
+
+    apply();
+
+    // astro:after-swap lands after the new document is in place but before it
+    // paints, so the attribute is back in time and no motion shows through.
+    // Guarded because this inline script may run again on a swap, and each run
+    // would otherwise add another copy of the listener.
+    if (!window.__reducedMotionHooked) {
+      window.__reducedMotionHooked = true;
+      document.addEventListener('astro:after-swap', apply);
     }
   })();
 </script>

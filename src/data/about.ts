@@ -40,9 +40,9 @@ export const experience = [
   {
     company: 'Meta Reality Labs Research',
     title: 'Senior Product Design Prototyper',
-    dates: '2022 — present',
+    dates: '2022 — 2026',
     description:
-      'AR/VR research prototypes across haptics, AI, wearables, and robotics — built to drive design exploration, value assessment, and user studies.',
+      'AR/VR research prototypes across haptics, AI, wearables, and robotics — built to drive design exploration, value assessment, and user studies. Started on contract in 2022 and came on full time in 2024.',
   },
   {
     company: 'Publicis Sapient',

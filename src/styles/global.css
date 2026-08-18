@@ -109,6 +109,21 @@ a {
 }
 
 /* ─── Sidebar Sections ───────────────────────────────────────── */
+/* The masthead doubles as the home link, so it borrows the nav items' hover
+   fade — it should feel like the same class of target as "projects" below it.
+   display:block because this is an <a> wrapping two block children, and
+   data-section="intro" opts it into the hand cursor: the click handler already
+   carried an `intro` branch that waves at the tagline, dormant until now
+   because nothing claimed that value. */
+.sidebar-top {
+  display: block;
+  transition: opacity 0.15s;
+}
+
+.sidebar-top:hover {
+  opacity: 0.5;
+}
+
 .sidebar-name {
   font-family: var(--font-sans);
   font-size: 1.125rem;

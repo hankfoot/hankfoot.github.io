@@ -1,0 +1,26 @@
+<!DOCTYPE html><html lang="en" data-astro-cid-kpmccmae> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Myth Match — game test</title><script>
+  (function () {
+    function apply() {
+      var stored = localStorage.getItem('hank-reduced-motion');
+      var sys = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (stored === 'true' || (stored === null && sys)) {
+        document.documentElement.setAttribute('data-reduced-motion', 'true');
+      } else {
+        document.documentElement.removeAttribute('data-reduced-motion');
+      }
+    }
+
+    apply();
+
+    // astro:after-swap lands after the new document is in place but before it
+    // paints, so the attribute is back in time and no motion shows through.
+    // Guarded because this inline script may run again on a swap, and each run
+    // would otherwise add another copy of the listener.
+    if (!window.__reducedMotionHooked) {
+      window.__reducedMotionHooked = true;
+      document.addEventListener('astro:after-swap', apply);
+    }
+  })();
+</script><style>:root{color-scheme:light}body{margin:0;min-height:100vh;display:grid;place-items:center;gap:1.5rem;padding:2rem;box-sizing:border-box;background:#d9d5cc;font-family:system-ui,sans-serif;color:#2a2620}.test-head[data-astro-cid-kpmccmae]{text-align:center}.test-head[data-astro-cid-kpmccmae] h1[data-astro-cid-kpmccmae]{margin:0 0 .25rem;font-size:1.3rem}.test-head[data-astro-cid-kpmccmae] p[data-astro-cid-kpmccmae]{margin:0;opacity:.6;font-size:.85rem}.test-actions[data-astro-cid-kpmccmae]{display:flex;gap:.75rem;justify-content:center;margin-top:.75rem}.test-actions[data-astro-cid-kpmccmae] button[data-astro-cid-kpmccmae],.test-actions[data-astro-cid-kpmccmae] a[data-astro-cid-kpmccmae]{font:inherit;font-size:.8rem;padding:.35rem .7rem;border-radius:8px;border:1px solid rgba(0,0,0,.2);background:#f3efe6;color:inherit;cursor:pointer;text-decoration:none}.test-frame[data-astro-cid-kpmccmae]{width:min(560px,92vw)}
+</style>
+<link rel="stylesheet" href="/_astro/_game_.jwJYWWig.css"></head> <body data-astro-cid-kpmccmae> <div class="test-head" data-astro-cid-kpmccmae> <h1 data-astro-cid-kpmccmae>Myth Match</h1> <p data-astro-cid-kpmccmae>test harness · /games/treasure-hunt</p> <div class="test-actions" data-astro-cid-kpmccmae> <a href="/games/" data-astro-cid-kpmccmae>← all games</a> <button type="button" id="reset-badges" data-astro-cid-kpmccmae>reset badges</button> </div> </div> <div class="test-frame" data-astro-cid-kpmccmae> <section class="game-embed is-bare" id="game-myth-match" data-game="treasure-hunt" data-options="{&#34;emojis&#34;:[&#34;🧙&#34;,&#34;🦄&#34;,&#34;🧜‍♀️&#34;,&#34;🐦‍🔥&#34;,&#34;🐉&#34;,&#34;🎠&#34;,&#34;🔮&#34;,&#34;📯&#34;,&#34;🏹&#34;,&#34;🛡️&#34;,&#34;🗡️&#34;],&#34;title&#34;:&#34;Myth Match&#34;,&#34;instructions&#34;:&#34;Reveal the AR icons with your phone, then click to make matching pairs.&#34;}" data-badge="{&#34;id&#34;:&#34;myth-match&#34;,&#34;label&#34;:&#34;myth matcher&#34;,&#34;source&#34;:&#34;Quick Distract&#34;,&#34;icon&#34;:&#34;🏰&#34;}" style="--aspect:1" aria-label="Myth Match minigame" data-astro-cid-m7n5nm5f> <div class="game-embed-stage" data-astro-cid-m7n5nm5f> <canvas class="game-embed-canvas" aria-label="Reveal the AR icons with your phone, then click to make matching pairs." data-astro-cid-m7n5nm5f></canvas> </div> </section>  <script type="module" src="/_astro/GameCanvas.astro_astro_type_script_index_0_lang.CHYnrspd.js"></script> </div> <script type="module" src="/_astro/_game_.astro_astro_type_script_index_0_lang.nnu0SXG7.js"></script> </body> </html>

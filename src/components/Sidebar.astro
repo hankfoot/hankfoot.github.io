@@ -38,17 +38,6 @@
   </footer>
 </aside>
 
-<button
-  class="motion-toggle"
-  id="motion-toggle"
-  aria-label="Toggle reduced motion"
-  data-on="false"
->
-  <span class="motion-icon">✕</span>
-  <span class="motion-toggle-track"></span>
-  <span class="motion-emoji"><img src="/ui/hand-wave.svg" alt="" /></span>
-</button>
-
 <script>
   import { getBadges, clearBadges, BADGE_EVENT, BADGE_RESET } from '../utils/badges.ts';
   import { emojiSvgUrl } from '../games/emoji';
@@ -166,30 +155,4 @@
   initReset();
   initBadgeNav();
   initHomeLink();
-
-  function initToggle() {
-    const btn = document.getElementById('motion-toggle') as HTMLButtonElement | null;
-    if (!btn) return;
-
-    function getReduced(): boolean {
-      return document.documentElement.getAttribute('data-reduced-motion') === 'true';
-    }
-
-    function sync() {
-      btn!.setAttribute('data-on', String(!getReduced()));
-    }
-
-    btn.addEventListener('click', () => {
-      const next = !getReduced();
-      document.documentElement.setAttribute('data-reduced-motion', String(next));
-      localStorage.setItem('hank-reduced-motion', String(next));
-      sync();
-    });
-
-    sync();
-  }
-
-  // Run on initial load and after each page transition
-  document.addEventListener('astro:page-load', initToggle);
-  initToggle();
 </script>

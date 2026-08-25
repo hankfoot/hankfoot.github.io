@@ -1,6 +1,9 @@
 ---
 // Sets data-reduced-motion on <html> before first paint (avoids a motion FOUC).
-// Reads the user's saved preference, falling back to the system setting.
+// Follows the OS setting. It used to prefer a value saved in localStorage, but
+// the sidebar toggle that wrote that value is gone — leaving the read in place
+// would mean anyone who had flipped it once was pinned to that choice forever,
+// with no control left to undo it and the system setting ignored.
 // MUST stay is:inline and live in <head> so it runs synchronously pre-paint.
 //
 // Also re-applies after every router navigation: the attribute only ever exists
@@ -10,9 +13,8 @@
 <script is:inline>
   (function () {
     function apply() {
-      var stored = localStorage.getItem('hank-reduced-motion');
       var sys = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (stored === 'true' || (stored === null && sys)) {
+      if (sys) {
         document.documentElement.setAttribute('data-reduced-motion', 'true');
       } else {
         document.documentElement.removeAttribute('data-reduced-motion');

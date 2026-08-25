@@ -1876,11 +1876,14 @@ a.block-credits-name:hover,
 
   /* ── Touch targets ──
      Nav links measured 19px tall on phones. Padding (not font-size) grows the
-     hit area to ~44px; negative margin keeps the visual rhythm of the bar. */
+     hit area to ~44px; negative margin keeps the visual rhythm of the bar.
+     The horizontal pair must cancel exactly: any remainder insets the link's
+     glyphs from the bar's padding edge, so the nav no longer lines up with the
+     name above it. It was 6px of padding against 2px of margin — a 4px drift. */
   .sidebar-nav a {
     display: inline-block;
-    padding: 0.75rem 0.375rem;
-    margin: -0.5rem -0.125rem;
+    padding: 0.75rem 0.5rem;
+    margin: -0.5rem -0.5rem;
   }
 
   .project-panel-back {
@@ -1902,11 +1905,17 @@ a.block-credits-name:hover,
   }
 
   /* ── Shell: sidebar becomes a top bar ── */
+  /* space-between rather than an auto margin on the nav. Both put the nav right
+     when the two fit on one line, but a margin-left:auto resolves against
+     whatever space is left over once the nav has wrapped — leaving it indented
+     by that remainder instead of aligned with the name. Justification applies
+     per flex line, so a wrapped nav is alone on its line and sits flush left. */
   .sidebar {
     height: auto;
     flex-direction: row;
     align-items: center;
     flex-wrap: wrap;
+    justify-content: space-between;
     gap: 0.5rem 1.25rem;
     padding: 0.875rem 1.25rem;
     border-right: none;
@@ -1927,19 +1936,23 @@ a.block-credits-name:hover,
   .sidebar-nav {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 0.25rem 1rem;
-    margin: 0 0 0 auto;
+    /* 0.75rem, not 1rem: the four links plus their tap padding measured 333px
+       with the wider gap, so the row broke on a 320px phone before any unusual
+       viewport was involved. */
+    gap: 0.25rem 0.75rem;
+    margin: 0;
   }
 
   .sidebar-nav a {
     font-size: 1.0625rem;
   }
 
+  /* The rack belongs to the vertical sidebar. Once that is a top bar there is no
+     room for it beside the nav, so it goes entirely — same call as .sidebar-bio
+     and .sidebar-footer above. Badges are still earned and still persist; they
+     reappear when the sidebar does. */
   .sidebar-badges {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0;
+    display: none;
   }
 
   .sidebar-badges-label {
@@ -2122,3 +2135,24 @@ a.block-credits-name:hover,
     padding: 0.6rem 0.85rem;
   }
 }
+
+/* Keeps the nav on one row all the way down. Folding it is what looked untidy —
+   flex broke the four links 3 + 1, and a 2-up grid left a hole after the short
+   "cv" — so take a size step and avoid the fold rather than arrange it. At
+   0.9375rem the row clears viewports narrower than any shipping phone. Tap
+   height is unaffected: that comes from the links' vertical padding, not their
+   font size.
+
+   MUST stay last among the width queries. The 900px and 600px blocks above set
+   .sidebar-nav a's font-size at the same specificity, so from any earlier
+   position this loses on source order and silently never applies. */
+@media (max-width: 340px) {
+  .sidebar-nav a {
+    font-size: 0.9375rem;
+  }
+
+  .sidebar-nav {
+    column-gap: 0.625rem;
+  }
+}
+

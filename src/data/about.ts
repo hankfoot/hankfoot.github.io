@@ -10,7 +10,7 @@ export const bio = {
 export const aboutParagraphs = [
   "I'm Hank — a design technologist who builds playful interactive experiences.",
   "Most recently I've been focused on emergent digital spaces: from AR tools for healthcare to XR, haptics, and AI at Meta Reality Labs.",
-  'I thrive where code, hardware, and imagination meet: turning early ideas into prototypes that can be felt, heard, seen, and (sometimes) smelled. Not tasted though, at least… not yet 🤔',
+  'I thrive where code, hardware, and design meet: turning early ideas into prototypes that can be felt, heard, seen, and (sometimes) smelled. Not tasted though, at least… not yet 🤔',
   "Outside of work, I'm a hobbyist maker with skills in electronics and 3D printing. My love languages are threaded inserts and programmable LEDs.",
 ];
 
@@ -33,7 +33,7 @@ export const focus = [
 export const aboutPhoto = {
   src: '/about/hank-duck.jpg',
   alt: 'Hank sitting on a giant LEGO duck outside the LEGO House in Billund',
-  caption: 'billund, dk — riding the duck outside LEGO House',
+  caption: 'Me riding the duck outside of LEGO headquarters',
 };
 
 export const experience = [
@@ -42,14 +42,14 @@ export const experience = [
     title: 'Senior Product Design Prototyper',
     dates: '2022 — 2026',
     description:
-      'AR/VR research prototypes across haptics, AI, wearables, and robotics — built to drive design exploration, value assessment, and user studies. Started on contract in 2022 and came on full time in 2024.',
+      'Developed AR/VR research prototypes across haptics, AI, wearables, and robotics — built to drive design exploration, value assessment, and user studies. Started on contract in 2022 and came on full time in 2024.',
   },
   {
     company: 'Publicis Sapient',
     title: 'Experience Designer L1',
     dates: '2020 — 2022',
     description:
-      'Digital products for Mercedes-Benz USA: sketches, wireframes, interaction flows, and click-through prototypes.',
+      'Prototyped digital products for Mercedes-Benz USA: sketches, wireframes, interaction flows, and click-throughs.',
   },
   {
     company: 'SpellBound AR',
@@ -70,7 +70,7 @@ export const experience = [
     title: 'Experience Design Intern',
     dates: '2019',
     description:
-      'Flow diagrams, videos, and software prototypes pitching physical installations to prospective clients.',
+      'Produced flow diagrams, videos, and software prototypes pitching physical installations to prospective clients.',
   },
 ];
 

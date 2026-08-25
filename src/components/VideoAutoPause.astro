@@ -1,0 +1,61 @@
+---
+// Project pages render several autoplaying loops at once. Left alone they all
+// decode continuously whether or not they are on screen, which competes with
+// scrolling for the main thread. Pause what is out of view and resume it on the
+// way back in — the videos still start on their own, they just stop paying for
+// the ones you cannot see.
+---
+<script>
+  function initVideoAutoPause() {
+    const videos = Array.from(document.querySelectorAll<HTMLVideoElement>('video[autoplay]'));
+    if (!videos.length) return;
+
+    // Drop the previous page's observer, or the router's swaps leave one still
+    // running per visited page.
+    (window as any).__videoObserver?.disconnect();
+
+    const visible = new Set<HTMLVideoElement>();
+
+    // Only ever resume a video this script paused. A video the browser stopped
+    // for its own reasons is left alone rather than forced back into playing.
+    function resume(v: HTMLVideoElement) {
+      if (v.dataset.autoPaused !== 'true') return;
+      v.play().then(() => { delete v.dataset.autoPaused; }).catch(() => {});
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        const v = entry.target as HTMLVideoElement;
+        if (entry.isIntersecting) {
+          visible.add(v);
+          resume(v);
+        } else {
+          visible.delete(v);
+          if (!v.paused) { v.dataset.autoPaused = 'true'; v.pause(); }
+        }
+      }
+    }, { rootMargin: '200px 0px' }); // start a little before it scrolls in
+
+    videos.forEach(v => io.observe(v));
+    (window as any).__videoObserver = io;
+
+    // Backgrounding the tab pauses media, and coming back fires no intersection
+    // change — without this the on-screen videos would stay stopped for good.
+    if (!(window as any).__videoVisibilityHooked) {
+      (window as any).__videoVisibilityHooked = true;
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState !== 'visible') return;
+        document.querySelectorAll<HTMLVideoElement>('video[autoplay]').forEach(v => {
+          const r = v.getBoundingClientRect();
+          if (r.bottom > -200 && r.top < window.innerHeight + 200) {
+            v.dataset.autoPaused = 'true';
+            resume(v);
+          }
+        });
+      });
+    }
+  }
+
+  document.addEventListener('astro:page-load', initVideoAutoPause);
+  initVideoAutoPause();
+</script>

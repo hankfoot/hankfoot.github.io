@@ -53,6 +53,16 @@
   const GRAB_TRAVEL_MAX_PX    = 50;    // higher speed cap for fast travel
   const GRAB_PULL_PX_PER_FRAME = 14;   // slow pull — gives the panel some mass
   const ARRIVAL_THRESHOLD     = 8;     // px — considered "arrived" within this distance
+  // Cross-fade between the homepage and a project drawer. One value for both
+  // directions: the page fades out over this as the drawer arrives, and back in
+  // over the same as it leaves, so the pair reads as one gesture reversed.
+  const PANEL_FADE_MS         = 600;
+  // How far the outgoing drawer has to travel before the page starts showing
+  // through, as a fraction of its exit. Earlier than this and the fade happens
+  // behind a panel that has barely moved; later and it lands after the shove is
+  // already over. Expressed as travel, not time, so it stays put if the exit
+  // duration or its easing is retuned.
+  const PANEL_FADE_AT_TRAVEL  = 0.06;
 
   // ─── State machine ────────────────────────────────────────────
   // Priority tiers:
@@ -89,6 +99,7 @@
   let panelAnim: Animation | null = null;
   let contentClone: HTMLElement | null = null;
   let panelClone:   HTMLElement | null = null;
+  let panelScroll = 0;      // scrollTop of the panel at snapshot time (see below)
 
   // ─── tick() ───────────────────────────────────────────────────
   function tick(gen: number) {
@@ -423,6 +434,13 @@
       const panel = document.querySelector<HTMLElement>('.project-panel');
       if (panel) {
         const snapRect = panel.getBoundingClientRect();
+        // .project-panel is the scroll container on project pages, and
+        // cloneNode copies markup but not scrollTop — that is runtime state,
+        // not an attribute. Without carrying it over the clone renders from the
+        // top of the article, so leaving a scrolled page looked like the content
+        // snapped to the top just before it flew off. Re-applied after the clone
+        // is in the document; setting it beforehand has nothing to scroll.
+        panelScroll = panel.scrollTop;
         panelClone = panel.cloneNode(true) as HTMLElement;
         Object.assign(panelClone.style, {
           position: 'fixed',
@@ -461,7 +479,7 @@
       document.body.appendChild(contentClone);
       requestAnimationFrame(() => {
         if (!contentClone) return;
-        contentClone.style.transition = 'opacity 0.45s ease';
+        contentClone.style.transition = `opacity ${PANEL_FADE_MS}ms ease`;
         contentClone.style.opacity = '0';
         contentClone.addEventListener('transitionend', cleanupContentClone, { once: true });
       });
@@ -500,12 +518,26 @@
     if (panelClone) {
       el.style.opacity = '1';
       document.body.appendChild(panelClone);
+      // overflow is hidden on the clone, which still scrolls programmatically —
+      // this is what keeps the frame you were actually looking at.
+      panelClone.scrollTop = panelScroll;
+
+      // Fade the homepage back in, mirroring the fade-out that hides it when the
+      // drawer arrives. Driven per frame from the clone's position below, not by
+      // a timed transition: the exit eases IN, so the panel sits over the page
+      // for most of its flight and only sweeps clear at the end. Any
+      // duration-based fade therefore completes underneath the panel — it was
+      // measurably running and still invisible. Tying opacity to how much of the
+      // page is uncovered puts the fade on the part you can actually see.
+      const incomingContent = document.querySelector<HTMLElement>('.content-area');
+      if (incomingContent) incomingContent.style.opacity = '0';
 
       const cloneStartLeft = parseFloat(panelClone.style.left);
       const exitDistance   = window.innerWidth - cloneStartLeft; // move left edge to right of viewport
       const duration = 900; // ms — ease-in so hand can catch up before acceleration
       const startTime = performance.now();
       const emojiW = el.getBoundingClientRect().width;
+      let fadeStarted = false; // set the frame the hand lands on the panel
 
       function animatePush(now: number) {
         if (!panelClone) return; // aborted (new nav started)
@@ -520,7 +552,9 @@
         // Hand follows the clone's left edge
         targetX = cloneLeft - emojiW * 0.8;
 
-        // Switch to push emoji once hand has arrived near the panel edge
+        // Switch to push emoji once hand has arrived near the panel edge.
+        // Checked before the fade below, so arrival and the first frame of the
+        // fade land together rather than a frame apart.
         if (state === 'flick-travel') {
           const dxHand = targetX - currentX;
           const dyHand = targetY - currentY;
@@ -530,30 +564,41 @@
           }
         }
 
+        // Held at 0 until the clone is PANEL_FADE_AT_TRAVEL of the way off, then
+        // a single PANEL_FADE_MS transition. Starting any earlier — on the
+        // hand's contact, or metered against the eased travel — put the fade
+        // behind a panel that had barely moved, so it either finished unseen or
+        // crawled. The threshold is comfortably after contact, so the hand has
+        // always landed and shoved before the page begins to show.
+        if (incomingContent && !fadeStarted && eased >= PANEL_FADE_AT_TRAVEL) {
+          fadeStarted = true;
+          incomingContent.style.transition = `opacity ${PANEL_FADE_MS}ms ease`;
+          incomingContent.style.opacity = '1';
+          // Cleared on its own completion, not with the clone: starting this
+          // late means the fade outlives the shove, and tearing the inline
+          // styles off at the end of the exit would snap it to full mid-way.
+          incomingContent.addEventListener('transitionend', () => {
+            incomingContent.style.removeProperty('transition');
+            incomingContent.style.removeProperty('opacity');
+          }, { once: true });
+        }
+
         if (t < 1) {
           requestAnimationFrame(animatePush);
         } else {
+          // The fade clears itself on transitionend — see above. If the shove
+          // ended before it ever started (aborted nav), make sure the page is
+          // not left invisible.
+          if (incomingContent && !fadeStarted) {
+            incomingContent.style.removeProperty('transition');
+            incomingContent.style.removeProperty('opacity');
+          }
           cleanupPanelClone();
           state = 'idle';
           updateHand();
         }
       }
       requestAnimationFrame(animatePush);
-
-      // Fade in incoming homepage content
-      const incomingContent = document.querySelector<HTMLElement>('.content-area');
-      if (incomingContent) {
-        incomingContent.style.opacity = '0';
-        requestAnimationFrame(() => {
-          if (!incomingContent) return;
-          incomingContent.style.transition = 'opacity 0.42s ease';
-          incomingContent.style.opacity = '1';
-          incomingContent.addEventListener('transitionend', () => {
-            incomingContent.style.removeProperty('transition');
-            incomingContent.style.removeProperty('opacity');
-          }, { once: true });
-        });
-      }
     }
   });
 

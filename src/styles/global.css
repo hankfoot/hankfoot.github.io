@@ -189,26 +189,28 @@ a {
   display: inline;
 }
 
-/* Sized down so the glyph accents the line instead of out-weighing the words.
-   Only the 👋 beside the name uses this now — the tagline's two emoji were
-   dropped in favour of the mono/italic accents above — but it stays a shared
-   rule because .intro-wave is the stand-in for the live hand cursor. */
-.intro-emoji {
-  display: inline-block;
-  font-size: 0.78em;
-  line-height: 1;
-  /* Cap-band centred — (capHeight − boxHeight)/2 in em, so the glyph sits on
-     the text's optical line and holds alignment as the clamps scale. */
-  vertical-align: 0.115em;
-}
+/* The hand after the name is the live cursor, which parks and waves just past
+   .intro-greeting. This is its stand-in wherever that cursor is off — touch,
+   viewports under 900px (both by the query below) and reduced motion.
+   It is the same bundled Fluent sprite the cursor itself renders for its
+   resting wave (HAND_SRC.wave), not the platform 👋, so the two are the same
+   drawing on every device rather than whatever a given OS ships. Sized in em so
+   it tracks the title's clamp.
 
-/* The 👋 after the name is the live hand cursor, which parks and waves just
-   past .intro-greeting. This static glyph is only its stand-in where that
-   cursor doesn't exist — touch (hidden by the coarse-pointer query below) and
-   reduced motion. Shown by the two overrides further down the file. Must stay
-   after .intro-emoji: same specificity, so source order decides. */
+   vertical-align is still (capHeight − boxHeight)/2, the same cap-band centring
+   the emoji glyph used, but the box changed and so did the sign. A glyph at
+   font-size:0.78em only inks about 0.49em of box, which wanted a +0.115em lift;
+   this <img> is a replaced element exactly 0.78em tall, taller than Inter's
+   ~0.727em cap, so it needs pushing down instead: (0.727 − 0.78)/2 ≈ -0.027em.
+   Measured against the adjacent glyphs, not guessed — reuse the formula rather
+   than the number if the size ever changes.
+
+   Hidden here; the overrides further down the file are what reveal it. */
 .intro-wave {
   display: none;
+  width: 0.78em;
+  height: 0.78em;
+  vertical-align: -0.027em;
 }
 
 /* Capabilities row, sitting under .intro-formerly and sharing its mono
@@ -1836,8 +1838,11 @@ a.block-credits-name:hover,
    multi-column grid collapses. Keep new multi-column layouts in step by
    adding their override to the matching breakpoint below. */
 
-/* The hand cursor is a pointer-driven flourish with no touch equivalent. */
-@media (hover: none), (pointer: coarse) {
+/* The hand cursor is a pointer-driven flourish with no touch equivalent, and it
+   has nowhere to go in a narrow column — below 900px the sidebar it points at
+   has already become a top bar. Same treatment for both: hide it, stand the
+   static glyph in beside the name, and drop the bonus-level trigger. */
+@media (hover: none), (pointer: coarse), (max-width: 900px) {
   #hand-cursor {
     display: none;
   }

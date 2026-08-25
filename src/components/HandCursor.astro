@@ -8,8 +8,14 @@
   // astro:before-preparation DELAYED every navigation waiting for an invisible
   // hand to "arrive". Bail before any state or listeners exist — navigation
   // falls back to Astro's default transitions, and the choreography costs
-  // touch users nothing. Mirrors the CSS hide query exactly.
-  const COARSE_POINTER = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+  // touch users nothing. Also off below 900px: that is where the sidebar the hand
+  // points at becomes a top bar, so there is no rail left to travel along.
+  // Evaluated once at load — a resize across the breakpoint is handled by the
+  // CSS, which hides the element either way, and a hand that never initialised
+  // keeps its opacity:0, so nothing stray appears. Mirrors the CSS query exactly.
+  const HAND_DISABLED = window.matchMedia(
+    '(hover: none), (pointer: coarse), (max-width: 900px)',
+  ).matches;
 
   // Reduced motion is a live toggle (Sidebar), so it can't be an init-time
   // early return — navigation-delaying paths check it at call time instead.
@@ -19,7 +25,7 @@
   // Top-level return is illegal in a module script, so the entire body sits
   // inside this guard. Existing indentation left untouched to keep the diff
   // reviewable — this file is deliberately complex.
-  if (!COARSE_POINTER) {
+  if (!HAND_DISABLED) {
 
   // ─── Hand artwork ─────────────────────────────────────────────
   // Bundled Fluent Emoji SVGs (MIT, microsoft/fluentui-emoji) instead of
@@ -646,5 +652,5 @@
     requestAnimationFrame(() => tick(tickGen));
   }
 
-  } // end !COARSE_POINTER gate
+  } // end !HAND_DISABLED gate
 </script>

@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import SmartImage from '../SmartImage.astro';
 import { parseInline } from '../../utils/text';
 import { isVideo, videoBase } from '../../utils/media';
 
@@ -28,7 +28,14 @@ const { images, label } = Astro.props;
             <source src={`${videoBase(image.src)}.mp4`} type="video/mp4" />
           </video>
         ) : (
-          <Image src={image.src} alt={image.alt} width={image.width ?? 1200} height={image.height ?? 900} />
+          <SmartImage
+            src={image.src}
+            alt={image.alt}
+            widths={image.wide ? [600, 900, 1720] : [400, 600, 900]}
+            sizes={image.wide ? "(max-width: 600px) 100vw, 860px" : "(max-width: 600px) 100vw, 430px"}
+            width={image.width ?? 1200}
+            height={image.height ?? 900}
+          />
         )}
       </div>
       {image.caption && <figcaption set:html={parseInline(image.caption)} />}

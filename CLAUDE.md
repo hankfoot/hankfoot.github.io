@@ -38,6 +38,8 @@ hankfoot.github.io/
 │   │   ├── GameCanvas.astro      # Bonus-level embed (overlay mode) / bare canvas (test pages)
 │   │   ├── ReducedMotionInit.astro # Shared is:inline pre-paint reduced-motion bootstrap
 │   │   └── blocks/               # MDX content blocks (see Blocks Library)
+│   ├── assets/                   # Images, mirroring their public URL path so Astro can
+│   │                             #   optimise them (see utils/images.ts + SmartImage)
 │   ├── content/projects/*.mdx    # One file per project (quick-distract is the reference example)
 │   ├── games/                    # Canvas2D minigame subsystem (engine, manifest, registry, games)
 │   ├── utils/
@@ -47,7 +49,7 @@ hankfoot.github.io/
 │   └── styles/global.css         # ALL global styles + design tokens (:root block at top)
 │
 ├── public/
-│   ├── projects/[slug]/          # Per-project media, referenced by absolute path
+│   ├── projects/[slug]/          # Per-project VIDEO only (webm+mp4); images live in src/assets
 │   └── ui/hand-*.svg             # Fluent Emoji hand sprites (all 8 in use)
 ├── .video-backups/               # Pre-re-encode video originals (gitignored, keep)
 └── dist/                         # Build output (gitignored, deployed to gh-pages)
@@ -96,7 +98,7 @@ outcomes:                        # optional; strings or { text, url }
 - Wrap prose/blocks in `<Section label="...">…</Section>` (bare `<Section>` for unlabeled galleries).
 - Blocks are auto-injected — no imports. Available: `BentoGrid`, `Callout`, `Credits`, `Feature`, `GameCanvas`, `ImageGrid`, `Outcomes`, `PrototypeEmbed`, `Quote`, `Section`, `Specs`, `VideoEmbed`.
 - Meta fields, outcomes, credits, captions, and quotes support inline markdown links `[text](url)` AND tooltips `{visible text|tooltip content}` via `parseInline` (`src/utils/text.ts`). No braces inside either side; no pipe in the trigger.
-- Reference media by absolute path under `public/projects/[slug]/`.
+- Reference media by absolute path (`/projects/[slug]/name.jpg`) regardless of where the file lives — `resolveImage` maps image paths onto `src/assets/`, so authoring never changes.
 
 ### Blocks Library
 | Block | Renders |
@@ -116,7 +118,7 @@ outcomes:                        # optional; strings or { text, url }
 
 ### Media conventions
 - **Videos:** always a matched **webm (primary) + mp4 (fallback)** pair sharing one hyphen-case base name in `public/projects/[slug]/`. Components take the base path and derive both `<source>`s via the shared helpers in `src/utils/media.ts` (`isVideo()` / `videoBase()`) — use those, don't re-inline the regex. Use video, never GIF, for motion. Encoding recipes and the fade-through-white loop technique are in auto-memory; back up originals to `.video-backups/[slug]/` before destructive re-encodes.
-- **Images:** `BentoGrid`, `Feature`, `ImageGrid`, `ProjectCard` use Astro's `<Image>`; pass explicit `width`/`height` on BentoGrid items to override defaults.
+- **Images:** live in `src/assets/[same path as the public URL]` — **not** `public/`. Astro only optimises images it imports from `src/`; anything under `public/` is copied verbatim and ships at full resolution. Blocks render them through `SmartImage`, which resolves the public-style path via `src/utils/images.ts` and emits a resized, reformatted `srcset`. Pass `widths` + `sizes` describing where the image actually lands; a path that doesn't resolve degrades to an unoptimised passthrough rather than failing the build.
 
 ## Interactive Systems
 
@@ -137,7 +139,7 @@ outcomes:                        # optional; strings or { text, url }
 1. New visual patterns: add tokens/classes to `global.css`, then showcase them on `/styles` so the reference stays complete.
 2. New MDX block: create in `src/components/blocks/`, register in the components map in `src/pages/projects/[slug].astro`, style in `global.css`, showcase on `/styles`.
 3. New game: implement against `engine.ts`, add metadata to `manifest.ts`, factory to `registry.ts`; verify at `/games/[id]` before embedding via `<GameCanvas game="id" />`.
-4. New project: create `src/content/projects/[slug].mdx`, media in `public/projects/[slug]/`, follow quick-distract's structure.
+4. New project: create `src/content/projects/[slug].mdx`, images in `src/assets/projects/[slug]/`, video in `public/projects/[slug]/`, follow quick-distract's structure.
 5. Motion: WAAPI or CSS transitions using existing easing/durations; always gate on `data-reduced-motion`.
 
 ## Building & Deploying

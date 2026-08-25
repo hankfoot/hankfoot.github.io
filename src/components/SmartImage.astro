@@ -1,0 +1,42 @@
+---
+import { Image } from 'astro:assets';
+import { resolveImage } from '../utils/images';
+
+// Wraps astro:assets' <Image> so call sites can keep passing the site's
+// public-style paths ("/projects/slug/x.jpg") and still get resized, reformatted
+// output with a srcset.
+//
+// When a path resolves to an imported asset it renders responsively: `widths`
+// generates the srcset, `sizes` tells the browser how wide the image actually
+// lands so it can pick the smallest file that will do. When it does not resolve
+// it degrades to the old passthrough behaviour on the raw path, so a bad path is
+// a heavy image rather than a broken build.
+interface Props {
+  src: string;
+  alt: string;
+  widths?: number[];
+  sizes?: string;
+  /** Fallback intrinsic size, used only on the unresolved path. */
+  width?: number;
+  height?: number;
+  loading?: 'lazy' | 'eager';
+}
+
+const {
+  src,
+  alt,
+  widths = [400, 800, 1200],
+  sizes = '(max-width: 900px) 100vw, 800px',
+  width = 1200,
+  height = 900,
+  loading,
+} = Astro.props;
+
+const resolved = resolveImage(src);
+const optimised = typeof resolved !== 'string';
+---
+{optimised ? (
+  <Image src={resolved as any} alt={alt} widths={widths} sizes={sizes} loading={loading} />
+) : (
+  <Image src={src} alt={alt} width={width} height={height} loading={loading} />
+)}

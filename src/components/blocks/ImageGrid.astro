@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import SmartImage from '../SmartImage.astro';
 
 interface Props {
   images: string[];
@@ -10,7 +10,7 @@ const { images, caption } = Astro.props;
 ---
 <figure class="block-image-grid">
   {images.map((src, i) => (
-    <Image src={src} alt={`Image ${i + 1}`} width={1200} height={900} />
+    <SmartImage src={src} alt={`Image ${i + 1}`} widths={[400, 800, 1200]} sizes="(max-width: 600px) 100vw, 430px" />
   ))}
   {caption && <figcaption style="grid-column: 1 / -1">{caption}</figcaption>}
 </figure>

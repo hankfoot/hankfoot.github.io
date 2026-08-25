@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import { Image } from 'astro:assets';
+import SmartImage from '../components/SmartImage.astro';
 import { getCollection } from 'astro:content';
 import {
   aboutParagraphs,
@@ -84,7 +84,7 @@ const sorted = projects.sort((a, b) => {
         {aboutParagraphs.map(para => <p>{para}</p>)}
       </div>
       <figure class="about-photo">
-        <Image src={aboutPhoto.src} alt={aboutPhoto.alt} width={1400} height={928} />
+        <SmartImage src={aboutPhoto.src} alt={aboutPhoto.alt} widths={[460, 700, 920]} sizes="(max-width: 900px) 100vw, 460px" />
         <figcaption>{aboutPhoto.caption}</figcaption>
       </figure>
     </div>

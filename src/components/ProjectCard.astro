@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import SmartImage from './SmartImage.astro';
 
 interface Props {
   title: string;
@@ -15,7 +15,7 @@ const { title, timeline, tags, thumb, summary, href } = Astro.props;
 <a href={href} class="project-card">
   <div class="project-card-thumb">
     {thumb && (
-      <Image src={thumb} alt={title} width={800} height={600} />
+      <SmartImage src={thumb} alt={title} widths={[400, 640, 1000]} sizes="(max-width: 600px) 100vw, 50vw" />
     )}
   </div>
   <h2 class="project-card-title">{title}</h2>

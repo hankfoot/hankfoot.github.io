@@ -54,7 +54,7 @@ export const experience = [
   {
     company: 'SpellBound AR',
     title: 'UX Designer / Engineer',
-    dates: '2020 — 2021 & 2016 — 2018',
+    dates: '2020 & 2016 — 2018',
     description:
       'Designed, built, and shipped 5 mobile AR minigames now used in 20+ pediatric hospitals.',
   },
@@ -71,6 +71,13 @@ export const experience = [
     dates: '2019',
     description:
       'Produced flow diagrams, videos, and software prototypes pitching physical installations to prospective clients.',
+  },
+  {
+    company: 'IMAGINE Lab',
+    title: 'Mixed Reality Research Assistant',
+    dates: '2019',
+    description:
+      'Prototyped 4 mixed reality interactions in Unity, supporting research into immersive visualisation for city planning.',
   },
 ];
 
@@ -122,7 +129,10 @@ export const publications = [
   },
 ];
 
-export const resumeUrl = 'https://hankduhaime.com/s/DuhaimeResume2023-V-Nov.pdf';
+// Served from public/ rather than hankduhaime.com so the file is versioned with
+// the site and deploys with it. Stable filename on purpose: the link does not
+// change when the PDF is replaced, and it is what the browser saves it as.
+export const resumeUrl = '/hank-duhaime-resume.pdf';
 
 // Shared by the CV section's "full history" pointer and the contact list below
 // it, so the two can never drift apart.

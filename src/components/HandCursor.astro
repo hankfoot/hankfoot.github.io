@@ -409,10 +409,55 @@
 
   // ─── Astro lifecycle ──────────────────────────────────────────
 
+  // Panel transitions are not interruptible. While one is in flight the
+  // choreography owns the screen, so swallow clicks that would navigate this
+  // document rather than trying to unwind a half-played animation — every
+  // graceful-interruption path we had still left something visible, whether a
+  // stale snapshot fading over a scrolled page or a half-shoved panel vanishing.
+  //
+  // Capture phase, so this lands before the card and nav handlers below and they
+  // never see the click at all. Links that go somewhere else are untouched: a new
+  // tab, a download, mailto, or another origin does not disturb the animation, and
+  // silently eating those would just look broken.
+  const PANEL_TRANSITIONS = ['grab-travel', 'grab-pull', 'flick-travel', 'flick-push'];
+  document.addEventListener('click', (e) => {
+    if (!PANEL_TRANSITIONS.includes(state)) return;
+    const link = (e.target as Element)?.closest?.('a[href]') as HTMLAnchorElement | null;
+    if (!link) return;
+    if (link.target === '_blank' || link.hasAttribute('download')) return;
+    // Modified clicks open a new tab, so they leave this document alone.
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    let url: URL;
+    try { url = new URL(link.href, location.href); } catch { return; }
+    if (url.origin !== location.origin) return; // off-site, or mailto: (origin "null")
+    e.preventDefault();
+    e.stopPropagation();
+  }, { capture: true });
+
+
   // Intercept the navigation loader so the page waits for the hand animation (grab only)
   document.addEventListener('astro:before-preparation', (e: Event) => {
     cleanupContentClone();
     cleanupPanelClone();
+
+    // Clicking anything mid-shove used to wedge the whole hand system. The push
+    // loop bails on the clone nulled just above without reaching the line that
+    // clears the state, and page-load deliberately skips flick states on the
+    // assumption that loop is still running — so nothing reset it. Every entry
+    // point is guarded on `state === 'idle'`, so one interrupted back-click left
+    // the hand frozen, project cards no longer pulling the panel in, and the nav
+    // choreography dead for the rest of the session. Reset before the branches
+    // below read state, so the new navigation starts from a known footing.
+    if (state === 'flick-travel' || state === 'flick-push') state = 'idle';
+
+    // That same loop may have left the outgoing page part-way through its fade.
+    // The element is swapped eventually, but not until the fetch resolves, and
+    // until then a half-faded or fully transparent page stays on screen.
+    const outgoing = document.querySelector<HTMLElement>('.content-area');
+    if (outgoing) {
+      outgoing.style.removeProperty('transition');
+      outgoing.style.removeProperty('opacity');
+    }
 
     // Abort any bonus-level sequence — navigation outranks easter eggs.
     if (state.startsWith('egg-') || state === 'in-game') {
@@ -422,6 +467,22 @@
     }
     const event = e as any;
     const originalLoader = event.loader.bind(event);
+
+    // Where this navigation is actually headed. The grab choreography commits to
+    // a panel arriving and never rechecks, so clicking "projects" while a project
+    // page is still opening used to keep the grab alive: it delayed the second
+    // navigation too, then snapshotted the page for a cross-fade against a panel
+    // that does not exist on the home page. The snapshot is taken at the old
+    // scroll offset and faded over a page the browser has since scrolled, which
+    // is what read as a jump. Abandon the grab instead when the destination is no
+    // longer a project.
+    const toProject = String(event.to?.pathname ?? '').startsWith('/projects/');
+    if ((state === 'grab-travel' || state === 'grab-pull') && !toProject) {
+      panelAnim?.cancel();
+      panelAnim = null;
+      cleanupContentClone();
+      state = 'idle';
+    }
 
     if (state === 'grab-travel') {
       // Outgoing grab: wait for hand to reach the right edge before swapping
@@ -631,7 +692,9 @@
         .catch(release);
 
     } else if (prevState === 'flick-travel' || prevState === 'flick-push') {
-      // animatePush is running and will set state = 'idle' when done — nothing to do
+      // Uninterrupted, animatePush is still running and clears the state when it
+      // finishes. An interrupted one is already back to idle — before-preparation
+      // resets it, because that loop dies without ever reaching its own reset.
 
     } else {
       state = 'idle';

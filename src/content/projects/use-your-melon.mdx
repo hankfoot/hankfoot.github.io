@@ -1,6 +1,6 @@
 ---
 title: Use Your Melon
-timeline: "2019-2020"
+timeline: "2019–2020"
 tags:
   - Installation
   - Academic
@@ -8,7 +8,7 @@ tags:
   - UX Design
 thumb: /projects/use-your-melon/kid-playing-16x9.jpeg
 featured: true
-summary: A gesture-controlled installation challenging Georgia Aquarium guests to a game of echolocation charades.
+summary: A gesture-controlled installation challenging Georgia Aquarium guests to a game of echolocation charades
 context: Georgia Aquarium
 contextLabel: Partner
 contextUrl: https://www.georgiaaquarium.org/
@@ -21,14 +21,14 @@ tools:
   - Figma
 outcomes:
   - Completed Georgia Tech MS-HCI thesis
-  - Polished Unity+Kinect installation pilot
-  - Nine stakeholder and expert evaluations
+  - Shipped a Unity + Kinect pilot
+  - Ran nine stakeholder and expert evaluations
 ---
 
 {/* Callout and hero share a Section so the note reads as a lead-in to the
     image rather than a full section of its own. */}
 <Section>
-<Callout type="note" text="The installation of this work was impacted by the COVID-19 pandemic, so all media on this page shows the project working in isolation." />
+<Callout type="note" text="The COVID-19 pandemic kept this work from being installed, so all media on this page shows the project working in isolation." />
 
 <BentoGrid images={[
   { src: "/projects/use-your-melon/kid-playing-16x9.jpeg", alt: "A child mid-transformation into a lemon shark in front of the installation screen", wide: true, ratio: "16 / 9", width: 2000, height: 1124 }
@@ -41,7 +41,7 @@ The Georgia Aquarium's Dolphin Coast opens onto a pre-show atrium where guests w
 Use Your Melon turns the wait into a game of charades. Guests strike a pose to mimic a sea creature, and a digital dolphin echolocates to identify them and explain their relationship in the wild.
 
 <Quote
-  text={`The walls were pretty blank...it would've been nice to have a little more to do`}
+  text={`The walls were pretty blank… it would’ve been nice to have a little more to do`}
   cite="Aquarium guest"
 />
 </Section>
@@ -53,14 +53,14 @@ Use Your Melon turns the wait into a game of charades. Guests strike a pose to m
 </Section>
 
 <Section label="my role">
-I led the guest research — five days of observation in the atrium, 14 interviews with guests, floor staff, and managers, and the affinity mapping that turned all of it into a design brief.
+I pitched in on the guest research, sitting in on the observations and interviews and helping sort it all onto the affinity map.
 
-From there I designed the gesture interaction and built the demo. A Microsoft Kinect feeds depth data to a pose model, and Unity renders a responsive undersea scene around whoever is standing in front of it.
+Once we landed on a concept for a gesture-based installation, I designed the interactions and the general flow, then built technical spikes to test the capabilities of our hardware. From there I integrated all of the UI into a working pilot in Unity, all from the comfort of my apartment during lockdown.
 </Section>
 
 <Section>
 <BentoGrid images={[
-  { src: "/projects/use-your-melon/octopus-transform.webm", alt: "A player transformed into a common octopus", wide: true, ratio: "16 / 9", caption: "Hold the pose and the bubbles burst into a common octopus." }
+  { src: "/projects/use-your-melon/octopus-transform.webm", alt: "A player transformed into a common octopus", wide: true, ratio: "16 / 9" }
 ]} />
 </Section>
 
@@ -70,7 +70,7 @@ From there I designed the gesture interaction and built the demo. A Microsoft Ki
   alt="A player approaching the installation and meeting their bubblized avatar"
   label="step right up"
   ratio="16 / 9"
-  description="A dolphin companion greets you beside a bubblized version of yourself."
+  description="Approach the screen and a dolphin companion greets you beside a bubblized version of yourself."
 />
 
 <Feature
@@ -128,7 +128,7 @@ From there I designed the gesture interaction and built the demo. A Microsoft Ki
   alt="Kinect pose recognition prototype showing per-creature confidence bars"
   label="technical spikes"
   ratio="16 / 9"
-  description="I built quick prototypes to test our core interactions against Microsoft Kinect's gesture recognition engine."
+  description="I built quick prototypes to test our core interactions against Microsoft Kinect’s gesture recognition engine."
   flip={true}
 />
 </Section>
@@ -143,16 +143,22 @@ From there I designed the gesture interaction and built the demo. A Microsoft Ki
 
 <Section label="outcomes">
 <Outcomes items={[
-  "Completed the work as a Georgia Tech [MS-HCI master's thesis](https://drive.google.com/file/d/1Y8vGPAWyPnEuvJTKSSEJ3aYsmn0ntQHb/view?usp=sharing) advised by Dr. Carrie Bruce",
+  "Completed the work as a Georgia Tech [MS-HCI master’s thesis](https://drive.google.com/file/d/1Y8vGPAWyPnEuvJTKSSEJ3aYsmn0ntQHb/view?usp=sharing) advised by Dr. Carrie Bruce",
   "Partnered with the [Georgia Aquarium](https://www.georgiaaquarium.org/) to design for their Dolphin Coast pre-show atrium",
   "Shipped a feature-complete Unity and Kinect demo recognizing six creature poses",
-  "Evaluated remotely with four aquarium stakeholders and five physical-interaction experts, with 12 of 13 heuristics averaging only cosmetic or minor issues",
+  "Evaluated remotely with four aquarium stakeholders and five physical-interaction experts; 12 of 13 heuristics averaged only cosmetic or minor issues",
+]} />
+</Section>
+
+<Section>
+<BentoGrid images={[
+  { src: "/projects/use-your-melon/paper-prototype-3x2.jpg", alt: "Hand-cut paper sea creatures and echolocation waves laid out on a table beside a legal pad of prototype notes", wide: true, ratio: "2500 / 1595", width: 2500, height: 1595 }
 ]} />
 </Section>
 
 <Credits
   people={[
-    { name: "Hank Duhaime", role: "UX Design & Software" },
+    { name: "Hank Duhaime", role: "UX Design & Development" },
     { name: "[Rex McKay](https://www.rexmckay.com/)", role: "Visual & UX Design" },
     { name: "[Courtney Sutter](https://www.linkedin.com/in/courtneystorm/)", role: "UX Research" }
   ]}

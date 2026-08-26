@@ -4,14 +4,14 @@
 export const bio = {
   location: 'Seattle, WA',
   contactMessage:
-    "I'm always happy to chat with fellow designers, recruiters, up-and-comers, potential collaborators, or anyone willing to nerd out about theme parks.",
+    "I’m always happy to chat with fellow designers, recruiters, up-and-comers, potential collaborators, or anyone willing to nerd out about theme parks.",
 };
 
 export const aboutParagraphs = [
-  "I'm Hank — a design technologist who builds playful interactive experiences.",
-  "Most recently I've been focused on emergent digital spaces: from AR tools for healthcare to XR, haptics, and AI at Meta Reality Labs.",
-  'I thrive where code, hardware, and design meet: turning early ideas into prototypes that can be felt, heard, seen, and (sometimes) smelled. Not tasted though, at least… not yet 🤔',
-  "Outside of work, I'm a hobbyist maker with skills in electronics and 3D printing. My love languages are threaded inserts and programmable LEDs.",
+  "Hi, I’m Hank, a creative technologist who builds playful interactive experiences.",
+  "Most recently, I’ve been focused on emergent digital spaces in XR, haptics, and AI at Meta Reality Labs Research, and AR tools for healthcare before that.",
+  'I thrive where code, hardware, and design meet: turning early ideas into prototypes that can be felt, heard, seen, and (sometimes) smelled. Not tasted, though — at least not yet 🤔',
+  "Outside of work, I’m a hobbyist maker with skills in electronics and 3D printing. My love languages are threaded inserts and programmable LEDs.",
 ];
 
 // The "formerly @" row in the hero
@@ -40,28 +40,28 @@ export const experience = [
   {
     company: 'Meta Reality Labs Research',
     title: 'Senior Product Design Prototyper',
-    dates: '2022 — 2026',
+    dates: '2022–2026',
     description:
-      'Developed AR/VR research prototypes across haptics, AI, wearables, and robotics — built to drive design exploration, value assessment, and user studies. Started on contract in 2022 and came on full time in 2024.',
+      'Developed AR/VR research prototypes across haptics, AI, wearables, and robotics to drive design exploration, executive reviews, and user studies. Started on contract in 2022 and came on full time in 2024.',
   },
   {
     company: 'Publicis Sapient',
     title: 'Experience Designer L1',
-    dates: '2020 — 2022',
+    dates: '2020–2022',
     description:
       'Prototyped digital products for Mercedes-Benz USA: sketches, wireframes, interaction flows, and click-throughs.',
   },
   {
     company: 'SpellBound AR',
     title: 'UX Designer / Engineer',
-    dates: '2020 & 2016 — 2018',
+    dates: '2020 & 2016–2018',
     description:
-      'Designed, built, and shipped 5 mobile AR minigames now used in 20+ pediatric hospitals.',
+      'Designed, built, and shipped five mobile AR minigames now used in 20+ pediatric hospitals.',
   },
   {
     company: 'Georgia Tech College of Design',
     title: 'Graduate Teaching Assistant',
-    dates: '2019 — 2020',
+    dates: '2019–2020',
     description:
       'Mentored graduate students concepting, designing, and fabricating interactive installations.',
   },
@@ -77,7 +77,7 @@ export const experience = [
     title: 'Mixed Reality Research Assistant',
     dates: '2019',
     description:
-      'Prototyped 4 mixed reality interactions in Unity, supporting research into immersive visualisation for city planning.',
+      'Prototyped four mixed-reality interactions in Unity, supporting research into immersive visualization for city planning.',
   },
 ];
 
@@ -117,7 +117,7 @@ export const publications = [
   },
   {
     title: 'Safecracker: Exploring Immersion Through Audio and Object-Based Controllers',
-    venue: 'CHI Student Games Competition',
+    venue: 'CHI Student Game Competition',
     year: '2020',
     link: 'https://dl.acm.org/doi/10.1145/3334480.3381656',
   },

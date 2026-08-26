@@ -14,8 +14,10 @@ const { title, timeline, tags, thumb, summary, href } = Astro.props;
 ---
 <a href={href} class="project-card">
   <div class="project-card-thumb">
+    {/* alt="" is deliberate: the thumb is decorative, and the h2 below already
+        names the link — alt text here makes screen readers say the title twice. */}
     {thumb && (
-      <SmartImage src={thumb} alt={title} widths={[400, 640, 1000]} sizes="(max-width: 600px) 100vw, 50vw" />
+      <SmartImage src={thumb} alt="" widths={[400, 640, 1000]} sizes="(max-width: 600px) 100vw, 50vw" />
     )}
   </div>
   <h2 class="project-card-title">{title}</h2>

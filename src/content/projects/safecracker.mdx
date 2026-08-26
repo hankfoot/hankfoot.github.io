@@ -1,12 +1,12 @@
 ---
 title: Safecracker
-timeline: "2019-2021"
+timeline: "2019–2021"
 tags:
   - Game Design
   - Academic
 thumb: /projects/safecracker/safe-in-play-7x5.jpeg
 featured: true
-summary: A high-stakes safecracking game with a custom alternative controller.
+summary: A high-stakes safecracking game with a custom alternative controller
 context: Interactive Product Design Lab
 contextLabel: Lab
 contextUrl: https://ipdl.gatech.edu/
@@ -19,9 +19,9 @@ tools:
   - Arduino
   - SolidWorks
 outcomes:
-  - 1st Place, [CHI 2020 Student Games](https://chi2020.acm.org/authors/student-game-competition/)
+  - "Won [1st place at the CHI 2020 Student Game Competition](https://chi2020.acm.org/authors/student-game-competition/)"
   - Playtested with 15+ players
-  - Novel concept for audio-based gameplay
+  - Pioneered audio-based, screen-free play
 ---
 
 <Section>
@@ -31,12 +31,12 @@ outcomes:
 </Section>
 
 <Section label="summary">
-Let's face it, pressing a button or tilting a joystick won't ever feel as satisfying as hurling a fireball or gobbling up power pellets. True embodiment calls for [alternative controllers](https://gdconf.com/alt-ctrl-gdc/) that leverage custom-made sensors rather than off-the-shelf inputs.
+Let's face it: pressing a button or tilting a joystick won't ever feel as satisfying as hurling a fireball or gobbling up power pellets. True embodiment calls for [alternative controllers](https://gdconf.com/alt-ctrl-gdc/) that leverage custom-made sensors rather than off-the-shelf inputs.
 
 As part of Georgia Tech's [Interactive Product Design Lab](https://ipdl.gatech.edu/), we built [Safecracker](https://dl.acm.org/doi/10.1145/3334480.3381656): a game where you crack a safe by listening closely with your trusty stethoscope. After debuting as a class project, we polished the gameplay and took first place in the [CHI 2020 Student Game Competition](https://chi2020.acm.org/authors/student-game-competition/) out of more than 50 entries in the Innovative Interfaces category.
 
 <Quote
-  text={`I am impressed by [Safecracker's] rich juiciness as an audio-based game with environmental and disturbing sound design`}
+  text={`I am impressed by [Safecracker’s] rich juiciness as an audio-based game with environmental and disturbing sound design`}
   cite="CHI 2020 reviewer"
 />
 </Section>
@@ -48,7 +48,7 @@ As part of Georgia Tech's [Interactive Product Design Lab](https://ipdl.gatech.e
 </Section>
 
 <Section label="my role">
-I was the project's game designer and was responsible for translating common safecracking tropes into interactions that could be sensed with electronics. Once mechanics solidified via prototyping and playtesting, I worked with our visual designer to build out the core game loop in Processing.
+As the project's game designer, I translated common safecracking tropes into interactions that could be sensed with electronics. Once mechanics solidified via prototyping and playtesting, I worked with our visual designer to build out the core game loop in Processing.
 
 My favorite part: the entire game is playable _without_ having to look at the screen.
 </Section>
@@ -64,14 +64,14 @@ My favorite part: the entire game is playable _without_ having to look at the sc
   image="/projects/safecracker/touch-points.webm"
   alt="A player holding the stethoscope to a marked point on the safe"
   label="find the sweet spots"
-  description="Hold the stethoscope to the marked points and listen for the lock's inner mechanisms."
+  description="Hold the stethoscope to the marked points and listen for the lock’s inner mechanisms."
 />
 
 <Feature
   image="/projects/safecracker/listening.webm"
-  alt="A player rotating the safe's dial while listening through headphones"
+  alt="A player rotating the safe’s dial while listening through headphones"
   label="listen closely"
-  description="Rotate the dial until a “<em>THUNK</em>” signals the next number in the combination."
+  description={`Rotate the dial until a “<em>THUNK</em>” signals the next number in the combination.`}
   flip={true}
 />
 
@@ -85,9 +85,9 @@ My favorite part: the entire game is playable _without_ having to look at the sc
 
 <Section label="prototyping">
 <BentoGrid images={[
-  { src: "/projects/safecracker/mechanism-sketches.jpeg", alt: "Hand-drawn sketches of the safe's internal electronics: stethoscope touch points, handle and door locks, solenoid feedback, and the dial", wide: true, ratio: "1240 / 834", width: 1240, height: 834, caption: "Sketched iterations of the safe's internal electronics (courtesy of [Kelsie Thomas](https://www.linkedin.com/in/kelsiedesign/))" },
+  { src: "/projects/safecracker/mechanism-sketches.jpeg", alt: "Hand-drawn sketches of the safe’s internal electronics: stethoscope touch points, handle and door locks, solenoid feedback, and the dial", wide: true, ratio: "1240 / 834", width: 1240, height: 834, caption: "Sketched iterations of the safe’s internal electronics — [Kelsie Thomas](https://www.linkedin.com/in/kelsiedesign/)" },
   { src: "/projects/safecracker/proto-touch-points-16x9.jpeg", alt: "Copper pads taped to a board with a stethoscope resting on one, wired to a breadboard beside a hand-drawn circuit", ratio: "16 / 9", width: 2000, height: 1125, caption: "Copper tape touch pads to detect the stethoscope" },
-  { src: "/projects/safecracker/door-lock.webm", alt: "A chipboard mockup of the door lock mechanism engaging by hand", ratio: "16 / 9", caption: "A chipboard mockup of the safe door's locking mechanism" }
+  { src: "/projects/safecracker/door-lock.webm", alt: "A chipboard mockup of the door lock mechanism engaging by hand", ratio: "16 / 9", caption: "A chipboard mockup of the safe door’s locking mechanism" }
 ]} />
 </Section>
 
@@ -104,27 +104,27 @@ My favorite part: the entire game is playable _without_ having to look at the sc
   alt="A player listening through the stethoscope at a touch point on the boxy prototype while a group watches"
   ratio="4 / 3"
   label="playtesting"
-  description="We showcased the prototype at Georgia Tech's Industrial Design Student Showcase and captured feedback from 15+ players.
+  description="We showcased the prototype at Georgia Tech’s Industrial Design Student Showcase and captured feedback from 15+ players.
 
 Players found the mechanics engaging and challenging, but we learned the next iteration would need a fabrication overhaul to feel truly immersive."
-  caption="Photo: [Interactive Product Design Lab](https://ipdl.gatech.edu/)"
+  caption="Source: [Interactive Product Design Lab](https://ipdl.gatech.edu/)"
   flip={true}
 />
 </Section>
 
 <Section label="digital design">
 <BentoGrid images={[
-  { src: "/projects/safecracker/system-diagram-5x3.png", alt: "System diagram showing the PC, Arduino, sensors, locks, and both displays", wide: true, ratio: "5 / 3", width: 1693, height: 1005, caption: "A Processing game drives both displays and talks to an Arduino running the sensors and locks" },
-  { src: "/projects/safecracker/main-menu.webm", alt: "The Safecracker main menu listing three heists", ratio: "16 / 9", caption: "Players use the safe's dial and handle to navigate in-game menus" },
-  { src: "/projects/safecracker/tutorial.webm", alt: "The interactive tutorial teaching the game's audio cues", ratio: "16 / 9", caption: "A playable tutorial teaches the audio cues before the heist starts" },
-  { src: "/projects/safecracker/levels.webm", alt: "The three heist environments: a corner store, a jeweler, and the National Archives", wide: true, ratio: "1920 / 856", caption: "Each difficulty brings its own heist, graphics, and audio distractions" }
+  { src: "/projects/safecracker/system-diagram-5x3.png", alt: "System diagram showing the PC, Arduino, sensors, locks, and both displays", wide: true, ratio: "5 / 3", width: 1693, height: 1005, caption: "A Processing game drives both displays and talks to an Arduino running the sensors and locks." },
+  { src: "/projects/safecracker/main-menu.webm", alt: "The Safecracker main menu listing three heists", ratio: "16 / 9", caption: "Players use the safe’s dial and handle to navigate in-game menus." },
+  { src: "/projects/safecracker/tutorial.webm", alt: "The interactive tutorial teaching the game’s audio cues", ratio: "16 / 9", caption: "A playable tutorial teaches the audio cues before the heist starts." },
+  { src: "/projects/safecracker/levels.webm", alt: "The three heist environments: a corner store, a jeweler, and the National Archives", wide: true, ratio: "1920 / 856", caption: "Each difficulty brings its own heist, graphics, and audio distractions." }
 ]} />
 </Section>
 
 <Section label="fabrication">
 <BentoGrid images={[
-  { src: "/projects/safecracker/cnc-housing-4x3.jpeg", alt: "The CNC-routed plywood housing being assembled in the shop", width: 2000, height: 1500, caption: "A CNC'd exterior replaced the plywood box" },
-  { src: "/projects/safecracker/hidden-display-4x3.jpeg", alt: "The frame built to house a screen hidden inside the safe", width: 2000, height: 1500, caption: "A screen hidden inside plays the payoff" },
+  { src: "/projects/safecracker/cnc-housing-4x3.jpeg", alt: "The CNC-routed plywood housing being assembled in the shop", width: 2000, height: 1500, caption: "A CNC’d exterior replaced the plywood box." },
+  { src: "/projects/safecracker/hidden-display-4x3.jpeg", alt: "The frame built to house a screen hidden inside the safe", width: 2000, height: 1500, caption: "A screen hidden inside plays the payoff." },
   { src: "/projects/safecracker/printed-mounts-4x3.jpeg", alt: "A solenoid seated in white 3D-printed mounts", width: 2000, height: 1500, caption: "3D-printed mounts for every component" },
   { src: "/projects/safecracker/lock-detail-3x2.jpeg", alt: "A printed gear and microswitches on one acrylic panel, with a solenoid on a second", width: 1554, height: 1036, caption: "Exposed dial and locking hardware" },
   { src: "/projects/safecracker/safe-internals-4x3.jpeg", alt: "The safe open, showing its internals and the lit inner display", wide: true, width: 1942, height: 1487, caption: "The full assembly of the door hardware and inner screen" }
@@ -133,11 +133,11 @@ Players found the mechanics engaging and challenging, but we learned the next it
 
 <Section label="outcomes">
 <Outcomes items={[
-  "1st Place in the [CHI 2020 Student Game Competition](https://chi2020.acm.org/authors/student-game-competition/), Innovative Interfaces category, from 50+ submissions",
+  "Won 1st place in the [CHI 2020 Student Game Competition](https://chi2020.acm.org/authors/student-game-competition/), Innovative Interfaces category, from 50+ submissions",
   "Published as an [extended abstract](https://dl.acm.org/doi/10.1145/3334480.3381656) in the ACM CHI 2020 proceedings",
   "Playtested with 15+ players at the Georgia Tech Industrial Design Student Showcase",
-  "Built at Georgia Tech's [Interactive Product Design Lab](https://ipdl.gatech.edu/) with functioning locks and no simulated hardware",
-  "Novel gameplay concept supporting audio-based, screen-free play",
+  "Built at Georgia Tech’s [Interactive Product Design Lab](https://ipdl.gatech.edu/) with functioning locks and no simulated hardware",
+  "Pioneered a gameplay concept supporting audio-based, screen-free play",
 ]} />
 
 <Quote
@@ -148,7 +148,7 @@ Players found the mechanics engaging and challenging, but we learned the next it
 
 <Section>
 <BentoGrid images={[
-  { src: "/projects/safecracker/trailer.webm", alt: "A clip from the Safecracker trailer, a masked player briefing a heist at a whiteboard", wide: true, ratio: "16 / 9", caption: "We also shot a [very silly trailer](https://www.youtube.com/watch?v=07zZ3BgV-cc) and a [complete gameplay demo](https://www.youtube.com/watch?v=BYZKwOU36k8) for our CHI submission, if you're curious." }
+  { src: "/projects/safecracker/trailer.webm", alt: "A clip from the Safecracker trailer, a masked player briefing a heist at a whiteboard", wide: true, ratio: "16 / 9", caption: "We also shot a [very silly trailer](https://www.youtube.com/watch?v=07zZ3BgV-cc) and a [complete gameplay demo](https://www.youtube.com/watch?v=BYZKwOU36k8) for our CHI submission, if you’re curious." }
 ]} />
 </Section>
 

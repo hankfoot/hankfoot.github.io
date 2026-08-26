@@ -100,6 +100,43 @@ outcomes:                        # optional; strings or { text, url }
 - Meta fields, outcomes, credits, captions, and quotes support inline markdown links `[text](url)` AND tooltips `{visible text|tooltip content}` via `parseInline` (`src/utils/text.ts`). No braces inside either side; no pipe in the trigger.
 - Reference media by absolute path (`/projects/[slug]/name.jpg`) regardless of where the file lives — `resolveImage` maps image paths onto `src/assets/`, so authoring never changes.
 
+### Copy Style
+
+House rules for every piece of prose on the site. Decide the **grammatical form first** —
+punctuation follows from it. Never add a period to a fragment to force consistency.
+
+1. **Labels lowercase, content as written.** A label names a slot (`role`, `timeline`,
+   `credits`) and is always lowercase — enforced in CSS, not by typing. Titles, proper
+   nouns, and quoted words keep their own capitals. Citation titles must never be
+   lowercased (see `.block-feature-label`).
+2. **A fragment takes no period, a complete sentence takes one.** Decide per string by
+   what it is, not per page. `summary` is always a teaser fragment — no period. Captions
+   go either way; punctuate by form.
+3. **Attribution:** one form — `Source: [Title](url) — Publisher, Year`. Em dash before the
+   publisher, never a comma. No `Photo:` and no `(courtesy of…)`.
+4. **Feature descriptions are complete sentences,** with periods.
+5. **Outcomes** start with a past-tense verb and end without a period — both the frontmatter
+   list and the body `<Outcomes>` list. *Shipped, Built, Playtested, Won* — not *1st Place*.
+6. **Year ranges** use a tight en dash: `2016–2018`. Same format in frontmatter and the CV.
+7. **Numerals in metadata; spell out one to nine in prose.** Always numerals with a modifier
+   attached (`10+`, `5-star`, `7-person`, `3D`).
+8. **`and` in prose, `&` in labels and credits.** No `+` or `×` as a conjunction outside the
+   hero's `focused on` row.
+9. **One ellipsis character (`…`), spaced when it joins two sentences. Curly quotes and
+   apostrophes** (`’ “ ”`) everywhere. Note the trap: MDX runs smartypants on *markdown
+   prose* but not on *JSX props* or `.ts`/`.astro` strings — so prose curls itself and
+   everything else must be typed curly by hand.
+10. **Expand an acronym on first use, or tooltip it** with the `{visible|tooltip}` syntax.
+
+**Alt text** opens with an article and describes what is visible, never an internal
+nickname. Two registers, picked by subject: object and screen shots run ~10 words
+(*A solenoid seated in white 3D-printed mounts*); photographs with people or action run
+~20 (*A boy holds a printed card up to a tablet while a clinician works on his other
+arm*). Decorative chrome takes `alt=""`.
+
+Also: US spelling (`visualization`, `standardized`); credit your own role as
+`… & Development`, matching the `Software Development` used in `role` fields.
+
 ### Blocks Library
 | Block | Renders |
 |---|---|

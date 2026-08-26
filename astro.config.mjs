@@ -4,7 +4,7 @@ import mdx from '@astrojs/mdx';
 export default defineConfig({
   integrations: [mdx()],
   output: 'static',
-  site: 'https://hankfoot.github.io',
+  site: 'https://hankduhaime.com',
   devToolbar: {
     enabled: false,
   },

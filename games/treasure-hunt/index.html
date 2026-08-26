@@ -1,9 +1,8 @@
 <!DOCTYPE html><html lang="en" data-astro-cid-kpmccmae> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Myth Match — game test</title><script>
   (function () {
     function apply() {
-      var stored = localStorage.getItem('hank-reduced-motion');
       var sys = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (stored === 'true' || (stored === null && sys)) {
+      if (sys) {
         document.documentElement.setAttribute('data-reduced-motion', 'true');
       } else {
         document.documentElement.removeAttribute('data-reduced-motion');

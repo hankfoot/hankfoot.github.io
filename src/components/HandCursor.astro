@@ -560,10 +560,22 @@
         initialTransform = 'translateX(100%)';
       }
       panel.style.transform = initialTransform;
+      // Safari will not composite this on its own: .project-panel is a scroll
+      // container (overflow-y: auto) holding several decoding videos, so an
+      // un-promoted transform animation repaints the whole subtree every frame.
+      // Promote for the duration only — left on permanently it costs a layer
+      // and pins the panel's contents in GPU memory for the life of the page.
+      panel.style.willChange = 'transform';
       panelAnim = panel.animate(
         [{ transform: initialTransform }, { transform: 'translateX(0)' }],
         { duration, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', fill: 'both' }
       );
+      panelAnim.finished
+        .then(() => { panel.style.removeProperty('will-change'); })
+        .catch(() => { panel.style.removeProperty('will-change'); }); // cancelled by a new nav
+      // Hold video playback until the drawer has landed. Four clips spinning up
+      // their decoders is the single biggest thing competing with this animation.
+      document.dispatchEvent(new CustomEvent('panel:animating', { detail: { duration } }));
     }
 
     // Ensure re-queried el has the right emoji for the current state

@@ -1,11 +1,45 @@
 ---
 // Project pages render several autoplaying loops at once. Left alone they all
 // decode continuously whether or not they are on screen, which competes with
-// scrolling for the main thread. Pause what is out of view and resume it on the
-// way back in — the videos still start on their own, they just stop paying for
-// the ones you cannot see.
+// scrolling — and, worse, with the panel slide-in — for the main thread.
+//
+// The previous version of this never actually paused anything. It asked
+// `if (!v.paused)` inside the observer callback, but on a cold load an autoplay
+// video has not buffered enough to have started yet, so `paused` is still true
+// for every clip. Nothing got marked, nothing got paused, and because an
+// IntersectionObserver only fires on *changes*, the offscreen videos were never
+// revisited — they started on their own moments later and played to the end of
+// the session, 3000px below the fold.
+//
+// So this drives from intent instead of from the element's current state:
+// work out what *should* be playing, then make the elements match. A `play`
+// listener re-runs that reconcile whenever the browser starts a clip on its
+// own, which is what closes the cold-load race for good.
 ---
 <script>
+  interface Candidate {
+    video: HTMLVideoElement;
+    /** px from the nearest viewport edge; 0 while any part is on screen. */
+    distance: number;
+  }
+
+  // Nothing may start before this timestamp. HandCursor fires `panel:animating`
+  // as the drawer starts sliding in — four decoders spinning up is the single
+  // biggest thing competing with that animation, and the clips are all far below
+  // the fold while it runs.
+  //
+  // This lives outside init() on purpose. `panel:animating` is dispatched during
+  // astro:after-swap, which is *before* astro:page-load re-runs init for the
+  // incoming page — so a gate stored in init's closure would be written to the
+  // outgoing page's copy and the new page would never see it.
+  if (!(window as any).__videoPanelHooked) {
+    (window as any).__videoPanelHooked = true;
+    document.addEventListener('panel:animating', (e) => {
+      const ms = (e as CustomEvent).detail?.duration ?? 0;
+      (window as any).__videoGateUntil = performance.now() + ms;
+    });
+  }
+
   function initVideoAutoPause() {
     const videos = Array.from(document.querySelectorAll<HTMLVideoElement>('video[autoplay]'));
     if (!videos.length) return;
@@ -14,46 +48,99 @@
     // running per visited page.
     (window as any).__videoObserver?.disconnect();
 
-    const visible = new Set<HTMLVideoElement>();
-
-    // Only ever resume a video this script paused. A video the browser stopped
-    // for its own reasons is left alone rather than forced back into playing.
-    function resume(v: HTMLVideoElement) {
-      if (v.dataset.autoPaused !== 'true') return;
-      v.play().then(() => { delete v.dataset.autoPaused; }).catch(() => {});
+    /**
+     * Decide which videos are allowed to be playing right now.
+     *
+     * `candidates` is every autoplay video on the page, sorted nearest-first,
+     * each tagged with how far it sits from the viewport (0 = on screen).
+     * Return the set that should be playing; everything else gets paused.
+     *
+     * Policy: play anything within 200px of the viewport, matching the old
+     * rootMargin. Chosen for the arrival — a clip has a beat to start decoding
+     * before it scrolls in, so it is already moving when you reach it.
+     *
+     * The trade-off, if this ever needs revisiting: a margin says nothing about
+     * *how many* clips run at once, so a taller page can still put three or four
+     * decoders up together. If a machine struggles again, the fix is a hard
+     * budget — sort is nearest-first for exactly that reason, so capping it is
+     * `candidates.slice(0, N)`. That bounds concurrent decode however the page
+     * grows, at the cost of pausing a clip that is technically on screen.
+     */
+    function selectPlaying(candidates: Candidate[]): Set<HTMLVideoElement> {
+      return new Set(candidates.filter(c => c.distance <= 200).map(c => c.video));
     }
 
-    const io = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        const v = entry.target as HTMLVideoElement;
-        if (entry.isIntersecting) {
-          visible.add(v);
-          resume(v);
-        } else {
-          visible.delete(v);
-          if (!v.paused) { v.dataset.autoPaused = 'true'; v.pause(); }
-        }
-      }
-    }, { rootMargin: '200px 0px' }); // start a little before it scrolls in
+    function distanceFromViewport(v: HTMLVideoElement): number {
+      const r = v.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < window.innerHeight) return 0;
+      return r.top >= window.innerHeight ? r.top - window.innerHeight : -r.bottom;
+    }
 
-    videos.forEach(v => io.observe(v));
+    let gateTimer: number | undefined;
+    let reconciling = false;
+
+    function reconcile() {
+      // play() below fires a `play` event, which lands straight back here. The
+      // second pass always agrees with the first, so it is only wasted work —
+      // but it is wasted work inside the loop that starts the decoders.
+      if (reconciling) return;
+      const now = performance.now();
+      const gateUntil = (window as any).__videoGateUntil ?? 0;
+      if (now < gateUntil) {
+        // Re-run once the gate lifts, so whatever is on screen starts promptly.
+        clearTimeout(gateTimer);
+        gateTimer = window.setTimeout(reconcile, gateUntil - now);
+        return;
+      }
+
+      const candidates = videos
+        .map(video => ({ video, distance: distanceFromViewport(video) }))
+        .sort((a, b) => a.distance - b.distance);
+      const playing = selectPlaying(candidates);
+
+      reconciling = true;
+      try {
+        for (const v of videos) {
+          if (playing.has(v)) {
+            // play() rejects if the browser declines (autoplay policy, no data
+            // yet). Nothing to do about it here — the next reconcile retries.
+            if (v.paused) v.play().catch(() => {});
+          } else if (!v.paused) {
+            v.pause();
+          }
+        }
+      } finally {
+        reconciling = false;
+      }
+    }
+
+    // Published so the once-registered listeners below always reach the current
+    // page's reconcile. Capturing it in their closures would pin them to the
+    // first page loaded, and after a swap they would be walking a `videos` array
+    // of elements that are no longer in the document.
+    (window as any).__videoReconcile = reconcile;
+
+    const io = new IntersectionObserver(reconcile, { rootMargin: '400px 0px' });
+    videos.forEach(v => {
+      io.observe(v);
+      // The cold-load race: a clip the browser starts by itself, offscreen,
+      // after the observer has already had its say. Reconcile catches it the
+      // instant it begins rather than letting it run unattended.
+      v.addEventListener('play', reconcile);
+    });
     (window as any).__videoObserver = io;
+
+    reconcile();
 
     // Backgrounding the tab pauses media, and coming back fires no intersection
     // change — without this the on-screen videos would stay stopped for good.
     if (!(window as any).__videoVisibilityHooked) {
       (window as any).__videoVisibilityHooked = true;
       document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState !== 'visible') return;
-        document.querySelectorAll<HTMLVideoElement>('video[autoplay]').forEach(v => {
-          const r = v.getBoundingClientRect();
-          if (r.bottom > -200 && r.top < window.innerHeight + 200) {
-            v.dataset.autoPaused = 'true';
-            resume(v);
-          }
-        });
+        if (document.visibilityState === 'visible') (window as any).__videoReconcile?.();
       });
     }
+
   }
 
   document.addEventListener('astro:page-load', initVideoAutoPause);

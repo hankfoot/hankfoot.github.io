@@ -96,10 +96,59 @@
   let currentMode: Mode = 'wave';  // currently displayed idle mode
   let targetMode:  Mode = 'wave';  // idle mode we're heading toward
 
-  let panelAnim: Animation | null = null;
+  // The panel slide is driven by rAF writing style.transform, NOT by WAAPI.
+  //
+  // Both a WAAPI transform animation and a CSS opacity transition get promoted
+  // to the compositor, and Safari rebuilds accelerated animations when the view
+  // transition tears down its layer tree — replaying from the start anything
+  // begun inside it. That is what made the panel slide a third of the way, snap
+  // back and run again, and the homepage cross-fade fire twice. None of it is
+  // visible to script: getComputedStyle keeps reporting a smooth main-thread
+  // timeline while the compositor replays underneath, which is why seven runs of
+  // frame timing all looked perfect.
+  //
+  // Waiting for the transition to finish before starting fixed the replay but
+  // cost ~290ms of dead time with the drawer frozen part-open. Driving it from
+  // rAF on the main thread instead has nothing to rebuild, so it needs no wait.
+  // The main thread has the headroom: measured on the machine this was reported
+  // from, the whole navigation ran at a flat 60fps with a 17ms median, and an
+  // unpromoted box of text sliding the same distance was perfectly smooth.
+  let slideGen = 0;          // bumped to abort an in-flight slide
+  let panelSlideX = 0;       // current translateX of the drawer, in px
+  let panelNaturalLeft = 0;  // its resting left edge, measured before transform
+  let handGrabOffsetX = 0;   // how far left of that edge the hand sits
+  let handRestY = 0;
+  // True only once the drawer exists and its resting edge has been measured.
+  // grab-pull begins before the swap, while there is still no .project-panel on
+  // the page — without this the hand would be pinned to an unmeasured edge at
+  // x=0 and fly to the top-left corner before the drawer ever appeared.
+  let panelPinned = false;
+  // Resolves when the drawer has landed. Armed at swap time so page-load's
+  // release path has something to wait on regardless of how the slide finishes.
+  let panelSettled: Promise<void> = Promise.resolve();
+  let settlePanel: () => void = () => {};
   let contentClone: HTMLElement | null = null;
   let panelClone:   HTMLElement | null = null;
   let panelScroll = 0;      // scrollTop of the panel at snapshot time (see below)
+
+  /** cubic-bezier solved by Newton-Raphson — matches the CSS curve exactly. */
+  function cubicBezier(p1x: number, p1y: number, p2x: number, p2y: number) {
+    const cx = 3 * p1x, bx = 3 * (p2x - p1x) - cx, ax = 1 - cx - bx;
+    const cy = 3 * p1y, by = 3 * (p2y - p1y) - cy, ay = 1 - cy - by;
+    const sampleX = (t: number) => ((ax * t + bx) * t + cx) * t;
+    const sampleY = (t: number) => ((ay * t + by) * t + cy) * t;
+    const slopeX  = (t: number) => (3 * ax * t + 2 * bx) * t + cx;
+    return (x: number) => {
+      let t = x;
+      for (let i = 0; i < 5; i++) {
+        const err = sampleX(t) - x, d = slopeX(t);
+        if (Math.abs(err) < 1e-4 || d === 0) break;
+        t -= err / d;
+      }
+      return sampleY(Math.min(Math.max(t, 0), 1));
+    };
+  }
+  const EASE_PANEL = cubicBezier(0.4, 0, 0.2, 1);
 
   // ─── tick() ───────────────────────────────────────────────────
   function tick(gen: number) {
@@ -128,13 +177,13 @@
     }
 
     if (state === 'grab-pull') {
-      // Stick directly to the panel's left edge — true attachment, no lerp drift
-      const panel = document.querySelector<HTMLElement>('.project-panel');
-      if (panel) {
-        const panelRect = panel.getBoundingClientRect();
-        const emojiW = el.getBoundingClientRect().width;
-        currentX = panelRect.left - emojiW * 0.4;
-        currentY = window.innerHeight * 0.5 - el.getBoundingClientRect().height * 0.5;
+      // Pinned to the drawer's left edge, computed from the slide's own value
+      // rather than measured. Reading the panel's box here used to force a
+      // layout every frame — and, once the panel was promoted, forced its
+      // compositor animation to sync back to the main thread every frame too.
+      if (panelPinned) {
+        currentX = panelNaturalLeft + panelSlideX - handGrabOffsetX;
+        currentY = handRestY;
         targetX = currentX;
         targetY = currentY;
       }
@@ -291,13 +340,92 @@
               top: `${rect.top}px`,
               left: `${rect.left}px`,
               width: `${rect.width}px`,
+              // Clip to what is actually on screen. Without a height the clone
+              // is as tall as the whole scrollable homepage — measured at 3093px
+              // against an 860px viewport — and the browser rasterises all of it
+              // to composite the fade below. That is 3.3M pixels of texture to
+              // animate where 0.9M is visible; the rest is paid for and never
+              // seen. The clone is position:fixed at the old scroll offset, so
+              // nothing below the fold could have shown anyway.
+              height: `${Math.max(0, window.innerHeight - rect.top)}px`,
               overflow: 'hidden',
               pointerEvents: 'none',
               zIndex: '10',
+              // Promote now, while we are already off the critical path. Left to
+              // the transition below, the layer gets built on the first frame of
+              // the fade — a hitch exactly where the animation starts.
+              willChange: 'opacity',
             });
-            // Hide images that haven't decoded — they'd flash as placeholder boxes
-            contentClone.querySelectorAll<HTMLImageElement>('img').forEach(img => {
-              if (!img.complete || img.naturalWidth === 0) img.style.visibility = 'hidden';
+            // Carry the decoded images over to the clone.
+            //
+            // This used to ask the CLONE whether it had decoded — but a freshly
+            // cloned <img> starts its load again from scratch, so `complete` is
+            // false at that instant even for an image sitting in cache, fully
+            // painted, one frame ago. Every image therefore got hidden, and the
+            // card's placeholder tint showed through: at the moment of
+            // navigation the homepage visibly dropped every photo to a grey box,
+            // then the panel slid over the wreckage. The guard meant to prevent
+            // a flash of placeholder boxes was producing one.
+            //
+            // Ask the ORIGINAL instead, and pin the clone to the exact URL the
+            // original already resolved — dropping srcset/sizes so the browser
+            // cannot re-run selection and pick a different file it would have to
+            // fetch. Only genuinely unloaded images get hidden now.
+            // Repainting the clone's images from the ORIGINAL's decoded pixels.
+            //
+            // Two earlier attempts both flashed. Asking the clone whether it had
+            // decoded hid everything, because a cloned <img> restarts its load
+            // and reports complete=false even for a cached image — the homepage
+            // dropped every photo to its placeholder tint. Pointing the clone at
+            // the already-resolved URL cut that to a single frame, but only one:
+            // assigning src restarts the load no matter what, and Safari needs a
+            // frame to decode even a cache hit. Measured at exactly one frame of
+            // full desaturation, which still reads as a flicker.
+            //
+            // So don't go through the network stack at all. drawImage() from a
+            // loaded <img> is synchronous and copies the bitmap the compositor
+            // already has, so the clone is correct on the very first frame.
+            const liveImgs = contentArea.querySelectorAll<HTMLImageElement>('img');
+            contentClone.querySelectorAll<HTMLImageElement>('img').forEach((img, i) => {
+              const live = liveImgs[i];
+              const box = live?.getBoundingClientRect();
+              // Only what is actually on screen and actually decoded is worth
+              // copying; anything else is hidden, exactly as before.
+              if (!live || !live.complete || !live.naturalWidth || !box
+                  || box.width < 1 || box.bottom < 0 || box.top > window.innerHeight) {
+                img.style.visibility = 'hidden';
+                return;
+              }
+              try {
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.round(box.width * dpr);
+                canvas.height = Math.round(box.height * dpr);
+                canvas.style.width = `${box.width}px`;
+                canvas.style.height = `${box.height}px`;
+                canvas.style.display = 'block';
+                const ctx = canvas.getContext('2d')!;
+                // Reproduce object-fit: cover / contain by hand — a canvas has no
+                // object-fit, so the crop has to be baked into the draw.
+                const fit = getComputedStyle(live).objectFit;
+                const sx = canvas.width / live.naturalWidth;
+                const sy = canvas.height / live.naturalHeight;
+                const scale = fit === 'contain' ? Math.min(sx, sy)
+                            : fit === 'fill'    ? 0 // handled below
+                            :                     Math.max(sx, sy);
+                if (scale === 0) {
+                  ctx.drawImage(live, 0, 0, canvas.width, canvas.height);
+                } else {
+                  const w = live.naturalWidth * scale;
+                  const h = live.naturalHeight * scale;
+                  ctx.drawImage(live, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+                }
+                img.replaceWith(canvas);
+              } catch {
+                // Anything unexpected (a tainted canvas, a zero-size draw) falls
+                // back to the old behaviour rather than breaking the transition.
+                img.style.visibility = 'hidden';
+              }
             });
           }
           resolve();
@@ -478,8 +606,8 @@
     // longer a project.
     const toProject = String(event.to?.pathname ?? '').startsWith('/projects/');
     if ((state === 'grab-travel' || state === 'grab-pull') && !toProject) {
-      panelAnim?.cancel();
-      panelAnim = null;
+      slideGen++;
+      panelPinned = false;
       cleanupContentClone();
       state = 'idle';
     }
@@ -537,42 +665,64 @@
 
     // Fade out the homepage snapshot simultaneously with the panel slide-in
     if (contentClone) {
+      // Appended here, but faded by the slide loop below rather than by a CSS
+      // transition — opacity is compositor-accelerated too, so a transition
+      // started here gets replayed by Safari exactly like the slide did, which
+      // is what made the homepage appear to fade out twice.
       document.body.appendChild(contentClone);
-      requestAnimationFrame(() => {
-        if (!contentClone) return;
-        contentClone.style.transition = `opacity ${PANEL_FADE_MS}ms ease`;
-        contentClone.style.opacity = '0';
-        contentClone.addEventListener('transitionend', cleanupContentClone, { once: true });
-      });
     }
 
-    // WAAPI panel slide-in — WAAPI ignores the CSS animation:none kill switch,
-    // so reduced motion has to be gated here in script.
+    // Panel slide-in. Gated here in script because reduced motion has to be
+    // honoured and CSS cannot see this animation at all.
     const panel = document.querySelector<HTMLElement>('.project-panel');
     if (panel && !reducedMotion()) {
       const duration = state === 'grab-pull' ? 950 : 220;
-      let initialTransform: string;
-      if (state === 'grab-pull') {
-        const panelRect = panel.getBoundingClientRect();
-        const emojiW = el.getBoundingClientRect().width;
-        initialTransform = `translateX(${currentX + emojiW * 0.4 - panelRect.left}px)`;
-      } else {
-        initialTransform = 'translateX(100%)';
-      }
-      panel.style.transform = initialTransform;
-      // Safari will not composite this on its own: .project-panel is a scroll
-      // container (overflow-y: auto) holding several decoding videos, so an
-      // un-promoted transform animation repaints the whole subtree every frame.
-      // Promote for the duration only — left on permanently it costs a layer
-      // and pins the panel's contents in GPU memory for the life of the page.
-      panel.style.willChange = 'transform';
-      panelAnim = panel.animate(
-        [{ transform: initialTransform }, { transform: 'translateX(0)' }],
-        { duration, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', fill: 'both' }
-      );
-      panelAnim.finished
-        .then(() => { panel.style.removeProperty('will-change'); })
-        .catch(() => { panel.style.removeProperty('will-change'); }); // cancelled by a new nav
+      const wasGrabPull = state === 'grab-pull';
+      const handRect = el.getBoundingClientRect();
+
+      // Measured BEFORE any transform is applied, so it is the resting position.
+      // Reading it afterwards returns the offscreen one, because
+      // getBoundingClientRect includes transforms — which silently made the
+      // hand's destination its own start point, so it sat still for the whole
+      // slide and only moved when the nav-link handoff yanked it left at the end.
+      panelNaturalLeft = panel.getBoundingClientRect().left;
+      handGrabOffsetX = handRect.width * 0.4;
+      handRestY = window.innerHeight * 0.5 - handRect.height * 0.5;
+
+      const fromX = wasGrabPull
+        ? currentX + handGrabOffsetX - panelNaturalLeft
+        : panel.getBoundingClientRect().width;
+
+      panelSettled = new Promise<void>(res => { settlePanel = res; });
+      // Safety net: release the hand even if the slide never reports back,
+      // rather than leaving it wedged in grab-pull for the rest of the session.
+      setTimeout(() => settlePanel(), duration + 600);
+      panelPinned = true;
+      const gen = ++slideGen;
+      panelSlideX = fromX;
+      panel.style.transform = `translateX(${fromX}px)`;
+
+      const startedAt = performance.now();
+      const slide = (now: number) => {
+        if (gen !== slideGen) return;           // a new navigation took over
+        const t = Math.min((now - startedAt) / duration, 1);
+        panelSlideX = fromX * (1 - EASE_PANEL(t));
+        panel.style.transform = `translateX(${panelSlideX}px)`;
+
+        // The homepage uncovers on the same clock, so the two read as one move.
+        if (contentClone) {
+          const f = Math.min((now - startedAt) / PANEL_FADE_MS, 1);
+          contentClone.style.opacity = String(1 - f);
+          if (f >= 1) cleanupContentClone();
+        }
+
+        if (t < 1) { requestAnimationFrame(slide); return; }
+        panelSlideX = 0;
+        panel.style.transform = 'translateX(0)';
+        settlePanel();
+      };
+      requestAnimationFrame(slide);
+
       // Hold video playback until the drawer has landed. Four clips spinning up
       // their decoders is the single biggest thing competing with this animation.
       document.dispatchEvent(new CustomEvent('panel:animating', { detail: { duration } }));
@@ -692,14 +842,14 @@
       // Keep grab-pull alive until the panel animation fully completes
       const release = () => {
         state = 'idle';
-        panelAnim = null;
+        panelPinned = false;
         currentMode = 'point';
         cleanupContentClone();
         document.querySelector<HTMLElement>('.project-panel')?.style.removeProperty('transform');
         if (window.location.pathname.startsWith('/projects/')) pointAtNavLink('projects');
         else updateHand();
       };
-      (panelAnim?.finished ?? Promise.resolve())
+      panelSettled
         .then(() => setTimeout(release, 180))
         .catch(release);
 

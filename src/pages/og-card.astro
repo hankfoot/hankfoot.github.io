@@ -34,8 +34,6 @@
     </div>
 
     <img class="og-hand" src="/ui/hand-raised.svg" alt="" />
-
-    <p class="og-meta">xr &amp; games · physical computing · seattle</p>
   </div>
 </body>
 </html>
@@ -55,12 +53,16 @@
     font-family: 'Inter', system-ui, sans-serif;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    /* The text block sits on the card's optical centre now that the footer line
+       is gone; the domain is lifted out of the flow so it cannot drag it down. */
+    justify-content: center;
     overflow: hidden;
   }
 
-  .og-domain,
-  .og-meta {
+  .og-domain {
+    position: absolute;
+    top: 72px;
+    left: 80px;
     font-family: 'Source Code Pro', monospace;
     font-size: 20px;
     letter-spacing: 0.08em;
@@ -97,14 +99,15 @@
     vertical-align: 0.08em;
   }
 
-  /* Sits in the corner the text leaves empty, cropped by the card edge so it
-     reads as part of the page rather than a sticker dropped on top. */
+  /* Centred against the text block rather than dropped in the corner, and only
+     lightly cropped by the right edge so it reads as part of the page rather
+     than a sticker sitting on top of it. */
   .og-hand {
     position: absolute;
-    right: -40px;
-    bottom: 40px;
-    width: 340px;
-    height: 340px;
-    transform: rotate(-12deg);
+    right: -62px;
+    top: 50%;
+    width: 420px;
+    height: 420px;
+    transform: translateY(-50%) rotate(-10deg);
   }
 </style>

@@ -15,6 +15,8 @@ import Quote from '../../components/blocks/Quote.astro';
 import GameCanvas from '../../components/GameCanvas.astro';
 import MdxLink from '../../components/MdxLink.astro';
 import { getCollection, render } from 'astro:content';
+import { getImage } from 'astro:assets';
+import { resolveImage } from '../../utils/images';
 
 export async function getStaticPaths() {
   // Drafts generate no route at all — an unlinked page would still be live,
@@ -33,8 +35,24 @@ const { Content } = await render(project);
 // `a` overrides markdown links in prose so external ones open in a new tab,
 // matching what parseInline already does for captions and outcomes.
 const components = { VideoEmbed, ImageGrid, Callout, PrototypeEmbed, Specs, Outcomes, BentoGrid, Feature, Credits, Section, Quote, GameCanvas, a: MdxLink };
+
+// Link preview: the project's own thumb, re-cut to the 1200×630 every scraper
+// expects. The frontmatter `thumb` is a public-style path whose file actually
+// lives in src/assets, so it has to go back through resolveImage — pointing
+// og:image straight at that path would 404, since nothing serves it from public.
+// JPEG rather than the site's usual webp: several scrapers still refuse webp.
+const thumbAsset = resolveImage(project.data.thumb);
+const ogImage = typeof thumbAsset === 'string'
+  ? '/og/home.png' // unresolved thumb — fall back rather than ship a broken preview
+  : (await getImage({ src: thumbAsset, width: 1200, height: 630, fit: 'cover', format: 'jpeg' })).src;
 ---
-<Base title={`${project.data.title} — Hank Duhaime`}>
+<Base
+  title={`${project.data.title} — Hank Duhaime`}
+  description={project.data.summary}
+  image={ogImage}
+  imageAlt={`${project.data.title} — ${project.data.summary}`}
+  type="article"
+>
   <ProjectPanel
     title={project.data.title}
     summary={project.data.summary}

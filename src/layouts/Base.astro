@@ -8,9 +8,34 @@ import '../styles/global.css';
 
 interface Props {
   title?: string;
+  /** Meta + og description. Keep it under ~160 characters or search results clip it. */
+  description?: string;
+  /** Site-root-relative path to the link-preview image; made absolute below. */
+  image?: string;
+  /** Alt text for that image — read aloud by screen readers on shared links. */
+  imageAlt?: string;
+  /** 'article' for project pages, 'website' everywhere else. */
+  type?: 'website' | 'article';
+  /** Keep a page out of search results — for the internal, unlinked ones. */
+  noindex?: boolean;
 }
 
-const { title = 'Hank Duhaime' } = Astro.props;
+const {
+  title = 'Hank Duhaime',
+  description = 'Hank Duhaime is a creative technologist designing playful, embodied interactions across XR, games, and physical computing. Based in Seattle.',
+  image = '/og/home.png',
+  imageAlt = 'hank duhaime — a creative technologist designing playful, embodied interactions',
+  type = 'website',
+  noindex = false,
+} = Astro.props;
+
+// Scrapers will not resolve a relative og:image, and several refuse a relative
+// canonical too — both have to be absolute. Astro.site is set in astro.config.mjs;
+// falling back to the production origin keeps these correct if it is ever unset,
+// since a wrong absolute URL here is worse than a build error.
+const origin = Astro.site ?? new URL('https://hankduhaime.com');
+const canonical = new URL(Astro.url.pathname, origin);
+const ogImage = new URL(image, origin);
 ---
 <!doctype html>
 <html lang="en">
@@ -18,10 +43,39 @@ const { title = 'Hank Duhaime' } = Astro.props;
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
+  <meta name="description" content={description} />
+  <meta name="author" content="Hank Duhaime" />
+  {noindex && <meta name="robots" content="noindex, nofollow" />}
+  <link rel="canonical" href={canonical.href} />
+
+  {/* Link previews — iMessage, Slack, Twitter/X, LinkedIn, Discord. Without
+      these a scraper guesses: it picks the largest image it can find on the page
+      and slices the <title>, which is how a shared homepage link ended up
+      showing a haptic glove from an unrelated project. */}
+  <meta property="og:type" content={type} />
+  <meta property="og:site_name" content="Hank Duhaime" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content={canonical.href} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={ogImage.href} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content={imageAlt} />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage.href} />
+  <meta name="twitter:image:alt" content={imageAlt} />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  {/* iOS home screen: SVG is not supported here, and a transparent ground
+      composites to black — hence an opaque raster rather than the sprite. */}
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <ReducedMotionInit />
   <VideoAutoPause />
   <ClientRouter />

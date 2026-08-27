@@ -1,0 +1,110 @@
+---
+// Source for the homepage link-preview image (public/og/home.png).
+//
+// Unlinked and internal, in the same spirit as /styles and /games — it exists so
+// the card stays editable in the repo rather than being a mystery PNG nobody can
+// regenerate. To re-cut it: open /og-card, screenshot the 1200×630 .og-card at
+// 1× and save over public/og/home.png.
+//
+// Deliberately does NOT use Base.astro: no sidebar, no hand cursor, no view
+// transitions — just the card, at exact pixel dimensions, so a screenshot of the
+// viewport is the asset. Styles are local for the same reason; this is the one
+// page whose layout must not move when global.css changes underneath it.
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OG card — Hank Duhaime</title>
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="og-card">
+    <p class="og-domain">hankduhaime.com</p>
+
+    <div class="og-body">
+      <h1 class="og-name">hank duhaime</h1>
+      <p class="og-tagline">
+        a <code class="og-code">creative technologist</code> designing playful,
+        embodied interactions
+      </p>
+    </div>
+
+    <img class="og-hand" src="/ui/hand-raised.svg" alt="" />
+
+    <p class="og-meta">xr &amp; games · physical computing · seattle</p>
+  </div>
+</body>
+</html>
+
+<style is:global>
+  /* Exact-size canvas — the screenshot viewport is set to match. */
+  html, body { margin: 0; padding: 0; background: #fff; }
+
+  .og-card {
+    position: relative;
+    width: 1200px;
+    height: 630px;
+    box-sizing: border-box;
+    padding: 72px 80px;
+    background: #ffffff;
+    color: #111111;
+    font-family: 'Inter', system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+
+  .og-domain,
+  .og-meta {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 20px;
+    letter-spacing: 0.08em;
+    color: #666666;
+    margin: 0;
+  }
+
+  .og-body { max-width: 760px; }
+
+  .og-name {
+    font-size: 116px;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    margin: 0 0 28px;
+  }
+
+  .og-tagline {
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1.45;
+    color: #111111;
+    margin: 0;
+    max-width: 700px;
+  }
+
+  .og-code {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 0.8em;
+    background: #f0f0f0;
+    border-radius: 4px;
+    padding: 0.18em 0.36em;
+    margin-block: -0.18em;
+    vertical-align: 0.08em;
+  }
+
+  /* Sits in the corner the text leaves empty, cropped by the card edge so it
+     reads as part of the page rather than a sticker dropped on top. */
+  .og-hand {
+    position: absolute;
+    right: -40px;
+    bottom: 40px;
+    width: 340px;
+    height: 340px;
+    transform: rotate(-12deg);
+  }
+</style>

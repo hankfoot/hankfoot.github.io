@@ -15,6 +15,20 @@
 // work out what *should* be playing, then make the elements match. A `play`
 // listener re-runs that reconcile whenever the browser starts a clip on its
 // own, which is what closes the cold-load race for good.
+//
+// The clips carry `data-autoplay` rather than `autoplay`. With the real
+// attribute the browser tried to start every clip the moment the page parsed —
+// eight decoders at once on a phone, which exhausts the hardware budget so some
+// never start, and it leaked playback through the panel gate below. This script
+// is the only thing that starts a clip now, so the gate holds and only the
+// clips near the viewport ever decode.
+//
+// Phones also refuse play() outright in iOS Low Power Mode, with Safari's
+// "Auto-Play Video Previews" off, or with Data Saver on. The first two still
+// honour play() after a user gesture, and a finished scroll ends in a touchend
+// that counts as one — so a refusal arms a one-shot retry on the next gesture,
+// and native controls appear until playback succeeds so a tap on the clip
+// itself also works. Data Saver is respected: nothing plays or fetches unbidden.
 ---
 <script>
   interface Candidate {
@@ -41,12 +55,39 @@
   }
 
   function initVideoAutoPause() {
-    const videos = Array.from(document.querySelectorAll<HTMLVideoElement>('video[autoplay]'));
+    const videos = Array.from(document.querySelectorAll<HTMLVideoElement>('video[data-autoplay]'));
     if (!videos.length) return;
 
     // Drop the previous page's observer, or the router's swaps leave one still
     // running per visited page.
     (window as any).__videoObserver?.disconnect();
+
+    if ((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData) {
+      // The user asked for fewer bytes. Leave each clip one tap away and stop.
+      videos.forEach(v => { v.preload = 'none'; v.controls = true; });
+      return;
+    }
+
+    /**
+     * play() was refused by policy. The next tap, scroll-release, or keypress
+     * anywhere on the page is a user activation that lifts the refusal, so
+     * re-run the *current* page's reconcile then. One controller per page
+     * lifetime; it lives on window so a swap mid-arm doesn't leak listeners.
+     */
+    function armGestureRetry() {
+      const w = window as any;
+      if (w.__videoGestureRetry) return;
+      const ac = new AbortController();
+      w.__videoGestureRetry = ac;
+      const retry = () => {
+        ac.abort();
+        w.__videoGestureRetry = null;
+        w.__videoReconcile?.();
+      };
+      for (const type of ['touchend', 'pointerup', 'keydown']) {
+        document.addEventListener(type, retry, { signal: ac.signal, passive: true, capture: true });
+      }
+    }
 
     /**
      * Decide which videos are allowed to be playing right now.
@@ -102,9 +143,23 @@
       try {
         for (const v of videos) {
           if (playing.has(v)) {
-            // play() rejects if the browser declines (autoplay policy, no data
-            // yet). Nothing to do about it here — the next reconcile retries.
-            if (v.paused) v.play().catch(() => {});
+            if (v.paused) {
+              // Belt and braces: some browsers only honour the property, not
+              // the attribute, on nodes that arrived via a DOM swap.
+              v.muted = true;
+              v.play()
+                .then(() => { v.controls = false; })
+                .catch((err: unknown) => {
+                  // pause() interrupting a pending play() — a clip scrolled out
+                  // before it finished loading. The next reconcile sorts it out.
+                  if (err instanceof DOMException && err.name === 'AbortError') return;
+                  // Refused by policy (Low Power Mode, preview setting, no data
+                  // yet). Give the clip a control bar so a direct tap works, and
+                  // retry every wanted clip on the next gesture.
+                  v.controls = true;
+                  armGestureRetry();
+                });
+            }
           } else if (!v.paused) {
             v.pause();
           }

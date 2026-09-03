@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /styles
+Disallow: /games
+Disallow: /og-card
+
+Sitemap: https://hankduhaime.com/sitemap.xml

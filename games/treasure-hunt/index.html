@@ -1,23 +1,9 @@
-<!DOCTYPE html><html lang="en" data-astro-cid-kpmccmae> <head><meta name="robots" content="noindex, nofollow"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Myth Match — game test</title><script>
+<!DOCTYPE html><html lang="en" data-astro-cid-kpmccmae> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Myth Match — game test</title><script>
   (function () {
-    function apply() {
-      var sys = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (sys) {
-        document.documentElement.setAttribute('data-reduced-motion', 'true');
-      } else {
-        document.documentElement.removeAttribute('data-reduced-motion');
-      }
-    }
-
-    apply();
-
-    // astro:after-swap lands after the new document is in place but before it
-    // paints, so the attribute is back in time and no motion shows through.
-    // Guarded because this inline script may run again on a swap, and each run
-    // would otherwise add another copy of the listener.
-    if (!window.__reducedMotionHooked) {
-      window.__reducedMotionHooked = true;
-      document.addEventListener('astro:after-swap', apply);
+    var stored = localStorage.getItem('hank-reduced-motion');
+    var sys = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (stored === 'true' || (stored === null && sys)) {
+      document.documentElement.setAttribute('data-reduced-motion', 'true');
     }
   })();
 </script><style>:root{color-scheme:light}body{margin:0;min-height:100vh;display:grid;place-items:center;gap:1.5rem;padding:2rem;box-sizing:border-box;background:#d9d5cc;font-family:system-ui,sans-serif;color:#2a2620}.test-head[data-astro-cid-kpmccmae]{text-align:center}.test-head[data-astro-cid-kpmccmae] h1[data-astro-cid-kpmccmae]{margin:0 0 .25rem;font-size:1.3rem}.test-head[data-astro-cid-kpmccmae] p[data-astro-cid-kpmccmae]{margin:0;opacity:.6;font-size:.85rem}.test-actions[data-astro-cid-kpmccmae]{display:flex;gap:.75rem;justify-content:center;margin-top:.75rem}.test-actions[data-astro-cid-kpmccmae] button[data-astro-cid-kpmccmae],.test-actions[data-astro-cid-kpmccmae] a[data-astro-cid-kpmccmae]{font:inherit;font-size:.8rem;padding:.35rem .7rem;border-radius:8px;border:1px solid rgba(0,0,0,.2);background:#f3efe6;color:inherit;cursor:pointer;text-decoration:none}.test-frame[data-astro-cid-kpmccmae]{width:min(560px,92vw)}

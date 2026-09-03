@@ -31,6 +31,23 @@
 // itself also works. Data Saver is respected: nothing plays or fetches unbidden.
 ---
 <script>
+  /**
+   * How near the viewport a clip must be to play, in px.
+   *
+   * This is ALSO the observer's rootMargin, and the two must stay equal — the
+   * bug that shipped on 2026-09-03 was a 400px margin against a 200px policy.
+   * An IntersectionObserver only reports *crossings* of its own boundary, so
+   * with a wider margin a clip was announced at 400px, judged too far to play,
+   * and then never mentioned again as it slid the rest of the way in. It only
+   * started if some *other* clip happened to cross the 400px line meanwhile —
+   * so a clip's playback depended on its neighbours' spacing. The last clip on
+   * a page has no neighbour below it to rescue it, which is why "Dose of Play"
+   * at the foot of quick-distract stayed still on a phone while the clips above
+   * it played. Equal boundaries mean every clip is told exactly when its own
+   * answer changes. The scroll listener below is the belt to this braces.
+   */
+  const NEAR_PX = 200;
+
   interface Candidate {
     video: HTMLVideoElement;
     /** px from the nearest viewport edge; 0 while any part is on screen. */
@@ -55,12 +72,19 @@
   }
 
   function initVideoAutoPause() {
+    // Tear down the outgoing page BEFORE the early return below. The listeners
+    // registered once on window reach the current page through __videoReconcile,
+    // so a stale one left pointing at a swapped-away page is not merely dead
+    // weight: a detached element measures 0x0 at 0,0, which reads as distance 0
+    // — on screen — so the next reconcile would start decoding videos that are
+    // no longer in the document. Leaving these set on a page with no clips of
+    // its own (the homepage, about, cv) is exactly that case.
+    (window as any).__videoObserver?.disconnect();
+    (window as any).__videoObserver = null;
+    (window as any).__videoReconcile = null;
+
     const videos = Array.from(document.querySelectorAll<HTMLVideoElement>('video[data-autoplay]'));
     if (!videos.length) return;
-
-    // Drop the previous page's observer, or the router's swaps leave one still
-    // running per visited page.
-    (window as any).__videoObserver?.disconnect();
 
     if ((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData) {
       // The user asked for fewer bytes. Leave each clip one tap away and stop.
@@ -96,8 +120,8 @@
      * each tagged with how far it sits from the viewport (0 = on screen).
      * Return the set that should be playing; everything else gets paused.
      *
-     * Policy: play anything within 200px of the viewport, matching the old
-     * rootMargin. Chosen for the arrival — a clip has a beat to start decoding
+     * Policy: play anything within NEAR_PX of the viewport — the same constant
+     * the observer watches. Chosen for the arrival — a clip has a beat to start decoding
      * before it scrolls in, so it is already moving when you reach it.
      *
      * The trade-off, if this ever needs revisiting: a margin says nothing about
@@ -108,7 +132,7 @@
      * grows, at the cost of pausing a clip that is technically on screen.
      */
     function selectPlaying(candidates: Candidate[]): Set<HTMLVideoElement> {
-      return new Set(candidates.filter(c => c.distance <= 200).map(c => c.video));
+      return new Set(candidates.filter(c => c.distance <= NEAR_PX).map(c => c.video));
     }
 
     function distanceFromViewport(v: HTMLVideoElement): number {
@@ -175,7 +199,7 @@
     // of elements that are no longer in the document.
     (window as any).__videoReconcile = reconcile;
 
-    const io = new IntersectionObserver(reconcile, { rootMargin: '400px 0px' });
+    const io = new IntersectionObserver(reconcile, { rootMargin: `${NEAR_PX}px 0px` });
     videos.forEach(v => {
       io.observe(v);
       // The cold-load race: a clip the browser starts by itself, offscreen,
@@ -194,6 +218,34 @@
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') (window as any).__videoReconcile?.();
       });
+    }
+
+    // Belt to the equal-boundaries braces above. Matching margins are correct
+    // in theory, but they leave the whole system resting on one observer
+    // reporting every crossing — and a missed or coalesced one strands a clip
+    // silently, with no error and nothing in the console, which is exactly how
+    // the last bug survived to production. Reconciling on scroll costs a rect
+    // read per clip per frame at most, against a page that is already decoding
+    // video, and it makes a stranded clip impossible however the boundaries
+    // drift. Resize covers a phone being rotated, which moves every clip
+    // without scrolling. Registered once; it reaches the current page through
+    // __videoReconcile, like the visibility hook.
+    if (!(window as any).__videoScrollHooked) {
+      (window as any).__videoScrollHooked = true;
+      let queued = false;
+      const onMove = () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => {
+          queued = false;
+          (window as any).__videoReconcile?.();
+        });
+      };
+      // capture:true is load-bearing. On desktop the scroller is .project-panel,
+      // not the window, and a scroll event does not bubble — but it still runs
+      // the capture phase from the window down, so this catches both layouts.
+      window.addEventListener('scroll', onMove, { passive: true, capture: true });
+      window.addEventListener('resize', onMove, { passive: true });
     }
 
   }

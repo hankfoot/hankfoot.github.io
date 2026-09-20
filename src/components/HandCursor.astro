@@ -244,16 +244,21 @@
     targetMode = 'wave';
   }
 
+  function pointAtRect(rect: DOMRect, gap = 8) {
+    const emojiH = el.offsetHeight; // offsetHeight ignores CSS transforms (e.g. rotate from grab-pull)
+    targetX = rect.right + gap;
+    targetY = rect.top + rect.height / 2 - emojiH / 2;
+    targetMode = 'point';
+  }
+
   function pointAtNavLink(section: string) {
     const link = document.querySelector<HTMLElement>(`a[data-section="${section}"]`);
     if (!link) return;
+    // Range, not the element box: the nav link is a full-width block, and its
+    // box would put the hand out past the sidebar rule rather than beside the word.
     const range = document.createRange();
     range.selectNodeContents(link);
-    const rect = range.getBoundingClientRect();
-    const emojiH = el.offsetHeight; // offsetHeight ignores CSS transforms (e.g. rotate from grab-pull)
-    targetX = rect.right + 8;
-    targetY = rect.top + rect.height / 2 - emojiH / 2;
-    targetMode = 'point';
+    pointAtRect(range.getBoundingClientRect());
   }
 
   const SECTIONS = [
@@ -273,6 +278,25 @@
 
     const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80;
     if (atBottom) { pointAtNavLink('contact'); return; }
+
+    // The resume carries none of the five section anchors the scan below looks
+    // for, so every branch missed and the function returned having set no
+    // target at all — the hand simply kept whatever it was doing on the page
+    // before, which read as it not knowing where it was. Give the page the one
+    // thing worth pointing at while that is on screen, and hand back to the nav
+    // item this page lives under once it scrolls away.
+    if (window.location.pathname.startsWith('/resume')) {
+      const cta = document.querySelector<HTMLElement>('.resume-bar-actions a');
+      const rect = cta?.getBoundingClientRect();
+      // The element box, not its text range: this is a bordered button, and
+      // aiming at the text would tuck the hand inside its right padding.
+      if (rect && rect.bottom > 0 && rect.top < window.innerHeight) {
+        pointAtRect(rect, 10);
+      } else {
+        pointAtNavLink('cv');
+      }
+      return;
+    }
 
     // The hero owns the hand while it's meaningfully on screen — the wave next
     // to the name is the page's opening beat and has to survive load. The

@@ -244,13 +244,6 @@
     targetMode = 'wave';
   }
 
-  function pointAtRect(rect: DOMRect, gap = 8) {
-    const emojiH = el.offsetHeight; // offsetHeight ignores CSS transforms (e.g. rotate from grab-pull)
-    targetX = rect.right + gap;
-    targetY = rect.top + rect.height / 2 - emojiH / 2;
-    targetMode = 'point';
-  }
-
   function pointAtNavLink(section: string) {
     const link = document.querySelector<HTMLElement>(`a[data-section="${section}"]`);
     if (!link) return;
@@ -258,7 +251,11 @@
     // box would put the hand out past the sidebar rule rather than beside the word.
     const range = document.createRange();
     range.selectNodeContents(link);
-    pointAtRect(range.getBoundingClientRect());
+    const rect = range.getBoundingClientRect();
+    const emojiH = el.offsetHeight; // offsetHeight ignores CSS transforms (e.g. rotate from grab-pull)
+    targetX = rect.right + 8;
+    targetY = rect.top + rect.height / 2 - emojiH / 2;
+    targetMode = 'point';
   }
 
   const SECTIONS = [
@@ -276,27 +273,17 @@
     // Project pages have none of the homepage sections — keep the hand on "projects"
     if (window.location.pathname.startsWith('/projects/')) { pointAtNavLink('projects'); return; }
 
+    // Above atBottom, like the /projects/ branch: the resume is a document, and
+    // the hand should sit still beside the nav item it belongs to rather than
+    // react to scrolling through it. Pointing at the page's own download button
+    // was worse than doing nothing — updateHand() re-runs on every scroll event,
+    // so the hand rode the button up the page and off the top edge before
+    // snapping back down to the sidebar. A sidebar link cannot be scrolled away
+    // from, so this target is stable for the whole page.
+    if (window.location.pathname.startsWith('/resume')) { pointAtNavLink('cv'); return; }
+
     const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80;
     if (atBottom) { pointAtNavLink('contact'); return; }
-
-    // The resume carries none of the five section anchors the scan below looks
-    // for, so every branch missed and the function returned having set no
-    // target at all — the hand simply kept whatever it was doing on the page
-    // before, which read as it not knowing where it was. Give the page the one
-    // thing worth pointing at while that is on screen, and hand back to the nav
-    // item this page lives under once it scrolls away.
-    if (window.location.pathname.startsWith('/resume')) {
-      const cta = document.querySelector<HTMLElement>('.resume-bar-actions a');
-      const rect = cta?.getBoundingClientRect();
-      // The element box, not its text range: this is a bordered button, and
-      // aiming at the text would tuck the hand inside its right padding.
-      if (rect && rect.bottom > 0 && rect.top < window.innerHeight) {
-        pointAtRect(rect, 10);
-      } else {
-        pointAtNavLink('cv');
-      }
-      return;
-    }
 
     // The hero owns the hand while it's meaningfully on screen — the wave next
     // to the name is the page's opening beat and has to survive load. The

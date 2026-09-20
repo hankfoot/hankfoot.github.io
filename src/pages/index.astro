@@ -15,6 +15,7 @@ import {
   education,
   publications,
   resumeUrl,
+  tagline,
 } from '../data/about';
 
 // Homepage running order — curated, not chronological. Anything not listed
@@ -44,8 +45,7 @@ const sorted = projects.sort((a, b) => {
       <span class="intro-greeting">hi, I’m Hank <img class="intro-wave" src="/ui/hand-raised.svg" alt="" aria-hidden="true" /></span>
     </h1>
     <p class="intro-subtitle">
-      A <code class="intro-code">creative technologist</code> with 8+ years of
-      experience designing playful, embodied interactions
+      A <code class="intro-code">{tagline.emphasis}</code> {tagline.tail}
     </p>
     <div class="intro-formerly">
       <span class="intro-formerly-label">formerly @</span>
@@ -94,7 +94,8 @@ const sorted = projects.sort((a, b) => {
     <div class="section-head">
       <p class="section-label">cv</p>
       <div class="cv-actions">
-        <a href={resumeUrl} target="_blank" rel="noopener" class="section-cta">download resume ↗</a>
+        <a href="/resume" class="section-cta">resume</a>
+        <a href={resumeUrl} download class="section-cta">download pdf ↓</a>
         <a href={linkedinUrl} target="_blank" rel="noopener" class="section-cta">full history on linkedin ↗</a>
       </div>
     </div>

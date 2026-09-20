@@ -404,6 +404,31 @@ import Section from '../components/blocks/Section.astro';
 
     </section>
 
+    <!-- ─── Section: Print / Resume ──────────────────────── -->
+    <section class="styles-section">
+      <p class="styles-section-label">print · the /resume document</p>
+      <div class="styles-print-note">
+        <p class="styles-print-lede">
+          The site has exactly one print stylesheet, at the foot of global.css, and exactly
+          one page that uses it. <a href="/resume">/resume</a> renders the same
+          <code>experience</code> / <code>education</code> / <code>skillGroups</code> /
+          <code>publications</code> exports the homepage CV reads, and the browser&rsquo;s own
+          print-to-PDF is the export path &mdash; there is no PDF toolchain.
+        </p>
+        <dl class="styles-print-rules">
+          <div><dt>no rails</dt><dd>Deliberately NOT .cv-role&rsquo;s two tracks. A PDF reader re-sorts glyphs by position rather than paint order, reads a narrow rail as a column, and interleaves it &mdash; which put the next employer&rsquo;s name inside the previous role&rsquo;s bullets. Every row here is one column of inline flow; the site&rsquo;s voice comes from the type roles instead.</dd></div>
+          <div><dt>case</dt><dd>Labels lowercase, content as written. The CV lowercases company names through CSS and that rewrites the glyphs in the PDF, so the resume does not.</dd></div>
+          <div><dt>@page</dt><dd>Letter, 0.55in margin. Type switches to pt; .sidebar, #hand-cursor and .no-print come off.</dd></div>
+          <div><dt>breaks</dt><dd>break-inside: avoid on every role, row and pub &mdash; a split role leaves its rail behind on the previous page.</dd></div>
+          <div><dt>order</dt><dd>One linear column in DOM order, real headings and real lists: what makes the PDF&rsquo;s text layer readable to an applicant tracking system.</dd></div>
+        </dl>
+        <p class="styles-print-lede">
+          The @media print block <strong>must stay last in global.css</strong> &mdash; it competes with
+          the width queries at equal specificity and would otherwise lose on source order.
+        </p>
+      </div>
+    </section>
+
     <!-- ─── Section: Color Tokens ────────────────────────── -->
     <section class="styles-section">
       <p class="styles-section-label">color tokens</p>
@@ -599,6 +624,56 @@ import Section from '../components/blocks/Section.astro';
 .styles-spacing-label {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
+  color: var(--color-muted);
+}
+
+/* ── Print notes ────────────────────────────────────────── */
+/* Prose, not a specimen: the print rules are invisible on screen, so this is
+   the only place the reference can show what they do. */
+.styles-print-note {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 68ch;
+}
+
+.styles-print-lede {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+.styles-print-lede code {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  background: var(--color-surface-mid);
+  border-radius: var(--radius-sm);
+  padding: 0.05rem 0.25rem;
+}
+
+.styles-print-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.styles-print-rules > div {
+  display: grid;
+  grid-template-columns: 5rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.styles-print-rules dt {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--label-tracking-tight);
+  color: var(--color-text);
+}
+
+.styles-print-rules dd {
+  font-size: 0.875rem;
+  line-height: 1.55;
   color: var(--color-muted);
 }
 </style>

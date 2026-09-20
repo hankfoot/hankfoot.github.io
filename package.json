@@ -6,7 +6,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "deploy": "astro build && gh-pages -d dist -t"
+    "deploy": "npm run resume:pdf && gh-pages -d dist -t",
+    "resume:pdf": "node scripts/export-resume-pdf.mjs"
   },
   "dependencies": {
     "astro": "^5.0.0",

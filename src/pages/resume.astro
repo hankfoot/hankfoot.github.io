@@ -1,0 +1,160 @@
+---
+import Base from '../layouts/Base.astro';
+import {
+  bio,
+  contactLinks,
+  education,
+  experience,
+  linkedinUrl,
+  publications,
+  resumeMeta,
+  resumeUrl,
+  skillGroups,
+} from '../data/about';
+
+// One rendered document, printed by the browser. No PDF toolchain and no second
+// copy of the history: this page reads the same exports the homepage CV reads,
+// so the resume cannot drift from the site the way the checked-in PDF has.
+//
+// Everything here is shaped by what an applicant tracking system can actually
+// read. The rules that decided the markup below, in order of how often they are
+// what breaks a resume:
+//
+//   1. One linear column in DOM order. The two-track rail is a CSS grid, which
+//      paints in DOM order, so the PDF's text layer extracts as
+//      company → dates → title → bullets per role. A table or a float would
+//      interleave the rails and hand the parser nonsense.
+//   2. Real headings and real lists. <h2>/<h3>/<ul> are the structure a parser
+//      looks for; a styled <p> is invisible to it.
+//   3. Selectable text only — no text baked into an image, no icon fonts
+//      standing in for words.
+//   4. Proper nouns keep their capitals. The homepage lowercases company names
+//      through CSS, and `text-transform` rewrites the glyphs Chrome puts in the
+//      PDF — so a lowercased resume ships lowercased proper nouns to a human
+//      reader. Section labels stay lowercase (the site's signature, and
+//      standard words that parsers match case-insensitively); the content does
+//      not. This is house copy rule 1, applied honestly.
+//
+// Deliberately absent: a phone number (not in the data, and not mine to
+// invent), headshots, rules, and icons.
+
+const email = contactLinks.find(l => l.href.startsWith('mailto:'));
+
+// The contact row a parser reads first. Location is plain text; the rest are
+// real links, which stay clickable once the browser writes the PDF.
+const contactRow = [
+  { label: bio.location, href: null },
+  email ? { label: email.label, href: email.href } : null,
+  { label: 'linkedin.com/in/henryduhaime', href: linkedinUrl },
+  { label: resumeMeta.siteLabel, href: resumeMeta.siteUrl },
+].filter(Boolean) as { label: string; href: string | null }[];
+---
+
+<Base
+  title={`${resumeMeta.name} — Resume`}
+  description={`Resume of ${resumeMeta.name}: ${resumeMeta.headline}. ${bio.location}.`}
+>
+  <article class="resume">
+
+    {/* Screen-only chrome. `no-print` keeps it out of the PDF — a stray button
+        printed into the header is the classic tell of a web-printed resume. */}
+    <div class="resume-bar no-print">
+      <p class="section-label">resume</p>
+      <div class="resume-bar-actions">
+        {/* One action, and it serves the file this page exports to — not a
+            separately maintained document. Cmd+P on this page produces the
+            same PDF, which is the point: there is only ever one resume. */}
+        <a href={resumeUrl} download class="section-cta">download pdf ↓</a>
+      </div>
+    </div>
+
+    <header class="resume-head">
+      <h1 class="resume-name">{resumeMeta.name}</h1>
+      <p class="resume-headline">{resumeMeta.headline}</p>
+      <ul class="resume-contact">
+        {contactRow.map(item => (
+          <li>
+            {item.href
+              ? <a href={item.href} target={item.href.startsWith('mailto:') ? undefined : '_blank'} rel={item.href.startsWith('mailto:') ? undefined : 'noopener'}>{item.label}</a>
+              : item.label}
+          </li>
+        ))}
+      </ul>
+    </header>
+
+    <section class="resume-section">
+      <h2 class="resume-section-label">summary</h2>
+      <p class="resume-summary">{resumeMeta.summary}</p>
+    </section>
+
+    <section class="resume-section">
+      <h2 class="resume-section-label">experience</h2>
+      <div class="resume-roles">
+        {experience.map(role => (
+          <article class="resume-role">
+            {/* Title, employer and dates are ONE line of inline flow inside the
+                heading. They began as two cells of a side rail, which is what
+                broke extraction: poppler re-sorts glyphs by position rather
+                than paint order, read the narrow rail as a column, and lifted
+                the next employer's name up into the previous role's bullets.
+                Inline text cannot be re-columned — and folding the three onto
+                a single line is what puts the whole document on one page,
+                since the stacked form cost an extra line per role. */}
+            <h3 class="resume-role-title">
+              {role.title}<span class="resume-role-meta"> · {role.company}{role.location && <> · {role.location}</>}<span class="resume-role-dates"> · {role.datesFull ?? role.dates}</span></span>
+            </h3>
+            {/* Only when a single range hides something — Meta's contract that
+                converted to full-time. Its own line rather than more inline
+                text: the heading is already carrying four fields. */}
+            {role.dateNote && <p class="resume-role-note">{role.dateNote}</p>}
+            {/* A real <ul> when the role has bullets, prose when it doesn't.
+                Parsers and skimming humans both want the list; the fallback
+                means a role is never blank while the copy is being written. */}
+            {role.bullets?.length
+              ? <ul class="resume-bullets">{role.bullets.map(b => <li>{b}</li>)}</ul>
+              : <p class="resume-role-desc">{role.description}</p>}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="resume-section">
+      <h2 class="resume-section-label">skills</h2>
+      {/* Label and list in one inline run, comma-joined: the shape keyword
+          extraction handles best, and nothing for a column detector to mistake
+          for a second column. */}
+      <div class="resume-lines">
+        {skillGroups.map(group => (
+          <p class="resume-line">
+            <span class="resume-line-label">{group.group}</span> — {group.skills.join(', ')}
+          </p>
+        ))}
+      </div>
+    </section>
+
+    <section class="resume-section">
+      <h2 class="resume-section-label">education</h2>
+      <div class="resume-lines">
+        {education.map(ed => (
+          <p class="resume-line">
+            <span class="resume-line-strong">{ed.degree}</span>
+            <span class="resume-line-label"> · {ed.institution}{ed.location && ` · ${ed.location}`}</span>
+          </p>
+        ))}
+      </div>
+    </section>
+
+    <section class="resume-section">
+      <h2 class="resume-section-label">publications &amp; patents</h2>
+      <ul class="resume-pubs">
+        {publications.map(pub => (
+          <li class="resume-pub">
+            <a href={pub.link} target="_blank" rel="noopener">{pub.title}</a>
+            <span class="resume-pub-meta">{pub.venue}, {pub.year}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+  </article>
+</Base>

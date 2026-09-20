@@ -2100,3 +2100,417 @@ a.block-credits-name:hover,
   }
 }
 
+
+/* ─── Resume ─────────────────────────────────────────────────── */
+/* The rendered resume at /resume. It borrows the CV's two-track rail so the
+   document reads as the same family as the homepage, but it is NOT the CV: the
+   content keeps its real capitals. The homepage lowercases company names
+   through `text-transform`, and that rewrites the glyphs the browser puts in
+   the printed PDF — a lowercased proper noun is a style choice on a website and
+   an affectation on a resume. Labels stay lowercase, content as written. */
+
+.resume {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding-bottom: var(--space-divider);
+}
+
+/* Screen-only header row: the label on the left, the two actions on the right,
+   same idiom as .section-head on the homepage. */
+.resume-bar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+
+.resume-bar .section-label {
+  margin-bottom: 0;
+}
+
+.resume-bar-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* A <button> does not inherit font or colour from the page the way the <a>
+   beside it does, so .section-cta needs these to render as the same control. */
+button.section-cta {
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+}
+
+.resume-head {
+  padding-bottom: 1.75rem;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 2.25rem;
+}
+
+/* TITLE role, hero step. The one place on the site where a name is set large
+   and in its real capitals — this is a document masthead, not a page title. */
+.resume-name {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+.resume-headline {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: var(--label-tracking-tight);
+  color: var(--color-muted);
+  margin-top: 0.5rem;
+}
+
+/* Inline, separated by a middot from a pseudo-element. The character does land
+   in the printed PDF's text layer — pseudo-element content is painted like any
+   other glyph — and that is what we want: it extracts as a delimiter between
+   fields rather than letting the location run into the email address. Keeping
+   it out of the DOM only means it is never selected or read as content. */
+.resume-contact {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin-top: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: var(--label-tracking-tight);
+  color: var(--color-muted);
+}
+
+/* Trailing, not leading. As ::before on the following item the middot wrapped
+   to the head of the next line and each wrapped row opened with a stray dot;
+   hung off the end of the preceding item it closes a line instead, which is
+   how a run-in list is meant to break. */
+.resume-contact li:not(:last-child)::after {
+  content: '·';
+  margin-left: 0.9rem;
+  color: var(--color-border);
+}
+
+/* Hairline-underline idiom shared with .cv-pub a / .intro-formerly a */
+.resume-contact a {
+  color: var(--color-muted);
+  text-decoration: underline;
+  text-decoration-color: var(--color-border);
+  text-underline-offset: 2px;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.resume-contact a:hover {
+  color: var(--color-text);
+  text-decoration-color: var(--color-text);
+}
+
+.resume-section + .resume-section {
+  margin-top: 2.25rem;
+}
+
+/* CAPTION role, section step. Lowercase and mono like every other label on the
+   site; the words themselves stay the standard ones a parser scans for. */
+.resume-section-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 400;
+  text-transform: lowercase;
+  letter-spacing: var(--label-tracking-tight);
+  color: var(--color-muted);
+  margin-bottom: 1.25rem;
+}
+
+/* DESCRIPTION role. Wider measure than .cv-role-desc's 68ch: the summary is
+   three lines of continuous prose with no rail beside it to shorten the run. */
+.resume-summary {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  max-width: 76ch;
+}
+
+.resume-roles,
+.resume-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.resume-lines {
+  gap: 0.6rem;
+}
+
+/* Stacked, NOT railed. The CV's two-track grid is the right idiom for a web
+   page and the wrong one for a document that has to survive text extraction:
+   a PDF reader re-sorts glyphs by position, reads a narrow left rail as a
+   column, and interleaves it with the column beside it — which put the next
+   employer's name in the middle of the previous role's bullets. Everything
+   here is one column of inline flow, and the site's voice is carried by the
+   type roles instead of the layout. */
+.resume-role {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+/* CAPTION role, riding inline after the title. Mono like .cv-role-company, but
+   NOT lowercased: see the section note. font-weight resets because it inherits
+   the heading's 700. */
+.resume-role-meta {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: var(--label-tracking-tight);
+  color: var(--color-text);
+  /* Normal tracking would otherwise inherit the title's -0.02em */
+  white-space: normal;
+}
+
+.resume-role-dates {
+  color: var(--color-muted);
+}
+
+/* CAPTION role, field step — the qualifier under a role's heading. Muted and a
+   step down so it reads as a footnote to the dates, not as content. */
+.resume-role-note {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--label-tracking-tight);
+  color: var(--color-muted);
+}
+
+/* One line per entry, label inline so there is no second column to detect. */
+.resume-line {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-muted);
+  max-width: 76ch;
+}
+
+.resume-line-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: var(--label-tracking-tight);
+  color: var(--color-text);
+}
+
+.resume-line-strong {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+/* TITLE role, item step — matches .cv-role-title's size and weight, minus the
+   lowercasing. It leads each role because the job title is the first thing a
+   parser tries to match. */
+.resume-role-title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+/* DESCRIPTION role — the fallback when a role has no bullets yet. */
+.resume-role-desc {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-muted);
+  max-width: 68ch;
+}
+
+/* A real <ul> so the structure survives extraction. The marker is drawn with a
+   pseudo-element rather than list-style so it sits on the text's first line and
+   the wrap indents under the words, not under the dash. */
+.resume-bullets {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-width: 68ch;
+}
+
+.resume-bullets li {
+  position: relative;
+  padding-left: 1.1rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+.resume-bullets li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--color-placeholder);
+}
+
+.resume-pubs {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Title and venue on one line where there is room, wrapping as a unit when
+   there is not — four publications in a column, not a 2×2 grid, because the
+   printed page is one column and the screen should preview the printed page. */
+.resume-pub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+}
+
+.resume-pub a {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: var(--color-border);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.resume-pub a:hover {
+  text-decoration-color: var(--color-text);
+}
+
+/* CAPTION role */
+.resume-pub-meta {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--label-tracking-tight);
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .resume-name {
+    font-size: 1.75rem;
+  }
+}
+
+/* ─── Print ──────────────────────────────────────────────────── */
+/* The export path: the browser's own print-to-PDF. No toolchain, no extra
+   dependency, and the text layer stays real selectable text with the two
+   Google fonts embedded as subsets — which is exactly what an ATS needs to
+   read. Sizes switch to pt here because a printed page is measured in
+   physical units, not CSS pixels.
+
+   MUST stay last in this file. It is an unprefixed media block competing with
+   the width queries above at equal specificity, so from any earlier position
+   the responsive rules would win on source order and print a phone layout. */
+@media print {
+  /* Letter with a 0.55in margin: wide enough to clear any printer's
+     unprintable edge, tight enough that the whole document lands on one page. */
+  @page {
+    size: letter;
+    margin: 0.55in;
+  }
+
+  /* The site shell is chrome. The sidebar, the hand cursor and the screen-only
+     actions all come off, and the main column gives up its padding to @page. */
+  .sidebar,
+  #hand-cursor,
+  .no-print {
+    display: none !important;
+  }
+
+  .content-area {
+    padding: 0 !important;
+  }
+
+  body {
+    display: block !important;
+    background: #fff;
+  }
+
+  .resume {
+    max-width: none;
+    margin: 0;
+    padding-bottom: 0;
+  }
+
+  /* Pure black on white. The screen's #666 is comfortable backlit and turns
+     weak in toner, so muted text darkens rather than disappears, and
+     print-color-adjust stops a browser "economy mode" lightening it further. */
+  .resume,
+  .resume * {
+    color: #000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .resume-headline,
+  .resume-contact,
+  .resume-role-dates,
+  .resume-role-note,
+  .resume-pub-meta,
+  .resume-section-label,
+  .resume-role-desc,
+  .resume-line,
+  .resume-bullets li {
+    color: #333 !important;
+  }
+
+  /* Links stay live in the PDF, so they need no printed URL beside them — and
+     the underline is dropped because a page of ruled text reads as clutter. */
+  .resume a {
+    text-decoration: none !important;
+  }
+
+  .resume-name { font-size: 19pt; }
+  .resume-headline { font-size: 9pt; margin-top: 0.25rem; }
+  .resume-contact { font-size: 8.5pt; margin-top: 0.5rem; gap: 0.2rem 0.7rem; }
+  .resume-contact li:not(:last-child)::after { margin-left: 0.7rem; color: #999; }
+
+  .resume-head {
+    padding-bottom: 0.55rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 0.5pt solid #999;
+  }
+
+  .resume-section-label { font-size: 8pt; margin-bottom: 0.26rem; }
+  .resume-section + .resume-section { margin-top: 0.45rem; }
+
+  /* 9pt at 1.25 rather than 8.5pt at 1.3: near-identical line height, but the
+     larger glyph is the more legible of the two at the same cost in space.
+     This pairing is what lands the whole document on one page — loosening
+     either value pushes publications onto a second, near-empty sheet. */
+  .resume-summary,
+  .resume-role-desc,
+  .resume-line,
+  .resume-bullets li,
+  .resume-pub a { font-size: 9pt; line-height: 1.25; max-width: none; }
+
+  .resume-role-title { font-size: 10pt; }
+  .resume-role-meta,
+  .resume-line-label { font-size: 8pt; }
+  .resume-role-note { font-size: 7.5pt; }
+  .resume-role-dates,
+  .resume-pub-meta { font-size: 7.5pt; }
+
+  .resume-roles { gap: 0.42rem; }
+  .resume-lines { gap: 0.14rem; }
+  .resume-role { gap: 0.09rem; }
+  .resume-pubs { gap: 0.16rem; }
+  .resume-bullets { gap: 0.1rem; }
+
+  /* A role split across a page break loses its rail — the company and dates
+     stay on page one while the bullets carry on overleaf, unattributed. */
+  .resume-role,
+  .resume-line,
+  .resume-pub,
+  .resume-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .resume-section-label {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+}

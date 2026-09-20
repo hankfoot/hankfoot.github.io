@@ -27,6 +27,7 @@ hankfoot.github.io/
 │   ├── layouts/Base.astro        # Global shell: sidebar, main slot, hand cursor, fonts, reduced-motion init
 │   ├── pages/
 │   │   ├── index.astro           # Homepage: intro, staggered 2-col project grid, about/cv/contact
+│   │   ├── resume.astro          # The resume document; source of the exported PDF (see Resume)
 │   │   ├── styles.astro          # Living design-system reference at /styles (unlinked, intentional)
 │   │   ├── projects/[slug].astro # Project pages + the MDX components map
 │   │   └── games/                # Internal game test harnesses (index + [game]); not linked from site
@@ -41,14 +42,19 @@ hankfoot.github.io/
 │   ├── assets/                   # Images, mirroring their public URL path so Astro can
 │   │                             #   optimise them (see utils/images.ts + SmartImage)
 │   ├── content/projects/*.mdx    # One file per project (quick-distract is the reference example)
+│   ├── data/about.ts             # Bio, CV, contact, resumeMeta — everything that is not a project
 │   ├── games/                    # Canvas2D minigame subsystem (engine, manifest, registry, games)
 │   ├── utils/
 │   │   ├── text.ts               # parseInline(): markdown links + {text|tooltip} syntax
 │   │   ├── media.ts              # isVideo()/videoBase(): shared webm+mp4 source derivation
 │   │   └── badges.ts             # localStorage badge store + events
-│   └── styles/global.css         # ALL global styles + design tokens (:root block at top)
+│   └── styles/global.css         # ALL global styles + design tokens (:root block at top);
+│                                 #   the @media print block MUST stay last in the file
 │
+├── scripts/
+│   └── export-resume-pdf.mjs     # Prints /resume to public/*.pdf via local Chrome (npm run resume:pdf)
 ├── public/
+│   ├── hank-duhaime-resume.pdf   # GENERATED — never hand-edit; regenerate with npm run resume:pdf
 │   ├── projects/[slug]/          # Per-project VIDEO only (webm+mp4); images live in src/assets
 │   └── ui/hand-*.svg             # Fluent Emoji hand sprites (all 8 in use)
 ├── .video-backups/               # Pre-re-encode video originals (gitignored, keep)
@@ -66,6 +72,8 @@ Tokens live in `:root` in `global.css` (~lines 9–37). Use them — don't hardc
 - **Visual language:** flat cards, subtle borders and surface tints, minimal decoration; the personality comes from the hand cursor and motion choreography, not from surface styling.
 
 **Styling convention:** everything goes in `global.css` under semantic class names — components do NOT carry scoped `<style>` blocks. Sole exception: `GameCanvas.astro` (its overlay choreography is self-contained). Follow this split.
+
+**Print:** one `@media print` block, at the very foot of `global.css`, serving one page (`/resume`). It is unprefixed and competes with the responsive width queries at equal specificity, so **it must stay last in the file** — moved earlier it loses on source order and the PDF silently prints a phone layout. It also strips `.sidebar`, `#hand-cursor` and anything marked `.no-print` on *every* page, which is what you want when printing any of them.
 
 ## Content Model
 
@@ -116,7 +124,8 @@ punctuation follows from it. Never add a period to a fragment to force consisten
    publisher, never a comma. No `Photo:` and no `(courtesy of…)`.
 4. **Feature descriptions are complete sentences,** with periods.
 5. **Outcomes** start with a past-tense verb and end without a period — both the frontmatter
-   list and the body `<Outcomes>` list. *Shipped, Built, Playtested, Won* — not *1st Place*.
+   list and the body `<Outcomes>` list, and the same for a role's resume `bullets`.
+   *Shipped, Built, Playtested, Won* — not *1st Place*.
 6. **Year ranges** use a tight en dash: `2016–2018`. Same format in frontmatter and the CV.
 7. **Numerals in metadata; spell out one to nine in prose.** Always numerals with a modifier
    attached (`10+`, `5-star`, `7-person`, `3D`).
@@ -172,20 +181,106 @@ Also: US spelling (`visualization`, `standardized`); credit your own role as
 
 **Reduced motion:** `data-reduced-motion="true"` on `<html>`, set pre-paint by an `is:inline` script (localStorage `hank-reduced-motion`, falls back to system preference). Toggle lives in Sidebar. Disables hand cursor and animation theatrics; games stay playable. Any new animation must respect this attribute.
 
+## Resume
+
+`/resume` (`src/pages/resume.astro`) is a document, not a page about a document. It renders the
+same `experience` / `education` / `skillGroups` / `publications` exports from `src/data/about.ts`
+that the homepage CV reads, and `public/hank-duhaime-resume.pdf` is **generated from it** by
+`npm run resume:pdf`. Every resume link on the site — the homepage CV action and the one on
+`/resume` — points at that generated file. Nothing links a separately authored PDF any more;
+commit `8eb8f68` ("Ship the 2026 resume and reconcile the CV against it") was the last time the
+two were reconciled by hand, and this exists so that never happens again.
+
+**Data.** `about.ts` exports a `Role` interface whose resume-only fields are all optional, so a role
+can gain resume copy without touching the homepage: `bullets` (falls back to `description`),
+`location`, `datesFull` (month precision — `dates` keeps the year range because the homepage CV's
+rail is too narrow for months) and `dateNote` (a qualifier line, e.g. Meta's contract that
+converted). `resumeMeta` holds the name, headline and summary.
+
+**Sources of truth, in order.** LinkedIn for dates and locations — it disagreed with the old
+hand-made PDF twice and is the record. `Resume — hankware.pdf` in `~/Downloads` (an artifact of an
+earlier version of this builder) for voice: the headline and summary came from it. Month ranges
+take a **spaced** en dash (`Jan 2022 – Mar 2026`), unlike house rule 6's tight one for bare years,
+because the operands contain spaces.
+
+**The layout is shaped by text extraction, and that constraint outranks visual consistency.**
+A PDF reader re-sorts glyphs by *position*, not paint order, so a CSS grid is NOT safe just
+because it paints in DOM order. The original build used `.cv-role`'s two-track rail; poppler read
+the narrow rail as a column and lifted the *next* employer's name into the *previous* role's
+bullets. Hence the current rules, none of which are cosmetic:
+
+- One linear column. Each role is `Title · Company · Dates` as one line of **inline flow**, then a
+  real `<ul>`. Inline text cannot be re-columned. Skills and education follow the same shape.
+- Real `<h2>`/`<h3>`/`<ul>`. A styled `<p>` is invisible to a parser.
+- Selectable text only — nothing important baked into an image.
+- Labels lowercase, content as written. The homepage lowercases company names through
+  `text-transform`, which rewrites the glyphs Chrome puts in the PDF; the resume does not, so
+  proper nouns reach a human reader with their capitals. This is house copy rule 1, applied
+  honestly, and it is the one place the resume deliberately diverges from the CV's styling.
+- Section headings use the standard words (`experience`, `skills`, `education`) — parsers match
+  them case-insensitively, so lowercase is fine but renaming them is not.
+
+**One page is a binding constraint**, and the print scale in the `@media print` block sits just
+inside it — currently with about **1pt to spare**, so assume any added copy will spill. Loosening
+the body size or line-height pushes publications onto a second, near-empty sheet.
+
+Don't tune this by eye. Measure the real overflow, because `break-inside: avoid` means a block
+bounces whole and the shortfall is usually far smaller than the empty second page suggests — at
+one point page 1 had 70pt free while a 79pt publications block sat overleaf, so unwrapping a
+single long line fixed it:
+
+```bash
+python3 - <<'EOF'
+import subprocess, re
+out = subprocess.run(['pdftotext','-bbox','public/hank-duhaime-resume.pdf','-'],
+                     capture_output=True, text=True).stdout
+for i, pg in enumerate(out.split('<page')[1:], 1):
+    ys = [float(y) for y in re.findall(r'yMax="([\d.]+)"', pg)]
+    if ys: print(f"page {i}: content ends {max(ys):.0f}pt of {792 - 0.55*72:.0f}pt usable")
+EOF
+``` Two things that bought the space, worth knowing before you re-tune: folding title, company
+and dates onto one line saves a line per role (~1in over six roles), and at a fixed line height
+9pt/1.25 beats 8.5pt/1.3 — the same vertical cost for a larger glyph. **After any change to the
+resume, its data, or the print block, re-run `npm run resume:pdf` and check the page count.**
+
+**Verify the PDF, not the screen.** The screen preview cannot show an extraction bug. The check is:
+
+```bash
+npm run resume:pdf
+pdftotext public/hank-duhaime-resume.pdf - | head -40   # reading order must be Title → Company → bullets
+python3 -c "d=open('public/hank-duhaime-resume.pdf','rb').read(); print(d.count(b'/Type /Page') - d.count(b'/Type /Pages'))"
+```
+
+Chrome emits Type 3 fonts here. They carry ToUnicode maps so extraction works (verified with
+poppler), but if you ever want belt-and-braces, save once from Safari and compare `pdffonts`.
+
 ## Best Practices for This Codebase
 1. New visual patterns: add tokens/classes to `global.css`, then showcase them on `/styles` so the reference stays complete.
 2. New MDX block: create in `src/components/blocks/`, register in the components map in `src/pages/projects/[slug].astro`, style in `global.css`, showcase on `/styles`.
 3. New game: implement against `engine.ts`, add metadata to `manifest.ts`, factory to `registry.ts`; verify at `/games/[id]` before embedding via `<GameCanvas game="id" />`.
 4. New project: create `src/content/projects/[slug].mdx`, images in `src/assets/projects/[slug]/`, video in `public/projects/[slug]/`, follow quick-distract's structure.
 5. Motion: WAAPI or CSS transitions using existing easing/durations; always gate on `data-reduced-motion`.
+6. Resume or CV content: edit `src/data/about.ts` only — both views read it. Then `npm run resume:pdf` and confirm the PDF is still one page and still extracts in order (see Resume).
 
 ## Building & Deploying
 
 ```bash
-npm run dev      # Dev server at localhost:4321
-npm run build    # Build to dist/
-npm run preview  # Preview built output
-npm run deploy   # Build + push dist/ to gh-pages branch (GitHub Pages)
+npm run dev         # Dev server at localhost:4321
+npm run build       # Build to dist/
+npm run preview     # Preview built output
+npm run resume:pdf  # Re-export public/hank-duhaime-resume.pdf from /resume, then rebuild
+npm run deploy      # resume:pdf, then push dist/ to gh-pages branch (GitHub Pages)
 ```
 
-Dependencies are intentionally minimal: `astro`, `@astrojs/mdx`, `gh-pages`. Don't add packages for things plain CSS/JS already handles here.
+`deploy` runs `resume:pdf` first on purpose: the PDF is generated, so shipping without
+regenerating it is exactly the drift the export replaces. That makes local Chrome a deploy-time
+requirement — `export-resume-pdf.mjs` finds it at the standard macOS path or via `CHROME_PATH`,
+and fails loudly rather than deploying a stale file.
+
+Note that `astro dev` and `astro preview` both **silently fall back to another port** when the one
+they are given is busy, announcing it only on stdout. Read the port back from their output rather
+than assuming it; `export-resume-pdf.mjs` parses it out of the banner for this reason.
+
+Dependencies are intentionally minimal: `astro`, `@astrojs/mdx`, `gh-pages`. Don't add packages for
+things plain CSS/JS already handles here — the PDF export drives the Chrome already on the machine
+rather than pulling in a headless-browser package.

@@ -19,6 +19,7 @@ export const GET: APIRoute = async () => {
 
   const paths = [
     '/',
+    '/resume/',
     ...projects.map(p => `/projects/${p.id.replace(/\.[^.]+$/, '')}/`),
   ];
 

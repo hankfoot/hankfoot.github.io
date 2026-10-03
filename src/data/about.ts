@@ -118,14 +118,14 @@ export const experience: Role[] = [
     title: 'UX Designer III',
     dates: '2022–2024',
     datesFull: 'January 2022 – January 2024',
-    dateNote: 'converted to full-time at Meta in February 2024',
     description:
       'Prototyped AR/VR interaction concepts on contract at Meta Reality Labs Research; the engagement converted to full-time employment in February 2024.',
-    // One line on purpose — the entry sits between two fuller ones and the page
-    // has no room for a wrap. Evidenced by the UIST 2022 Tasbi demo, which
-    // falls inside this window.
+    // One bullet, saying what this entry is for: the research prototyping and
+    // the conversion. It does not compete with the senior role above for the
+    // same accomplishments, which is why no dateNote is needed — the bullet
+    // carries the conversion and saves that line.
     bullets: [
-      'Prototyped AR/VR and wrist-haptics interaction concepts onsite at Meta Reality Labs Research',
+      'Built AR/VR research prototypes onsite at Meta Reality Labs Research; contract converted to full-time employment in February 2024',
     ],
   },
   {
@@ -147,8 +147,10 @@ export const experience: Role[] = [
     title: 'UX Designer',
     dates: '2020',
     datesFull: 'July 2020 – October 2020',
-    description: 'Returned on a short contract engagement.',
-    bullets: [],
+    description: 'Returned on contract to refresh the UI for ARISE, the studio’s AR scavenger hunt.',
+    bullets: [
+      'Redesigned onboarding, login, and inventory flows in Figma for ARISE, the studio’s AR scavenger hunt',
+    ],
   },
   {
     company: 'Georgia Tech College of Design',

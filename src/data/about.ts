@@ -102,10 +102,15 @@ export const experience: Role[] = [
     datesFull: 'February 2024 – March 2026',
     description:
       'Developed AR/VR research prototypes across haptics, AI, wearables, and robotics to drive design exploration, executive reviews, and user studies.',
+    // Rewritten from the Outcomes block in reality-labs-prototypes.mdx, which
+    // carries more than the frontmatter summary did. The first two bullets used
+    // to say the same thing twice — built prototypes, for these purposes — so
+    // they merge, and the space pays for the hardware-influence line.
     bullets: [
-      'Built 15+ research demos and novel interaction concepts for nascent R&D technologies across AR/VR, haptics, wearables, AI, and robotics',
-      'Prototyped low- and high-fidelity experiences to support design exploration, value assessment, user studies, executive demos, and conferences',
-      'Led a 7-person prototyping sprint, collaborating across research and engineering to build reusable systems and code libraries',
+      'Built 15+ research demos across AR/VR, haptics, wearables, AI, and robotics, from quick value tests and user studies to polished builds for executive review',
+      'Led a 7-person exploratory sprint and hackathon that produced 25+ prototypes',
+      'Collaborated across research and engineering to build shared haptic tooling and reusable systems',
+      'Contributed prototype insights to the requirements for 4 research hardware iterations',
     ],
   },
   {
@@ -164,12 +169,14 @@ export const experience: Role[] = [
     // concepting/designing/fabricating, interactive physical installations,
     // physical computing, Arduino, addressable LEDs, hardware.
     bullets: [
-      'Mentored graduate students designing and fabricating interactive installations, and lectured on electronics and physical computing',
+      'Mentored graduate students designing and fabricating interactive installations',
+      'Lectured on electronics and physical computing',
     ],
   },
   {
     company: 'Second Story Interactive Studios',
     location: 'Atlanta, GA',
+    hideFromResume: true,
     title: 'Experience Design Intern',
     dates: '2019',
     datesFull: 'June 2019 – August 2019',

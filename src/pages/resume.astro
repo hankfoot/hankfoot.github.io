@@ -29,6 +29,10 @@ import {
 //      looks for; a styled <p> is invisible to it.
 //   3. Selectable text only — no text baked into an image, no icon fonts
 //      standing in for words.
+//   3b. Section headings use the names scanners look for. "experience" alone
+//      failed a Jobscan check that wants "Work History" or "Professional
+//      Experience"; lowercase is fine (matching is case-insensitive), the
+//      wording is not.
 //   4. Proper nouns keep their capitals. The homepage lowercases company names
 //      through CSS, and `text-transform` rewrites the glyphs Chrome puts in the
 //      PDF — so a lowercased resume ships lowercased proper nouns to a human
@@ -93,7 +97,7 @@ const contactRow = [
     </section>
 
     <section class="resume-section">
-      <h2 class="resume-section-label">experience</h2>
+      <h2 class="resume-section-label">work history</h2>
       <div class="resume-roles">
         {roles.map(role => (
           <article class="resume-role">
@@ -106,7 +110,7 @@ const contactRow = [
                 a single line is what puts the whole document on one page,
                 since the stacked form cost an extra line per role. */}
             <h3 class="resume-role-title">
-              {role.title}<span class="resume-role-meta"> · {role.company}{role.location && <> · {role.location}</>}<span class="resume-role-dates"> · {role.datesFull ?? role.dates}</span></span>
+              {role.title}<span class="resume-role-meta"> | {role.company}{role.location && <> | {role.location}</>}<span class="resume-role-dates"> | {role.datesFull ?? role.dates}</span></span>
             </h3>
             {/* Only when a single range hides something — Meta's contract that
                 converted to full-time. Its own line rather than more inline
@@ -133,7 +137,7 @@ const contactRow = [
       <div class="resume-lines">
         {skillGroups.map(group => (
           <p class="resume-line">
-            <span class="resume-line-label">{group.group}</span> — {group.skills.join(', ')}
+            <span class="resume-line-label">{group.group}</span>: {group.skills.join(', ')}
           </p>
         ))}
       </div>
@@ -145,7 +149,7 @@ const contactRow = [
         {education.map(ed => (
           <p class="resume-line">
             <span class="resume-line-strong">{ed.degree}</span>
-            <span class="resume-line-label"> · {ed.institution}{ed.location && ` · ${ed.location}`}</span>
+            <span class="resume-line-label"> | {ed.institution}{ed.location && ` | ${ed.location}`}</span>
           </p>
         ))}
       </div>

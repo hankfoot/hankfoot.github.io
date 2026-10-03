@@ -192,14 +192,26 @@ commit `8eb8f68` ("Ship the 2026 resume and reconcile the CV against it") was th
 two were reconciled by hand, and this exists so that never happens again.
 
 **Data.** `about.ts` exports a `Role` interface whose resume-only fields are all optional, so a role
-can gain resume copy without touching the homepage: `bullets` (falls back to `description`),
-`location`, `datesFull` (month precision — `dates` keeps the year range because the homepage CV's
-rail is too narrow for months) and `dateNote` (a qualifier line, e.g. Meta's contract that
-converted). `resumeMeta` holds the name, headline and summary.
+can gain resume copy without touching the homepage: `bullets` (falls back to `description`;
+an explicit `[]` means the entry renders no body at all), `location`, `datesFull` (month precision
+— `dates` keeps the year range because the homepage CV's rail is too narrow for months),
+`dateNote` (a qualifier line, e.g. the contract that converted) and `hideFromResume` (keeps a role
+on the CV but off the resume, so a one-page constraint never deletes a real job from the site).
+`resumeMeta` holds the name and summary; there is no headline — the summary said the same thing
+two lines below it. The summary's first sentence is `tagline.plain`, the homepage hero's own
+string, so rewording the hero reaches the resume.
+
+**One date range per entry.** A parser reads one range per role, so a span that hides a contract,
+or two engagements joined by `&`, must be split into separate entries. Dates are
+`Month YYYY – Month YYYY`, month spelled out, never sharing a year across the dash: `July – October
+2020` leaves the start month with no year to bind to.
 
 **Sources of truth, in order.** LinkedIn for dates and locations — it disagreed with the old
 hand-made PDF twice and is the record. `Resume — hankware.pdf` in `~/Downloads` (an artifact of an
-earlier version of this builder) for voice: the headline and summary came from it. Month ranges
+earlier version of this builder) for voice and for the skills list. Jobscan for what a scanner
+actually sees — it caught the heading wording, the special-character count and the font size, none
+of which the extraction checks below reveal. The PDF in `public/` has a clean filename; a copy
+re-downloaded from the browser gains ` (1)` and fails a filename check that is not our bug. Month ranges
 take a **spaced** en dash (`Jan 2022 – Mar 2026`), unlike house rule 6's tight one for bare years,
 because the operands contain spaces.
 
@@ -209,20 +221,29 @@ because it paints in DOM order. The original build used `.cv-role`'s two-track r
 the narrow rail as a column and lifted the *next* employer's name into the *previous* role's
 bullets. Hence the current rules, none of which are cosmetic:
 
-- One linear column. Each role is `Title · Company · Dates` as one line of **inline flow**, then a
-  real `<ul>`. Inline text cannot be re-columned. Skills and education follow the same shape.
+- One linear column. Each role is `Title | Company | Location | Dates` as one line of **inline
+  flow**, then a real `<ul>`. Inline text cannot be re-columned. Skills and education follow the
+  same shape. Separators are ASCII pipes, not middots — see the special-characters note below.
+- A heading must never wrap: the continuation line strands the end year away from its range.
+  The check is that every line containing a pipe ends in a year or a state code, because a wrapped
+  heading's second line has no pipe in it and a naive grep steps right over the problem.
 - Real `<h2>`/`<h3>`/`<ul>`. A styled `<p>` is invisible to a parser.
 - Selectable text only — nothing important baked into an image.
 - Labels lowercase, content as written. The homepage lowercases company names through
   `text-transform`, which rewrites the glyphs Chrome puts in the PDF; the resume does not, so
   proper nouns reach a human reader with their capitals. This is house copy rule 1, applied
   honestly, and it is the one place the resume deliberately diverges from the CV's styling.
-- Section headings use the standard words (`experience`, `skills`, `education`) — parsers match
-  them case-insensitively, so lowercase is fine but renaming them is not.
+- Section headings use the words scanners look for. Lowercase is fine (matching is
+  case-insensitive), the wording is not: `experience` alone failed a Jobscan check that wants
+  `Work History` or `Professional Experience`, so the heading reads **`work history`**.
+- **Keep non-ASCII characters near zero.** Scanners flag overuse, and a CSS pseudo-element's
+  `content` is painted into the text layer like any other glyph — em-dash bullet markers and
+  middot separators counted 54 of them. Pipes, colons and hyphens cost nothing and read the same.
+  Only the date en dashes remain.
 
 **One page is a binding constraint**, and the print scale in the `@media print` block sits just
-inside it — currently with about **1pt to spare**, so assume any added copy will spill. Loosening
-the body size or line-height pushes publications onto a second, near-empty sheet.
+inside it — currently about **19pt**, under two lines. Assume added copy spills. Page margins are
+**0.5in** (scanners want 0.5–1in, and the wider measure unwraps lines for free).
 
 Don't tune this by eye. Measure the real overflow, because `break-inside: avoid` means a block
 bounces whole and the shortfall is usually far smaller than the empty second page suggests — at
@@ -236,12 +257,20 @@ out = subprocess.run(['pdftotext','-bbox','public/hank-duhaime-resume.pdf','-'],
                      capture_output=True, text=True).stdout
 for i, pg in enumerate(out.split('<page')[1:], 1):
     ys = [float(y) for y in re.findall(r'yMax="([\d.]+)"', pg)]
-    if ys: print(f"page {i}: content ends {max(ys):.0f}pt of {792 - 0.55*72:.0f}pt usable")
+    if ys: print(f"page {i}: content ends {max(ys):.0f}pt of {792 - 0.5*72:.0f}pt usable")
 EOF
-``` Two things that bought the space, worth knowing before you re-tune: folding title, company
-and dates onto one line saves a line per role (~1in over six roles), and at a fixed line height
-9pt/1.25 beats 8.5pt/1.3 — the same vertical cost for a larger glyph. **After any change to the
-resume, its data, or the print block, re-run `npm run resume:pdf` and check the page count.**
+```
+
+What bought the space, worth knowing before re-tuning. Folding title, company and dates onto one
+line saves a line per role. At a fixed line height a larger glyph is free — 9pt/1.25 beats
+8.5pt/1.3. Combining a junior role's two bullets into one reclaims two wrapped lines while keeping
+every keyword. And `hideFromResume` is the lever of last resort, in preference to shrinking type.
+
+The body is **10pt**; publication titles hold at **9pt** on purpose, because the extra half point
+wraps two fixed-length citations onto second lines. Nothing is below 8pt — a scanner checks
+average font size, and the compression that produced a 7.5pt tier was a finding against us.
+**After any change to the resume, its data, or the print block, re-run `npm run resume:pdf` and
+check the page count.**
 
 **Verify the PDF, not the screen.** The screen preview cannot show an extraction bug. The check is:
 

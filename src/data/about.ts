@@ -103,9 +103,9 @@ export const experience: Role[] = [
     description:
       'Developed AR/VR research prototypes across haptics, AI, wearables, and robotics to drive design exploration, executive reviews, and user studies.',
     bullets: [
-      'Developed novel interaction concepts and research prototypes for nascent R&D technologies across AR/VR, haptics, wearables, AI, and robotics',
+      'Built 15+ research demos and novel interaction concepts for nascent R&D technologies across AR/VR, haptics, wearables, AI, and robotics',
       'Prototyped low- and high-fidelity experiences to support design exploration, value assessment, user studies, executive demos, and conferences',
-      'Collaborated with cross-functional partners to document research insights, build reusable systems and code libraries, and facilitate design workshops',
+      'Led a 7-person prototyping sprint, collaborating across research and engineering to build reusable systems and code libraries',
     ],
   },
   {
@@ -149,7 +149,7 @@ export const experience: Role[] = [
     datesFull: 'July 2020 – October 2020',
     description: 'Returned on contract to refresh the UI for ARISE, the studio’s AR scavenger hunt.',
     bullets: [
-      'Redesigned onboarding, login, and inventory flows in Figma for ARISE, the studio’s AR scavenger hunt',
+      'Redesigned 3 core flows (onboarding, login, inventory) in Figma for ARISE, an AR scavenger hunt',
     ],
   },
   {
@@ -164,7 +164,7 @@ export const experience: Role[] = [
     // concepting/designing/fabricating, interactive physical installations,
     // physical computing, Arduino, addressable LEDs, hardware.
     bullets: [
-      'Mentored graduate students concepting, designing, and fabricating interactive physical installations, and lectured on physical computing topics such as Arduino, addressable LEDs, and hardware troubleshooting',
+      'Mentored graduate students designing and fabricating interactive installations, and lectured on electronics and physical computing',
     ],
   },
   {
@@ -178,7 +178,7 @@ export const experience: Role[] = [
     // Combined from two bullets. "two" is the only metric in this role and
     // "rapid prototyping" is one of the posting's named skills — both survive.
     bullets: [
-      'Developed flow diagrams, videos, and software prototypes to represent interactive physical installations to prospective clients, and conducted two rapid prototyping explorations of emergent physical sensing technologies',
+      'Developed flow diagrams, videos, and software prototypes to pitch interactive installations, and ran 2 rapid prototyping explorations of emergent sensing technologies',
     ],
   },
   {
@@ -201,9 +201,9 @@ export const experience: Role[] = [
     dates: '2016–2018',
     datesFull: 'June 2016 – July 2018',
     description:
-      'Designed, built, and shipped five mobile AR minigames now used in 20+ pediatric hospitals.',
+      'Designed, built, and shipped five mobile AR minigames now used in 12 pediatric hospitals across 3 countries.',
     bullets: [
-      'Designed, programmed, and shipped five mobile AR games used in 20+ pediatric hospitals to improve the patient experience',
+      'Designed, programmed, and shipped five mobile AR games used in 12 pediatric hospitals across 3 countries to improve patient care',
       'Patented a novel AR practice of leveraging multiple visual targets to create scalable, room-filling content',
     ],
   },
@@ -240,6 +240,7 @@ export const skillGroups = [
       'Digital fabrication (3D printing, laser cutting)',
       'CAD (Fusion 360)',
       'Electronics and physical computing (Arduino)',
+      'Robotics',
       'Model making',
     ],
   },
@@ -272,7 +273,7 @@ export const publications = [
   },
   {
     title: 'Safecracker: Exploring Immersion Through Audio and Object-Based Controllers',
-    venue: 'CHI Student Games (1st Place)',
+    venue: 'CHI Student Games (1st Place, Innovative Interfaces)',
     year: '2020',
     link: 'https://dl.acm.org/doi/10.1145/3334480.3381656',
   },

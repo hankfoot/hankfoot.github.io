@@ -10,6 +10,7 @@ import {
   resumeMeta,
   resumeUrl,
   skillGroups,
+  tagline,
 } from '../data/about';
 
 // One rendered document, printed by the browser. No PDF toolchain and no second
@@ -40,6 +41,11 @@ import {
 
 const email = contactLinks.find(l => l.href.startsWith('mailto:'));
 
+// The homepage CV renders every role; the resume renders the ones that earn a
+// line on a single page. Filtered here rather than by deleting data, so the
+// site keeps the full history.
+const roles = experience.filter(role => !role.hideFromResume);
+
 // The contact row a parser reads first. Location is plain text; the rest are
 // real links, which stay clickable once the browser writes the PDF.
 const contactRow = [
@@ -52,7 +58,7 @@ const contactRow = [
 
 <Base
   title={`${resumeMeta.name} — Resume`}
-  description={`Resume of ${resumeMeta.name}: ${resumeMeta.headline}. ${bio.location}.`}
+  description={`Resume of ${resumeMeta.name}. ${tagline.plain}. ${bio.location}.`}
 >
   <article class="resume">
 
@@ -70,7 +76,6 @@ const contactRow = [
 
     <header class="resume-head">
       <h1 class="resume-name">{resumeMeta.name}</h1>
-      <p class="resume-headline">{resumeMeta.headline}</p>
       <ul class="resume-contact">
         {contactRow.map(item => (
           <li>
@@ -90,7 +95,7 @@ const contactRow = [
     <section class="resume-section">
       <h2 class="resume-section-label">experience</h2>
       <div class="resume-roles">
-        {experience.map(role => (
+        {roles.map(role => (
           <article class="resume-role">
             {/* Title, employer and dates are ONE line of inline flow inside the
                 heading. They began as two cells of a side rail, which is what
@@ -110,8 +115,10 @@ const contactRow = [
             {/* A real <ul> when the role has bullets, prose when it doesn't.
                 Parsers and skimming humans both want the list; the fallback
                 means a role is never blank while the copy is being written. */}
-            {role.bullets?.length
-              ? <ul class="resume-bullets">{role.bullets.map(b => <li>{b}</li>)}</ul>
+            {role.bullets
+              ? role.bullets.length > 0 && (
+                  <ul class="resume-bullets">{role.bullets.map(b => <li>{b}</li>)}</ul>
+                )
               : <p class="resume-role-desc">{role.description}</p>}
           </article>
         ))}

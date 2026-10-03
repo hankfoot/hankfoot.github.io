@@ -2159,14 +2159,6 @@ button.section-cta {
   line-height: 1.1;
 }
 
-.resume-headline {
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  letter-spacing: var(--label-tracking-tight);
-  color: var(--color-muted);
-  margin-top: 0.5rem;
-}
-
 /* Inline, separated by a middot from a pseudo-element. The character does land
    in the printed PDF's text layer — pseudo-element content is painted like any
    other glyph — and that is what we want: it extracts as a delimiter between
@@ -2444,7 +2436,6 @@ button.section-cta {
     print-color-adjust: exact;
   }
 
-  .resume-headline,
   .resume-contact,
   .resume-role-dates,
   .resume-role-note,
@@ -2463,7 +2454,6 @@ button.section-cta {
   }
 
   .resume-name { font-size: 19pt; }
-  .resume-headline { font-size: 9pt; margin-top: 0.25rem; }
   .resume-contact { font-size: 8.5pt; margin-top: 0.5rem; gap: 0.2rem 0.7rem; }
   .resume-contact li:not(:last-child)::after { margin-left: 0.7rem; color: #999; }
 

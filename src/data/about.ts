@@ -76,32 +76,64 @@ export interface Role {
    * `dates` keeps the year range because the homepage CV's rail is too narrow
    * for months; the resume prefers this when present. Spaced en dash, not the
    * tight one house style uses for bare years: the operands contain spaces.
+   *
+   * Always `Month YYYY – Month YYYY`, with the month spelled out in full and
+   * NEVER sharing a year across the dash. An applicant tracking system matches
+   * a month against the year next to it, so `July – October 2020` leaves the
+   * start month with no year to bind to and the range can be read as starting
+   * in a different one.
    */
   datesFull?: string;
+  /**
+   * Keep the role on the homepage CV but off the resume. The resume is a
+   * one-page document competing for space; the CV is Hank's full history and
+   * should not lose a real job to that constraint. Deleting the entry outright
+   * would take it off both.
+   */
+  hideFromResume?: boolean;
 }
 
 export const experience: Role[] = [
   {
-    company: 'Meta Reality Labs Research',
-    datesFull: 'Jan 2022 – Mar 2026',
+    company: 'Meta Reality Labs',
     location: 'Redmond, WA',
     title: 'Senior Product Design Prototyper',
-    dates: '2022–2026',
-    dateNote: 'contract to Jan 2024, full-time from Feb 2024',
+    dates: '2024–2026',
+    datesFull: 'February 2024 – March 2026',
     description:
-      'Developed AR/VR research prototypes across haptics, AI, wearables, and robotics to drive design exploration, executive reviews, and user studies. Started on contract in 2022 and came on full time in 2024.',
+      'Developed AR/VR research prototypes across haptics, AI, wearables, and robotics to drive design exploration, executive reviews, and user studies.',
     bullets: [
-      'Developed novel interaction concepts for nascent R&D technologies across AR/VR, haptics, wearables, AI, and robotics',
-      'Prototyped low- and high-fidelity experiences to support design exploration, value assessment, executive demos, and conferences',
-      'Collaborated with cross-functional partners to document research insights, develop code libraries, and facilitate design workshops',
+      'Developed novel interaction concepts and research prototypes for nascent R&D technologies across AR/VR, haptics, wearables, AI, and robotics',
+      'Prototyped low- and high-fidelity experiences to support design exploration, value assessment, user studies, executive demos, and conferences',
+      'Collaborated with cross-functional partners to document research insights, build reusable systems and code libraries, and facilitate design workshops',
+    ],
+  },
+  {
+    // Split from the role above rather than folded into one 2022–2026 span: a
+    // parser reads one date range per entry, so a combined range hid the
+    // contract entirely. The employer of record is the agency, not Meta — the
+    // placement is where the work happened and belongs in the bullet.
+    company: 'Crystal Equation Corporation',
+    location: 'Redmond, WA',
+    title: 'UX Designer III',
+    dates: '2022–2024',
+    datesFull: 'January 2022 – January 2024',
+    dateNote: 'converted to full-time at Meta in February 2024',
+    description:
+      'Prototyped AR/VR interaction concepts on contract at Meta Reality Labs Research; the engagement converted to full-time employment in February 2024.',
+    // One line on purpose — the entry sits between two fuller ones and the page
+    // has no room for a wrap. Evidenced by the UIST 2022 Tasbi demo, which
+    // falls inside this window.
+    bullets: [
+      'Prototyped AR/VR and wrist-haptics interaction concepts onsite at Meta Reality Labs Research',
     ],
   },
   {
     company: 'Publicis Sapient',
-    datesFull: 'Oct 2020 – Jan 2022',
     location: 'Seattle, WA',
     title: 'Experience Designer L1',
     dates: '2020–2022',
+    datesFull: 'October 2020 – January 2022',
     description:
       'Prototyped digital products for Mercedes-Benz USA: sketches, wireframes, interaction flows, and click-throughs.',
     bullets: [
@@ -111,53 +143,66 @@ export const experience: Role[] = [
   },
   {
     company: 'SpellBound AR',
-    datesFull: 'Jul – Oct 2020 & Jun 2016 – Jul 2018',
+    location: 'Ann Arbor, MI',
+    title: 'UX Designer',
+    dates: '2020',
+    datesFull: 'July 2020 – October 2020',
+    description: 'Returned on a short contract engagement.',
+    bullets: [],
+  },
+  {
+    company: 'Georgia Tech College of Design',
+    location: 'Atlanta, GA',
+    title: 'Graduate Teaching Assistant',
+    dates: '2019–2020',
+    datesFull: 'August 2019 – May 2020',
+    description:
+      'Mentored graduate students concepting, designing, and fabricating interactive installations.',
+    // Combined from two bullets. Keeps every keyword that was carrying weight —
+    // concepting/designing/fabricating, interactive physical installations,
+    // physical computing, Arduino, addressable LEDs, hardware.
+    bullets: [
+      'Mentored graduate students concepting, designing, and fabricating interactive physical installations, and lectured on physical computing topics such as Arduino, addressable LEDs, and hardware troubleshooting',
+    ],
+  },
+  {
+    company: 'Second Story Interactive Studios',
+    location: 'Atlanta, GA',
+    title: 'Experience Design Intern',
+    dates: '2019',
+    datesFull: 'June 2019 – August 2019',
+    description:
+      'Produced flow diagrams, videos, and software prototypes pitching physical installations to prospective clients.',
+    // Combined from two bullets. "two" is the only metric in this role and
+    // "rapid prototyping" is one of the posting's named skills — both survive.
+    bullets: [
+      'Developed flow diagrams, videos, and software prototypes to represent interactive physical installations to prospective clients, and conducted two rapid prototyping explorations of emergent physical sensing technologies',
+    ],
+  },
+  {
+    company: 'IMAGINE Lab',
+    location: 'Atlanta, GA',
+    hideFromResume: true,
+    title: 'Mixed Reality Research Assistant',
+    dates: '2019',
+    datesFull: 'January 2019 – May 2019',
+    description:
+      'Prototyped four mixed-reality interactions in Unity, supporting research into immersive visualization for city planning.',
+    bullets: [
+      'Prototyped four mixed-reality interactions in Unity to support research on immersive visualization technology for city planning',
+    ],
+  },
+  {
+    company: 'SpellBound AR',
     location: 'Ann Arbor, MI',
     title: 'UX Designer / Engineer',
-    dates: '2020 & 2016–2018',
+    dates: '2016–2018',
+    datesFull: 'June 2016 – July 2018',
     description:
       'Designed, built, and shipped five mobile AR minigames now used in 20+ pediatric hospitals.',
     bullets: [
       'Designed, programmed, and shipped five mobile AR games used in 20+ pediatric hospitals to improve the patient experience',
       'Patented a novel AR practice of leveraging multiple visual targets to create scalable, room-filling content',
-    ],
-  },
-  {
-    company: 'Georgia Tech College of Design',
-    datesFull: 'Aug 2019 – May 2020',
-    location: 'Atlanta, GA',
-    title: 'Graduate Teaching Assistant',
-    dates: '2019–2020',
-    description:
-      'Mentored graduate students concepting, designing, and fabricating interactive installations.',
-    bullets: [
-      'Mentored graduate students through the process of concepting, designing, and fabricating interactive physical installations',
-      'Lectured on physical computing topics such as Arduino, addressable LEDs, and general hardware troubleshooting',
-    ],
-  },
-  {
-    company: 'Second Story Interactive Studios',
-    datesFull: 'Jun – Aug 2019',
-    location: 'Atlanta, GA',
-    title: 'Experience Design Intern',
-    dates: '2019',
-    description:
-      'Produced flow diagrams, videos, and software prototypes pitching physical installations to prospective clients.',
-    bullets: [
-      'Developed flow diagrams, videos, and software prototypes to represent interactive physical installations to prospective clients',
-      'Conducted two rapid prototyping explorations to evaluate emergent physical sensing technologies for future client work',
-    ],
-  },
-  {
-    company: 'IMAGINE Lab',
-    datesFull: 'Jan – May 2019',
-    location: 'Atlanta, GA',
-    title: 'Mixed Reality Research Assistant',
-    dates: '2019',
-    description:
-      'Prototyped four mixed-reality interactions in Unity, supporting research into immersive visualization for city planning.',
-    bullets: [
-      'Prototyped four mixed-reality interactions in Unity to support research on immersive visualization technology for city planning',
     ],
   },
 ];
@@ -179,8 +224,9 @@ export const skillGroups = [
   {
     group: 'Digital Prototyping',
     skills: [
-      'AI (Claude Code / ChatGPT)',
+      'Rapid prototyping',
       'Games, AR, and VR (Unity / Unreal)',
+      'AI (Claude Code)',
       'Generative art (Processing)',
       'Scripting (Python / C#)',
       'Web (HTML / CSS / JS)',
@@ -189,16 +235,16 @@ export const skillGroups = [
   {
     group: 'Physical Prototyping',
     skills: [
-      '3D printing',
+      'Digital fabrication (3D printing, laser cutting)',
       'CAD (Fusion 360)',
-      'Laser cutting',
-      'Model making (foam / cardboard)',
-      'Physical computing (Arduino)',
+      'Electronics and physical computing (Arduino)',
+      'Model making',
     ],
   },
   {
     group: 'UX Design',
     skills: [
+      'Product development',
       'Interaction flows and journey maps',
       'Wireframing (Figma)',
       'Workshops (Figjam)',
@@ -258,13 +304,14 @@ export const contactLinks = [
 
 export const resumeMeta = {
   name: 'Hank Duhaime',
-  // Sits under the name: the plain job title, which is what an ATS matches on.
-  // It deliberately does not repeat the summary's opening words.
-  headline: 'Senior Product Design Prototyper',
-  // The homepage hero line, not a second copy of it — see `tagline` above.
-  // Override with a literal here if the resume ever needs to say something the
-  // front page does not.
-  summary: tagline.plain,
+  // The homepage hero line, then a sentence the front page has no room for.
+  // The first half stays tied to `tagline`, so rewording the hero still reaches
+  // the resume; the elaboration is resume-only. `tagline.plain` is a fragment
+  // (house copy rule 2), which is why the period is added here rather than
+  // living in the string.
+  summary:
+    `${tagline.plain}. Works at the intersection of engineering, design, and research to ` +
+    'turn ambiguous ideas into testable prototypes in software and hardware alike.',
   siteLabel: 'hankduhaime.com',
   siteUrl: 'https://hankduhaime.com',
 };
